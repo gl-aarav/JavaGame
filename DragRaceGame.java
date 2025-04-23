@@ -71,6 +71,7 @@ class GameHolder extends JPanel
 class FirstPagePanel extends JPanel 
 {
 	private Image image;
+	private Image car1;
     public FirstPagePanel(JPanel Game) 
     {
         setLayout(null);
