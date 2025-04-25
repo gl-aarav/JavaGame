@@ -31,9 +31,9 @@ public class DragRaceGame
     public static void main(String[] args) 
     {
         JFrame frame = new JFrame("Drag Race!");
-        frame.setSize(800, 800);
+        frame.setSize(1500, 800);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLocation(0, 50);
+        frame.setLocation(0, 0);
         frame.setResizable(true);
         frame.getContentPane().add(new GameHolder());
         frame.setVisible(true);
@@ -56,15 +56,23 @@ class FirstPagePanel extends JPanel
     private float alpha = 1.0f; // Transparency value for fade
     private Timer timer;
     private Image gifImage;
+    private Image carBackground;
 
     public FirstPagePanel(JPanel Game) 
     {
-        setLayout(null);
-        setBackground(Color.BLACK);
+    	
+       startGIF();
+    }
+    
+    public void startGIF()
+    {
+    	setLayout(null);
+        setBackground(Color.WHITE);
 
-        gifImage = new ImageIcon("Start.gif").getImage(); // Load image
+        gifImage = new ImageIcon("Start.gif").getImage(); 
+        
+        carBackground = new ImageIcon("CarBackground.png").getImage();
 
-        // Start the fade after a delay (7 seconds)
         Timer delay = new Timer(7000, new ActionListener() 
         {
             public void actionPerformed(ActionEvent e) 
@@ -72,11 +80,13 @@ class FirstPagePanel extends JPanel
                 startFadeOut();
             }
         });
+        
         delay.setRepeats(false);
         delay.start();
     }
 
-    private void startFadeOut() {
+    public void startFadeOut()
+    {
         timer = new Timer(100, new ActionListener()
         {
             public void actionPerformed(ActionEvent e) 
@@ -95,38 +105,72 @@ class FirstPagePanel extends JPanel
     }
 
 
-    protected void paintComponent(Graphics g)
+    public void paintComponent(Graphics g)
     {
         super.paintComponent(g);
 
         if (alpha > 0 && gifImage != null) 
         {
-            int imgWidth = gifImage.getWidth(this);
-            int imgHeight = gifImage.getHeight(this);
-            int x = (getWidth() - imgWidth) / 2;
-            int y = (getHeight() - imgHeight) / 2;
+        	int originalWidth = gifImage.getWidth(this);
+        	int originalHeight = gifImage.getHeight(this);
+        	double ratio = (double) originalWidth / originalHeight;
+        	int finalWidth = (int) (700 * ratio);
+        	int finalHeight = 700;
+            int x  = (getWidth() - finalWidth)/2;
+            int y = (getHeight() - finalHeight)/2;
 
             Graphics2D g2d = (Graphics2D) g.create();
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-            g2d.drawImage(gifImage, x, y, this); // Draw centered at original size
-            g2d.dispose();
+            g2d.drawImage(gifImage, x, y, finalWidth, finalHeight, this); 
+        }
+        
+        else
+        {
+        	int imgWidth = carBackground.getWidth(this);
+            int imgHeight = carBackground.getHeight(this);
+            int ratio = ((getWidth() - imgWidth)/2) / ((getHeight() - imgHeight)/2);
+            int x  = (getWidth() - imgWidth)/2;
+            int y = (getHeight() - imgHeight)/2;
+            
+        	Graphics2D g2d = (Graphics2D) g.create();
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+            g2d.drawImage(gifImage, x, y, this); 
         }
     }
 
-    private void showWelcomeScreen()
+    public void showWelcomeScreen()
     {
-        removeAll(); // Remove everything from panel
         repaint();
-
-        JButton start = new JButton ("Start");
-        start.setBounds(700, 720, 80, 30);
-        add(start);
         
-        JLabel welcome = new JLabel("Welcome to Drag Race!", SwingConstants.CENTER);
+        JLabel welcome = new JLabel("Welcome to Drag Race!");
         welcome.setFont(new Font("Arial", Font.BOLD, 36));
         welcome.setForeground(Color.BLUE);
         welcome.setBounds(100, 350, 600, 50);
-        add(welcome);
+        add(welcome, BorderLayout.NORTH);
         repaint();
+        
+        JButton startButton = new JButton ("Start");
+        startButton.setBounds(330, 380, 80, 30);
+        add(startButton);
+        
+        JButton highScores = new JButton ("High Scores");
+        highScores.setBounds(310, 410, 120, 30);
+        add(highScores);
+        
+        startButton.addActionListener(new ActionListener() 
+        {
+            public void actionPerformed(ActionEvent e) 
+            {
+               System.out.println("start was clicked");
+            }
+        });
+        
+        highScores.addActionListener(new ActionListener()
+        {
+        	public void actionPerformed(ActionEvent e)
+        	{
+        		System.out.println("highscores was clicked");
+        	}
+        });
     }
 }
