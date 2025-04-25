@@ -3,87 +3,130 @@
  * 4/23/2025
  * DragRaceGame.java
  * 
- *  - Add Card Layout, Null Layout, etc...
- *  - Add all the tracks and the cars and make the welcome page, intstructions page, game page, and the answers/explanation page.
- */
+ * Week 1
+ * 	- Add intro GIF and fade out animation
+ * 	- Create welcome page
+ * Week 2
+ * 	- Create the instructions panel 
+ *  - Create select car panel
+ * Week 3
+ *  - Start on working to import all the files 
+ *  - Create basic functioning buttons
+ * Week 4
+ *  - Start the game panel
+ *  - create the text file for the questions
+ * Week 5
+ *  - Finish the game panel
+ *  - Create the learning panel
+ * Week 6
+ *  - Finishing touches
+ */ 
 
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.ButtonGroup;
-import javax.swing.JOptionPane;
-import javax.swing.SwingConstants;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Graphics;
-import java.awt.GridLayout;
-import java.awt.Image;
-
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-
-import java.io.File;
-import java.io.IOException;
-
-import javax.swing.JSlider;
-import javax.imageio.ImageIO;
-
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
-public class DragRaceGame
+public class DragRaceGame 
 {
-	public static void main(String[] args) 
-	{
-		JFrame frame = new JFrame("Drag Race!");
-		frame.setSize(800, 800);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setLocation(0, 50);
-		frame.setResizable(true);
-		frame.getContentPane().add(new GameHolder());
-		frame.setVisible(true);
-	}
+    public static void main(String[] args) 
+    {
+        JFrame frame = new JFrame("Drag Race!");
+        frame.setSize(800, 800);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocation(0, 50);
+        frame.setResizable(true);
+        frame.getContentPane().add(new GameHolder());
+        frame.setVisible(true);
+    }
 }
+
 class GameHolder extends JPanel 
 {
-	public GameHolder() 
-	{
-		setLayout(new CardLayout());
-		FirstPagePanel first = new FirstPagePanel(this);
-		add(first, "First");
-	}
+    public GameHolder() 
+    {
+        setLayout(new CardLayout());
+        FirstPagePanel first = new FirstPagePanel(this);
+        add(first, "First");
+    }
 }
 
 class FirstPagePanel extends JPanel 
 {
-	private Image image;
-	private Image car1;
+
+    private float alpha = 1.0f; // Transparency value for fade
+    private Timer timer;
+    private Image gifImage;
+
     public FirstPagePanel(JPanel Game) 
     {
         setLayout(null);
-        try 
+        setBackground(Color.BLACK);
+
+        gifImage = new ImageIcon("Start.gif").getImage(); // Load image
+
+        // Start the fade after a delay (7 seconds)
+        Timer delay = new Timer(7000, new ActionListener() 
         {
-        	image = ImageIO.read(new File ("track.jpg"));
-        }
-        catch (IOException e) 
+            public void actionPerformed(ActionEvent e) 
+            {
+                startFadeOut();
+            }
+        });
+        delay.setRepeats(false);
+        delay.start();
+    }
+
+    private void startFadeOut() {
+        timer = new Timer(100, new ActionListener()
         {
-        	e.printStackTrace();
+            public void actionPerformed(ActionEvent e) 
+            {
+                alpha -= 0.05f; // Decrease alpha
+                if (alpha <= 0) 
+                {
+                    alpha = 0;
+                    timer.stop();
+                    showWelcomeScreen();
+                }
+                repaint(); // Redraw with updated transparency
+            }
+        });
+        timer.start();
+    }
+
+
+    protected void paintComponent(Graphics g)
+    {
+        super.paintComponent(g);
+
+        if (alpha > 0 && gifImage != null) 
+        {
+            int imgWidth = gifImage.getWidth(this);
+            int imgHeight = gifImage.getHeight(this);
+            int x = (getWidth() - imgWidth) / 2;
+            int y = (getHeight() - imgHeight) / 2;
+
+            Graphics2D g2d = (Graphics2D) g.create();
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+            g2d.drawImage(gifImage, x, y, this); // Draw centered at original size
+            g2d.dispose();
         }
     }
+
+    private void showWelcomeScreen()
+    {
+        removeAll(); // Remove everything from panel
+        repaint();
+
+        JButton start = new JButton ("Start");
+        start.setBounds(700, 720, 80, 30);
+        add(start);
+        
+        JLabel welcome = new JLabel("Welcome to Drag Race!", SwingConstants.CENTER);
+        welcome.setFont(new Font("Arial", Font.BOLD, 36));
+        welcome.setForeground(Color.BLUE);
+        welcome.setBounds(100, 350, 600, 50);
+        add(welcome);
+        repaint();
+    }
 }
-
-
