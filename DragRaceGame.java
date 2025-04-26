@@ -31,7 +31,7 @@ public class DragRaceGame
     public static void main(String[] args) 
     {
         JFrame frame = new JFrame("Drag Race!");
-        frame.setSize(1500, 800);
+        frame.setSize(933, 800);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocation(0, 0);
         frame.setResizable(true);
@@ -53,7 +53,7 @@ class GameHolder extends JPanel
 class FirstPagePanel extends JPanel 
 {
 
-    private float alpha = 1.0f; // Transparency value for fade
+    private float alpha = 1.0f; 
     private Timer timer;
     private Image gifImage;
     private Image carBackground;
@@ -71,7 +71,7 @@ class FirstPagePanel extends JPanel
 
         gifImage = new ImageIcon("Start.gif").getImage(); 
         
-        carBackground = new ImageIcon("CarBackground.png").getImage();
+        carBackground = new ImageIcon("CarBackground.jpeg").getImage();
 
         Timer delay = new Timer(7000, new ActionListener() 
         {
@@ -115,10 +115,9 @@ class FirstPagePanel extends JPanel
         	int originalHeight = gifImage.getHeight(this);
         	double ratio = (double) originalWidth / originalHeight;
         	int finalWidth = (int) (700 * ratio);
-        	int finalHeight = 700;
+        	int finalHeight = 772;
             int x  = (getWidth() - finalWidth)/2;
             int y = (getHeight() - finalHeight)/2;
-
             Graphics2D g2d = (Graphics2D) g.create();
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
             g2d.drawImage(gifImage, x, y, finalWidth, finalHeight, this); 
@@ -126,15 +125,13 @@ class FirstPagePanel extends JPanel
         
         else
         {
-        	int imgWidth = carBackground.getWidth(this);
-            int imgHeight = carBackground.getHeight(this);
-            int ratio = ((getWidth() - imgWidth)/2) / ((getHeight() - imgHeight)/2);
-            int x  = (getWidth() - imgWidth)/2;
-            int y = (getHeight() - imgHeight)/2;
-            
-        	Graphics2D g2d = (Graphics2D) g.create();
-            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-            g2d.drawImage(gifImage, x, y, this); 
+        	int originalWidth = carBackground.getWidth(this);
+        	int originalHeight = carBackground.getHeight(this);
+        	double ratio = (double) originalWidth / originalHeight;
+        	int finalWidth = (int) (700 * ratio);
+        	int finalHeight = 772;
+            g.drawImage(carBackground, 0, 0, 933, 772, this); 
+           
         }
     }
 
@@ -142,19 +139,12 @@ class FirstPagePanel extends JPanel
     {
         repaint();
         
-        JLabel welcome = new JLabel("Welcome to Drag Race!");
-        welcome.setFont(new Font("Arial", Font.BOLD, 36));
-        welcome.setForeground(Color.BLUE);
-        welcome.setBounds(100, 350, 600, 50);
-        add(welcome, BorderLayout.NORTH);
-        repaint();
-        
         JButton startButton = new JButton ("Start");
-        startButton.setBounds(330, 380, 80, 30);
+        startButton.setBounds(400, 420, 80, 30);
         add(startButton);
         
         JButton highScores = new JButton ("High Scores");
-        highScores.setBounds(310, 410, 120, 30);
+        highScores.setBounds(420, 450, 120, 30);
         add(highScores);
         
         startButton.addActionListener(new ActionListener() 
