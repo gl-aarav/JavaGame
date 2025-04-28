@@ -70,7 +70,7 @@ class GameHolder extends JPanel
 }
 
 
-class WelcomePagePanel extends JPanel implements MouseListener
+class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListener
 {
 	private JPanel parent;
 	private CardLayout layout;
@@ -79,15 +79,24 @@ class WelcomePagePanel extends JPanel implements MouseListener
 	private Image gifImage;
 	private boolean gifOrNo;
 	private Image carBackground;
+	private boolean in;
 
-	private boolean leftButtonPressed = false;
-	private boolean rightButtonPressed = false;
-
+	private boolean leftButtonPressed;
+	private boolean rightButtonPressed;
+	private boolean leftButtonHovered;
+	private boolean rightButtonHovered;
 	public WelcomePagePanel(JPanel gameHolder, CardLayout layout) 
 	{
+		in = false;
+		leftButtonPressed = false;
+		rightButtonPressed = false;
+		leftButtonHovered = false;
+		rightButtonHovered = false;
+		repaint();
 		this.parent = gameHolder;
 		this.layout = layout;
 		addMouseListener(this);
+		addMouseMotionListener(this);
 		startGIF();
 		gifOrNo = true;
 	}
@@ -161,18 +170,33 @@ class WelcomePagePanel extends JPanel implements MouseListener
 			g.drawImage(carBackground, 0, 0, 933, 772, this);
 
 			Graphics2D g2d = (Graphics2D) g.create();
-			g2d.setColor(new Color(0, 0, 0, 80)); // Light semi-transparent black
 
-			if (leftButtonPressed) 
+		
+			if (in)
 			{
-				g2d.fillRect(180, 684, 150, 33); // Left button highlight
+				if (leftButtonPressed) 
+				{
+					g2d.setColor(new Color(0, 0, 0, 180));
+					g2d.fillRect(180, 684, 150, 33); 
+				}
+
+				else if (rightButtonPressed) 
+				{
+					g2d.setColor(new Color(0, 0, 0, 180)); 
+					g2d.fillRect(469, 683, 302, 33); 
+				}
+				else if(leftButtonHovered)
+				{
+					g2d.setColor(new Color(0, 0, 0, 80));
+					g2d.fillRect(180, 684, 150, 33); 
+				}
+				else if(rightButtonHovered)
+				{
+					g2d.setColor(new Color(0, 0, 0, 80)); 
+					g2d.fillRect(469, 683, 302, 33); 
+				}
 			}
 
-			if (rightButtonPressed) 
-			{
-				g2d.fillRect(469, 683, 302, 33); // Right button highlight
-			}
-			g2d.dispose();
 		}
 	}
 
@@ -220,23 +244,53 @@ class WelcomePagePanel extends JPanel implements MouseListener
 
 	public void mouseClicked(MouseEvent e) {}
 	public void mouseEntered(MouseEvent e) {}
-	public void mouseExited(MouseEvent e) {}
+	public void mouseExited(MouseEvent e) 
+	{
+		in = false;
+	}
+	public void mouseDragged(MouseEvent e) {}
+	public void mouseMoved(MouseEvent e) 
+	{
+		in = true;
+		int x = e.getX();
+		int y = e.getY();
+
+		if (!gifOrNo)
+		{
+			if (y > 684 && y < 717 && x > 185 && x < 329) 
+			{
+				leftButtonHovered = true;
+			} 
+			else if (y > 685 && y < 716 && x > 469 && x < 771) 
+			{
+				rightButtonHovered = true;	
+			}
+			else
+			{
+				leftButtonHovered = false;
+				rightButtonHovered = false;	
+			}
+			repaint();
+		}
+	}
 }
 
-class InstructionPanel extends JPanel
+class InstructionPanel extends JPanel 
 {
 	private JPanel parent;
 	private CardLayout layout;
+	
 	public InstructionPanel(GameHolder gameHolder, CardLayout layout) 
 	{
 		this.parent = gameHolder;
 		this.layout = layout;
 		setLayout(new BorderLayout());	
-		setBackground(new Color(0, 0, 70));
+		setBackground(Color.BLUE); 
 		showObjects();
 	}
 
-	public void showObjects() {
+	public void showObjects() 
+	{
 		JTextField instructions = new JTextField("Hello");
 		instructions.setForeground(Color.WHITE);
 		instructions.setBackground(Color.BLACK);
@@ -244,41 +298,47 @@ class InstructionPanel extends JPanel
 		instructions.setBackground(Color.BLACK);
 		add(instructions, BorderLayout.CENTER);
 
+		JPanel showButtons = new JPanel (new GridLayout(1,1));
+		showButtons.setBackground(Color.BLUE);
+
 		JButton back = new JButton("   Back   ");
-		back.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		back.addActionListener(new ActionListener() 
+		{
+			public void actionPerformed(ActionEvent e) 
+			{
 				layout.show(parent, "Welcome");
 			}
 		});
-		back.setBorder(new LineBorder(Color.BLUE, 1));
+
 		back.setBackground(Color.BLACK);
+
 		back.setForeground(Color.WHITE);
 		back.setOpaque(true);
+		back.setBorderPainted(false);
 		add(back, BorderLayout.WEST);
-
-		// Next Button
 		JButton next = new JButton("   Next   ");
-		next.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		next.addActionListener(new ActionListener() 
+		{
+			public void actionPerformed(ActionEvent e) 
+			{
 				layout.show(parent, "ChooseCar");
 			}
 		});	
-		next.setBorder(new LineBorder(Color.BLUE, 1));
 		next.setBackground(Color.BLACK);
+		next.setBorderPainted(false);
 		next.setForeground(Color.WHITE);
 		next.setOpaque(true);
-		add(next, BorderLayout.EAST);
+		showButtons.add(next);
 
-		// Image Label
 		ImageIcon icon = new ImageIcon("Instructions.png");
 		JLabel label = new JLabel(icon);
 		add(label, BorderLayout.NORTH);
+
+		add(showButtons, BorderLayout.EAST);
 	}
 
-	public void paintComponent(Graphics g)
-	{
-		super.paintComponent(g);
-	}
+	public void mouseDragged(MouseEvent e){}
+
 
 }
 
@@ -322,24 +382,20 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 	public void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
-		g.drawImage(carOptions, 0, 0, 500 , 772, this);
+		g.drawImage(carOptions, 0, 0, 500 , 775, this);
 		g.setColor(Color.BLUE);
 		if (xPrint != 0)
 		{
 			Graphics2D g2d = (Graphics2D) g;
 			java.awt.Stroke oldStroke = g2d.getStroke();
 			g2d.setStroke(new BasicStroke(5));
-			g.drawRect(xPrint, yPrint, 97, 195);
+			g.drawRect(xPrint, yPrint, 97, 190);
 			g2d.setStroke(oldStroke);
 		}
 	}
 
 
-	public void mouseClicked(MouseEvent e) 
-	{
-		x = e.getX();
-		y = e.getY();
-	}
+	public void mouseClicked(MouseEvent e) {}
 	public void mousePressed(MouseEvent e) {}
 	public void mouseReleased(MouseEvent e) {}
 	public void mouseEntered(MouseEvent e) {}
@@ -350,82 +406,107 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 	{
 		x = e.getX();
 		y = e.getY();
-		if (x > 3 && x < 103 && y > 0 && y < 192)
+		if (x > 4 && x < 103 && y > 0 && y < 195)
 		{
-			xPrint = 3;
-			yPrint = 3;
+			xPrint = 4;
+			yPrint = 6;
 		}
-		else if (x > 102 && x < 203 && y > 0 && y < 192)
+		else if (x > 102 && x < 203 && y > 0 && y < 195)
 		{
 			xPrint = 102;
-			yPrint = 3;
+			yPrint = 6;
 		}
-		else if (x > 203 && x < 305 && y > 0 && y < 192)
+		else if (x > 203 && x < 302 && y > 0 && y < 195)
 		{
 			xPrint = 203;
-			yPrint = 3;
+			yPrint = 6;
 		}
-		else if (x > 305 && x < 403 && y > 0 && y < 192)
+		else if (x > 302 && x < 400 && y > 0 && y < 195)
 		{
-			xPrint = 305;
-			yPrint = 3;
+			xPrint = 302;
+			yPrint = 6;
 		}
-		else if (x > 403 && x < 500 && y > 0 && y < 192)
+		else if (x > 400 && x < 500 && y > 0 && y < 195)
 		{
-			xPrint = 403;
-			yPrint = 3;
+			xPrint = 400;
+			yPrint = 6;
 		}
 
-		else if (x > 0 && x < 103 && y > 192 && y < 387)
+		else if (x > 4 && x < 103 && y > 195 && y < 387)
 		{
-			xPrint = 3;
-			yPrint = 192;
+			xPrint = 4;
+			yPrint = 195;
 		}
-		else if (x > 106 && x < 203 && y > 192 && y < 387)
+		else if (x > 102 && x < 203 && y > 195 && y < 387)
 		{
-			xPrint = 106;
-			yPrint = 192;
+			xPrint = 102;
+			yPrint = 195;
 		}
-		else if (x > 203 && x < 305 && y > 192 && y < 387)
+		else if (x > 203 && x < 302 && y > 195 && y < 387)
 		{
 			xPrint = 203;
-			yPrint = 192;
+			yPrint = 195;
 		}
-		else if (x > 305 && x < 403 && y > 192 && y < 387)
+		else if (x > 302 && x < 400 && y > 195 && y < 387)
 		{
-			xPrint = 305;
-			yPrint = 192;
+			xPrint = 302;
+			yPrint = 195;
 		}
-		else if (x > 403 && x < 500 && y > 192 && y < 387)
+		else if (x > 400 && x < 500 && y > 195 && y < 387)
 		{
-			xPrint = 403;
-			yPrint = 192;
+			xPrint = 400;
+			yPrint = 195;
 		}
 
-		else if (x > 0 && x < 103 && y > 408 && y < 580)
+		else if (x > 4 && x < 103 && y > 386 && y < 580)
 		{
-			xPrint = 3;
-			yPrint = 408;
+			xPrint = 4;
+			yPrint = 386;
 		}
-		else if (x > 106 && x < 203 && y > 408 && y < 580)
+		else if (x > 103 && x < 203 && y > 386 && y < 580)
 		{
-			xPrint = 106;
-			yPrint = 408;
+			xPrint = 103;
+			yPrint = 386;
 		}
-		else if (x > 203 && x < 305 && y > 408 && y < 580)
+		else if (x > 203 && x < 302 && y > 386 && y < 580)
 		{
 			xPrint = 203;
-			yPrint = 408;
+			yPrint = 386;
 		}
-		else if (x > 305 && x < 403 && y > 408 && y < 580)
+		else if (x > 302 && x < 400 && y > 386 && y < 580)
 		{
-			xPrint = 305;
-			yPrint = 408;
+			xPrint = 302;
+			yPrint = 386;
 		}
-		else if (x > 403 && x < 500 && y > 408 && y < 580)
+		else if (x > 400 && x < 500 && y > 386 && y < 580)
 		{
-			xPrint = 403;
-			yPrint = 408;
+			xPrint = 400;
+			yPrint = 386;
+		}
+		else if (x > 4 && x < 103 && y > 580 && y < 772)
+		{
+			xPrint = 4;
+			yPrint = 580;
+		}
+		else if (x > 103 && x < 203 && y > 580 && y < 772)
+		{
+			xPrint = 103;
+			yPrint = 580;
+		}
+		else if (x > 203 && x < 302 && y > 580 && y < 772)
+		{
+			xPrint = 203;
+			yPrint = 580;
+		}
+		else if (x > 302 && x < 400 && y > 580 && y < 772)
+		{
+			xPrint = 302;
+			yPrint = 580;
+		}
+		else if (x > 400 && x < 500 && y > 580 && y < 772)
+		{
+			xPrint = 400;
+			yPrint = 580;
 		}
 		repaint();
 	}
