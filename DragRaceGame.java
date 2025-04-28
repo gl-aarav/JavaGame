@@ -709,6 +709,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
         yHover = 0;
         xClick = 0;
         xHover = 0;
+        repaint();
     }
 
     public void mouseDragged(MouseEvent e) {}
