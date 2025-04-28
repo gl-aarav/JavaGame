@@ -24,7 +24,6 @@
 
 import javax.imageio.ImageIO;
 import java.awt.BasicStroke;
-import javax.swing.border.LineBorder;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -172,8 +171,7 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 			Graphics2D g2d = (Graphics2D) g.create();
 
 		
-			if (in)
-			{
+			
 				if (leftButtonPressed) 
 				{
 					g2d.setColor(new Color(0, 0, 0, 180));
@@ -195,8 +193,7 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 					g2d.setColor(new Color(0, 0, 0, 80)); 
 					g2d.fillRect(469, 683, 302, 33); 
 				}
-			}
-
+		
 		}
 	}
 
@@ -246,7 +243,10 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 	public void mouseEntered(MouseEvent e) {}
 	public void mouseExited(MouseEvent e) 
 	{
-		in = false;
+		leftButtonHovered = false;
+		rightButtonHovered = false;	
+		leftButtonPressed = false;
+		rightButtonPressed = false;	
 	}
 	public void mouseDragged(MouseEvent e) {}
 	public void mouseMoved(MouseEvent e) 
