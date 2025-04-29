@@ -78,7 +78,6 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 	private Image gifImage;
 	private boolean gifOrNo;
 	private Image carBackground;
-	private boolean in;
 
 	private boolean leftButtonPressed;
 	private boolean rightButtonPressed;
@@ -86,7 +85,6 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 	private boolean rightButtonHovered;
 	public WelcomePagePanel(JPanel gameHolder, CardLayout layout) 
 	{
-		in = false;
 		leftButtonPressed = false;
 		rightButtonPressed = false;
 		leftButtonHovered = false;
@@ -251,7 +249,7 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 	public void mouseDragged(MouseEvent e) {}
 	public void mouseMoved(MouseEvent e) 
 	{
-		in = true;
+	
 		int x = e.getX();
 		int y = e.getY();
 
@@ -342,14 +340,15 @@ class InstructionPanel extends JPanel
 class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListener
 {
     private Image carOptions;
-    int x, y, xHover, yHover, xClick, yClick;
-    private JPanel parent;
-    private CardLayout layout;
+    private int xClick = 0, yClick = 0, xHover = 0, yHover = 0;
+    private final JPanel parent;
+    private final CardLayout layout;
 
-    public CarChoosePanel(GameHolder gameHolder, CardLayout layout) 
+    public CarChoosePanel(JPanel parent, CardLayout layout)
     {
-        this.parent = gameHolder;
+        this.parent = parent;
         this.layout = layout;
+
         addMouseListener(this);
         addMouseMotionListener(this);
         setLayout(new BorderLayout());
@@ -358,340 +357,165 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 
     public void addComponents()
     {
-        try 
+        try
         {
             carOptions = ImageIO.read(new File("CarOptions.png"));
-        } 
-        catch (IOException e) 
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
         }
 
         JButton back = new JButton("Back");
-        back.addActionListener(new ActionListener() 
+        back.addActionListener(new ActionListener()
         {
-            public void actionPerformed(ActionEvent e) 
+            @Override
+            public void actionPerformed(ActionEvent e)
             {
                 layout.show(parent, "Instructions");
             }
         });
+
         add(back, BorderLayout.EAST);
     }
 
-    public void paintComponent(Graphics g)
+    @Override
+    protected void paintComponent(Graphics g)
     {
         super.paintComponent(g);
-        g.drawImage(carOptions, 0, 0, 500 , 775, this);
+        g.drawImage(carOptions, 0, 0, 500, 775, this);
+
         Graphics2D g2d = (Graphics2D) g;
 
         // Draw gray box if clicked
-        if (xClick != 0)
+        if (xClick != 0 || yClick != 0)
         {
-            g.setColor(new Color (0, 0, 0, 80));
+            g.setColor(new Color(0, 0, 0, 80));
             g.fillRect(xClick, yClick, 97, 190);
         }
 
         // Draw blue hover rectangle if hovering
-        if (xHover != 0)
+        if (xHover != 0 || yHover != 0)
         {
             g.setColor(Color.BLUE);
-            java.awt.Stroke oldStroke = g2d.getStroke();
+            Stroke oldStroke = g2d.getStroke();
             g2d.setStroke(new BasicStroke(5));
             g.drawRect(xHover, yHover, 97, 190);
             g2d.setStroke(oldStroke);
         }
     }
 
-    public void mouseClicked(MouseEvent e) 
+    @Override
+    public void mouseClicked(MouseEvent e)
     {
-        x = e.getX();
-        y = e.getY();
-        boolean clicked = false; // Flag to check if clicked box is toggled
+        int x = e.getX();
+        int y = e.getY();
+        boolean clicked = false;
 
-        // Toggle logic for each box region
-        if (x > 4 && x < 103 && y > 0 && y < 195) 
+        // Individual region checks with if-else
+        if (x > 4 && x < 103 && y > 0 && y < 195)
         {
-            if (xClick == 4 && yClick == 6) 
-            {
-                xClick = 0;
-                yClick = 0; // Reset if already clicked
-            } 
-            else 
-            {
-                xClick = 4;
-                yClick = 6;
-            }
+            toggleRegion(4, 6);
             clicked = true;
-        } 
-        else if (x > 102 && x < 203 && y > 0 && y < 195) 
+        }
+        else if (x > 102 && x < 203 && y > 0 && y < 195)
         {
-            if (xClick == 102 && yClick == 6) 
-            {
-                xClick = 0;
-                yClick = 0;
-            } 
-            else 
-            {
-                xClick = 102;
-                yClick = 6;
-            }
+            toggleRegion(102, 6);
             clicked = true;
-        } 
-        else if (x > 203 && x < 302 && y > 0 && y < 195) 
+        }
+        else if (x > 203 && x < 302 && y > 0 && y < 195)
         {
-            if (xClick == 203 && yClick == 6) 
-            {
-                xClick = 0;
-                yClick = 0;
-            } 
-            else 
-            {
-                xClick = 203;
-                yClick = 6;
-            }
+            toggleRegion(203, 6);
             clicked = true;
-        } 
-        else if (x > 302 && x < 400 && y > 0 && y < 195) 
+        }
+        else if (x > 302 && x < 400 && y > 0 && y < 195)
         {
-            if (xClick == 302 && yClick == 6) 
-            {
-                xClick = 0;
-                yClick = 0;
-            } 
-            else 
-            {
-                xClick = 302;
-                yClick = 6;
-            }
+            toggleRegion(302, 6);
             clicked = true;
-        } 
-        else if (x > 400 && x < 500 && y > 0 && y < 195) 
+        }
+        else if (x > 400 && x < 500 && y > 0 && y < 195)
         {
-            if (xClick == 400 && yClick == 6) 
-            {
-                xClick = 0;
-                yClick = 0;
-            } 
-            else 
-            {
-                xClick = 400;
-                yClick = 6;
-            }
+            toggleRegion(400, 6);
             clicked = true;
-        } 
-        else if (x > 4 && x < 103 && y > 195 && y < 387) 
+        }
+        else if (x > 4 && x < 103 && y > 195 && y < 387)
         {
-            if (xClick == 4 && yClick == 195) 
-            {
-                xClick = 0;
-                yClick = 0;
-            } 
-            else 
-            {
-                xClick = 4;
-                yClick = 195;
-            }
+            toggleRegion(4, 195);
             clicked = true;
-        } 
-        else if (x > 102 && x < 203 && y > 195 && y < 387) 
+        }
+        else if (x > 102 && x < 203 && y > 195 && y < 387)
         {
-            if (xClick == 102 && yClick == 195) 
-            {
-                xClick = 0;
-                yClick = 0;
-            } 
-            else 
-            {
-                xClick = 102;
-                yClick = 195;
-            }
+            toggleRegion(102, 195);
             clicked = true;
-        } 
-        else if (x > 203 && x < 302 && y > 195 && y < 387) 
+        }
+        else if (x > 203 && x < 302 && y > 195 && y < 387)
         {
-            if (xClick == 203 && yClick == 195) 
-            {
-                xClick = 0;
-                yClick = 0;
-            } 
-            else 
-            {
-                xClick = 203;
-                yClick = 195;
-            }
+            toggleRegion(203, 195);
             clicked = true;
-        } 
-        else if (x > 302 && x < 400 && y > 195 && y < 387) 
+        }
+        else if (x > 302 && x < 400 && y > 195 && y < 387)
         {
-            if (xClick == 302 && yClick == 195) 
-            {
-                xClick = 0;
-                yClick = 0;
-            } 
-            else 
-            {
-                xClick = 302;
-                yClick = 195;
-            }
+            toggleRegion(302, 195);
             clicked = true;
-        } 
-        else if (x > 400 && x < 500 && y > 195 && y < 387) 
+        }
+        else if (x > 400 && x < 500 && y > 195 && y < 387)
         {
-            if (xClick == 400 && yClick == 195) 
-            {
-                xClick = 0;
-                yClick = 0;
-            } 
-            else 
-            {
-                xClick = 400;
-                yClick = 195;
-            }
+            toggleRegion(400, 195);
             clicked = true;
-        } 
-        else if (x > 4 && x < 103 && y > 386 && y < 580) 
+        }
+        else if (x > 4 && x < 103 && y > 387 && y < 580)
         {
-            if (xClick == 4 && yClick == 386) 
-            {
-                xClick = 0;
-                yClick = 0;
-            } 
-            else 
-            {
-                xClick = 4;
-                yClick = 386;
-            }
+            toggleRegion(4, 386);
             clicked = true;
-        } 
-        else if (x > 103 && x < 203 && y > 386 && y < 580) 
+        }
+        else if (x > 102 && x < 203 && y > 387 && y < 580)
         {
-            if (xClick == 103 && yClick == 386) 
-            {
-                xClick = 0;
-                yClick = 0;
-            } 
-            else 
-            {
-                xClick = 103;
-                yClick = 386;
-            }
+            toggleRegion(102, 386);
             clicked = true;
-        } 
-        else if (x > 203 && x < 302 && y > 386 && y < 580) 
+        }
+        else if (x > 203 && x < 302 && y > 387 && y < 580)
         {
-            if (xClick == 203 && yClick == 386) 
-            {
-                xClick = 0;
-                yClick = 0;
-            } 
-            else 
-            {
-                xClick = 203;
-                yClick = 386;
-            }
+            toggleRegion(203, 386);
             clicked = true;
-        } 
-        else if (x > 302 && x < 400 && y > 386 && y < 580) 
+        }
+        else if (x > 302 && x < 400 && y > 387 && y < 580)
         {
-            if (xClick == 302 && yClick == 386) 
-            {
-                xClick = 0;
-                yClick = 0;
-            } 
-            else 
-            {
-                xClick = 302;
-                yClick = 386;
-            }
+            toggleRegion(302, 386);
             clicked = true;
-        } 
-        else if (x > 400 && x < 500 && y > 386 && y < 580) 
+        }
+        else if (x > 400 && x < 500 && y > 387 && y < 580)
         {
-            if (xClick == 400 && yClick == 386) 
-            {
-                xClick = 0;
-                yClick = 0;
-            } 
-            else 
-            {
-                xClick = 400;
-                yClick = 386;
-            }
+            toggleRegion(400, 386);
             clicked = true;
-        } 
-        else if (x > 4 && x < 103 && y > 580 && y < 772) 
+        }
+        else if (x > 4 && x < 103 && y > 580 && y < 772)
         {
-            if (xClick == 4 && yClick == 580) 
-            {
-                xClick = 0;
-                yClick = 0;
-            } 
-            else 
-            {
-                xClick = 4;
-                yClick = 580;
-            }
+            toggleRegion(4, 580);
             clicked = true;
-        } 
-        else if (x > 103 && x < 203 && y > 580 && y < 772) 
+        }
+        else if (x > 102 && x < 203 && y > 580 && y < 772)
         {
-            if (xClick == 103 && yClick == 580) 
-            {
-                xClick = 0;
-                yClick = 0;
-            } 
-            else 
-            {
-                xClick = 103;
-                yClick = 580;
-            }
+            toggleRegion(102, 580);
             clicked = true;
-        } 
-        else if (x > 203 && x < 302 && y > 580 && y < 772) 
+        }
+        else if (x > 203 && x < 302 && y > 580 && y < 772)
         {
-            if (xClick == 203 && yClick == 580) 
-            {
-                xClick = 0;
-                yClick = 0;
-            } 
-            else 
-            {
-                xClick = 203;
-                yClick = 580;
-            }
+            toggleRegion(203, 580);
             clicked = true;
-        } 
-        else if (x > 302 && x < 400 && y > 580 && y < 772) 
+        }
+        else if (x > 302 && x < 400 && y > 580 && y < 772)
         {
-            if (xClick == 302 && yClick == 580) 
-            {
-                xClick = 0;
-                yClick = 0;
-            } 
-            else 
-            {
-                xClick = 302;
-                yClick = 580;
-            }
+            toggleRegion(302, 580);
             clicked = true;
-        } 
-        else if (x > 400 && x < 500 && y > 580 && y < 772) 
+        }
+        else if (x > 400 && x < 500 && y > 580 && y < 772)
         {
-            if (xClick == 400 && yClick == 580) 
-            {
-                xClick = 0;
-                yClick = 0;
-            } 
-            else 
-            {
-                xClick = 400;
-                yClick = 580;
-            }
+            toggleRegion(400, 580);
             clicked = true;
-        } 
-        
+        }
+
         // Reset if clicked outside any region
-        if (!clicked) 
+        if (!clicked)
         {
             xClick = 0;
             yClick = 0;
@@ -700,137 +524,155 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
         repaint();
     }
 
-    public void mousePressed(MouseEvent e) {}
-    public void mouseReleased(MouseEvent e) {}
-    public void mouseEntered(MouseEvent e) {}
-    public void mouseExited(MouseEvent e) 
+    private void toggleRegion(int x, int y)
+    {
+        if (xClick == x && yClick == y)
+        {
+            xClick = 0;
+            yClick = 0; // Deselect if already clicked
+        }
+        else
+        {
+            xClick = x;
+            yClick = y; // Select new region
+        }
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e)
+    {
+        int x = e.getX();
+        int y = e.getY();
+
+        // Individual region checks for hover with if-else
+        if (x > 4 && x < 103 && y > 0 && y < 195)
+        {
+            xHover = 4;
+            yHover = 6;
+        }
+        else if (x > 102 && x < 203 && y > 0 && y < 195)
+        {
+            xHover = 102;
+            yHover = 6;
+        }
+        else if (x > 203 && x < 302 && y > 0 && y < 195)
+        {
+            xHover = 203;
+            yHover = 6;
+        }
+        else if (x > 302 && x < 400 && y > 0 && y < 195)
+        {
+            xHover = 302;
+            yHover = 6;
+        }
+        else if (x > 400 && x < 500 && y > 0 && y < 195)
+        {
+            xHover = 400;
+            yHover = 6;
+        }
+        else if (x > 4 && x < 103 && y > 195 && y < 387)
+        {
+            xHover = 4;
+            yHover = 195;
+        }
+        else if (x > 102 && x < 203 && y > 195 && y < 387)
+        {
+            xHover = 102;
+            yHover = 195;
+        }
+        else if (x > 203 && x < 302 && y > 195 && y < 387)
+        {
+            xHover = 203;
+            yHover = 195;
+        }
+        else if (x > 302 && x < 400 && y > 195 && y < 387)
+        {
+            xHover = 302;
+            yHover = 195;
+        }
+        else if (x > 400 && x < 500 && y > 195 && y < 387)
+        {
+            xHover = 400;
+            yHover = 195;
+        }
+        else if (x > 4 && x < 103 && y > 387 && y < 580)
+        {
+            xHover = 4;
+            yHover = 386;
+        }
+        else if (x > 102 && x < 203 && y > 387 && y < 580)
+        {
+            xHover = 102;
+            yHover = 386;
+        }
+        else if (x > 203 && x < 302 && y > 387 && y < 580)
+        {
+            xHover = 203;
+            yHover = 386;
+        }
+        else if (x > 302 && x < 400 && y > 387 && y < 580)
+        {
+            xHover = 302;
+            yHover = 386;
+        }
+        else if (x > 400 && x < 500 && y > 387 && y < 580)
+        {
+            xHover = 400;
+            yHover = 386;
+        }
+        else if (x > 4 && x < 103 && y > 580 && y < 772)
+        {
+            xHover = 4;
+            yHover = 580;
+        }
+        else if (x > 102 && x < 203 && y > 580 && y < 772)
+        {
+            xHover = 102;
+            yHover = 580;
+        }
+        else if (x > 203 && x < 302 && y > 580 && y < 772)
+        {
+            xHover = 203;
+            yHover = 580;
+        }
+        else if (x > 302 && x < 400 && y > 580 && y < 772)
+        {
+            xHover = 302;
+            yHover = 580;
+        }
+        else if (x > 400 && x < 500 && y > 580 && y < 772)
+        {
+            xHover = 400;
+            yHover = 580;
+        }
+        else
+        {
+            xHover = 0;
+            yHover = 0;
+        }
+
+        repaint();
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e)
     {
         xHover = 0;
         yHover = 0;
-        xClick = 0;
-        xHover = 0;
         repaint();
     }
 
+    @Override
+    public void mousePressed(MouseEvent e) {}
+
+    @Override
+    public void mouseReleased(MouseEvent e) {}
+
+    @Override
+    public void mouseEntered(MouseEvent e) {}
+
+    @Override
     public void mouseDragged(MouseEvent e) {}
-
-    public void mouseMoved(MouseEvent e) 
-    {
-        x = e.getX();
-        y = e.getY();
-
-        // Update hover position for each region
-        if (x > 4 && x < 103 && y > 0 && y < 195)
-		{
-			xHover = 4;
-			yHover = 6;
-		}
-		else if (x > 102 && x < 203 && y > 0 && y < 195)
-		{
-			xHover = 102;
-			yHover = 6;
-		}
-		else if (x > 203 && x < 302 && y > 0 && y < 195)
-		{
-			xHover = 203;
-			yHover = 6;
-		}
-		else if (x > 302 && x < 400 && y > 0 && y < 195)
-		{
-			xHover = 302;
-			yHover = 6;
-		}
-		else if (x > 400 && x < 500 && y > 0 && y < 195)
-		{
-			xHover = 400;
-			yHover = 6;
-		}
-
-		else if (x > 4 && x < 103 && y > 195 && y < 387)
-		{
-			xHover = 4;
-			yHover = 195;
-		}
-		else if (x > 102 && x < 203 && y > 195 && y < 387)
-		{
-			xHover = 102;
-			yHover = 195;
-		}
-		else if (x > 203 && x < 302 && y > 195 && y < 387)
-		{
-			xHover = 203;
-			yHover = 195;
-		}
-		else if (x > 302 && x < 400 && y > 195 && y < 387)
-		{
-			xHover = 302;
-			yHover = 195;
-		}
-		else if (x > 400 && x < 500 && y > 195 && y < 387)
-		{
-			xHover = 400;
-			yHover = 195;
-		}
-
-		else if (x > 4 && x < 103 && y > 386 && y < 580)
-		{
-			xHover = 4;
-			yHover = 386;
-		}
-		else if (x > 103 && x < 203 && y > 386 && y < 580)
-		{
-			xHover = 103;
-			yHover = 386;
-		}
-		else if (x > 203 && x < 302 && y > 386 && y < 580)
-		{
-			xHover = 203;
-			yHover = 386;
-		}
-		else if (x > 302 && x < 400 && y > 386 && y < 580)
-		{
-			xHover = 302;
-			yHover = 386;
-		}
-		else if (x > 400 && x < 500 && y > 386 && y < 580)
-		{
-			xHover = 400;
-			yHover = 386;
-		}
-		else if (x > 4 && x < 103 && y > 580 && y < 772)
-		{
-			xHover = 4;
-			yHover = 580;
-		}
-		else if (x > 103 && x < 203 && y > 580 && y < 772)
-		{
-			xHover = 103;
-			yHover = 580;
-		}
-		else if (x > 203 && x < 302 && y > 580 && y < 772)
-		{
-			xHover = 203;
-			yHover = 580;
-		}
-		else if (x > 302 && x < 400 && y > 580 && y < 772)
-		{
-			xHover = 302;
-			yHover = 580;
-		}
-		else if (x > 400 && x < 500 && y > 580 && y < 772)
-		{
-			xHover = 400;
-			yHover = 580;
-		}
-		else 
-		{
-			xHover = 0;
-			yHover = 0;
-		}
-        // Repeat for all other regions (same logic as in mouseClicked)
-
-        repaint();
-    }
 }
 
 class HighScorePanel extends JPanel
