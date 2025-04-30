@@ -58,13 +58,14 @@ class GameHolder extends JPanel
 		InstructionPanel instructionsPanel = new InstructionPanel(this, layout);
 
 		HighScorePanel highScoresPanel = new HighScorePanel(this, layout);
-
+		GamePanel gamePanel = new GamePanel(this, layout);
 		CarChoosePanel carChoose = new CarChoosePanel(this,layout);
 
 		add(welcomePanel, "Welcome");
 		add(instructionsPanel, "Instructions");
 		add(highScoresPanel, "HighScores");
 		add(carChoose, "ChooseCar");
+		add(gamePanel, "Game");
 	}
 }
 
@@ -165,11 +166,8 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 		else
 		{
 			g.drawImage(carBackground, 0, 0, 933, 772, this);
-
 			Graphics2D g2d = (Graphics2D) g.create();
-
-
-
+			
 			if (leftButtonPressed) 
 			{
 				g2d.setColor(new Color(0, 0, 0, 180));
@@ -349,7 +347,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
         this.layout = layout;
         addMouseListener(this);
         addMouseMotionListener(this);
-        setLayout(new BorderLayout());
+        setLayout(null);
         addComponents();
     }
 
@@ -372,7 +370,19 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
                 layout.show(parent, "Instructions");
             }
         });
-        add(back, BorderLayout.EAST);
+        back.setBounds(730, 720, 80, 30); // Positioned in bottom right corner with space for "Next"
+        add(back);
+
+        JButton next = new JButton("Next");
+        next.addActionListener(new ActionListener() 
+        {
+            public void actionPerformed(ActionEvent e) 
+            {
+                layout.show(parent, "Game"); // Replace with your actual next panel name
+            }
+        });
+        next.setBounds(830, 720, 80, 30); // To the right of the Back button
+        add(next);
     }
 
     public void paintComponent(Graphics g)
@@ -397,6 +407,9 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
             g.drawRect(xHover, yHover, 97, 190);
             g2d.setStroke(oldStroke);
         }
+        g.setColor(Color.BLACK);
+        g.setFont(new Font ("Amazone BT", Font.ITALIC, 30));
+        g.drawString("Choose Your Car", 500, 30);
     }
 
     public void mouseClicked(MouseEvent e) {}
@@ -689,7 +702,6 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
              clicked = true;
          } 
          
-         // Reset if clicked outside any region
          if (!clicked) 
          {
              xClick = 0;
@@ -830,10 +842,61 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
     }
 }
 
+
+class GamePanel extends JPanel
+{
+	private JPanel parent;
+	private CardLayout layout;
+
+	public GamePanel(JPanel gameHolder, CardLayout layout)
+	{
+		this.parent = gameHolder;
+		this.layout = layout;
+		setLayout(new BorderLayout());
+		setBackground(Color.DARK_GRAY);
+
+		JLabel label = new JLabel("Game Under Construction", JLabel.CENTER);
+		label.setForeground(Color.WHITE);
+		label.setFont(new Font("Arial", Font.BOLD, 30));
+		add(label, BorderLayout.CENTER);
+
+		JButton back = new JButton("Back to Car Select");
+		back.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				layout.show(parent, "ChooseCar");
+			}
+		});
+		add(back, BorderLayout.SOUTH);
+	}
+}
+
 class HighScorePanel extends JPanel
 {
-	public HighScorePanel(GameHolder gameHolder, CardLayout layout) 
-	{
+	private JPanel parent;
+	private CardLayout layout;
 
+	public HighScorePanel(JPanel gameHolder, CardLayout layout)
+	{
+		this.parent = gameHolder;
+		this.layout = layout;
+		setLayout(new BorderLayout());
+		setBackground(Color.BLACK);
+		
+		JLabel label = new JLabel("High Scores Coming Soon", JLabel.CENTER);
+		label.setForeground(Color.WHITE);
+		label.setFont(new Font("Arial", Font.BOLD, 32));
+		add(label, BorderLayout.CENTER);
+
+		JButton back = new JButton("Back");
+		back.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				layout.show(parent, "Welcome");
+			}
+		});
+		add(back, BorderLayout.SOUTH);
 	}
 }
