@@ -337,6 +337,7 @@ class InstructionPanel extends JPanel
 class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListener
 {
     private Image carOptions;
+    private Image carOptionsNoBackground;
     int x, y, xHover, yHover, xClick, yClick;
     private JPanel parent;
     private CardLayout layout;
@@ -356,6 +357,15 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
         try 
         {
             carOptions = ImageIO.read(new File("CarOptions.png"));
+        } 
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        }
+        
+        try 
+        {
+            carOptionsNoBackground = ImageIO.read(new File("CarOptionsClearBackground.png"));
         } 
         catch (IOException e) 
         {
@@ -396,6 +406,13 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
         {
             g.setColor(new Color (0, 0, 0, 80));
             g.fillRect(xClick, yClick, 97, 190);
+         // Define the width and height of the car area (same as the gray box)
+            int carWidth = 97;
+            int carHeight = 190;
+
+            // Draw cropped section from carOptions into "Your Car" area
+            g.drawImage(carOptionsNoBackground, 530, 100, 550 + carWidth, 35 + carHeight, xClick, yClick,  xClick + carWidth, yClick + carHeight, this);
+
         }
 
         // Draw blue hover rectangle if hovering
@@ -407,9 +424,16 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
             g.drawRect(xHover, yHover, 97, 190);
             g2d.setStroke(oldStroke);
         }
-        g.setColor(Color.BLACK);
-        g.setFont(new Font ("Amazone BT", Font.ITALIC, 30));
+        
+        g.setColor(new Color (31, 81, 255));
+        g.setFont(new Font ("Brush Script MT", Font.BOLD, 30));
         g.drawString("Choose Your Car", 500, 30);
+        g.drawLine(500, 35, 933, 35);
+        g.setFont(new Font ("Amazone BT", Font.PLAIN, 15));
+        g.drawLine(550, 95, 600, 95);
+        g.drawString("Your Car", 550, 90);
+        g.drawLine(750, 95, 830, 95);
+        g.drawString("Opponents Car", 750, 90);
     }
 
     public void mouseClicked(MouseEvent e) {}
