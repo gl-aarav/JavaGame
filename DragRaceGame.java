@@ -23,12 +23,12 @@
  */ 
 
 import javax.imageio.ImageIO;
-import java.awt.BasicStroke;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.awt.image.BufferedImage;
 
 public class DragRaceGame 
 {
@@ -167,7 +167,7 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 		{
 			g.drawImage(carBackground, 0, 0, 933, 772, this);
 			Graphics2D g2d = (Graphics2D) g.create();
-			
+
 			if (leftButtonPressed) 
 			{
 				g2d.setColor(new Color(0, 0, 0, 180));
@@ -336,424 +336,420 @@ class InstructionPanel extends JPanel
 
 class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListener
 {
-    private Image carOptions;
-    private Image carOptionsNoBackground;
-    int x, y, xHover, yHover, xClick, yClick;
-    private JPanel parent;
-    private CardLayout layout;
+	private Image carOptions;
+	private Image carOptionsNoBackgroundOriginal;
+	int x, y, xHover, yHover, xClick, yClick;
+	private JPanel parent;
+	private CardLayout layout;
 
-    public CarChoosePanel(GameHolder gameHolder, CardLayout layout) 
-    {
-        this.parent = gameHolder;
-        this.layout = layout;
-        addMouseListener(this);
-        addMouseMotionListener(this);
-        setLayout(null);
-        addComponents();
-    }
+	public CarChoosePanel(GameHolder gameHolder, CardLayout layout) 
+	{
+		this.parent = gameHolder;
+		this.layout = layout;
+		addMouseListener(this);
+		addMouseMotionListener(this);
+		setLayout(null);
+		addComponents();
+	}
 
-    public void addComponents()
-    {
-        try 
-        {
-            carOptions = ImageIO.read(new File("CarOptions.png"));
-        } 
-        catch (IOException e) 
-        {
-            e.printStackTrace();
-        }
-        
-        try 
-        {
-            carOptionsNoBackground = ImageIO.read(new File("CarOptionsClearBackground.png"));
-        } 
-        catch (IOException e) 
-        {
-            e.printStackTrace();
-        }
+	public void addComponents()
+	{
+		try 
+		{
+			carOptions = ImageIO.read(new File("CarOptions.png"));
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
 
-        JButton back = new JButton("Back");
-        back.addActionListener(new ActionListener() 
-        {
-            public void actionPerformed(ActionEvent e) 
-            {
-                layout.show(parent, "Instructions");
-            }
-        });
-        back.setBounds(730, 720, 80, 30); // Positioned in bottom right corner with space for "Next"
-        add(back);
+		try 
+		{
+			carOptionsNoBackgroundOriginal = ImageIO.read(new File("CarOptionsClearBackground.png"));
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
 
-        JButton next = new JButton("Next");
-        next.addActionListener(new ActionListener() 
-        {
-            public void actionPerformed(ActionEvent e) 
-            {
-                layout.show(parent, "Game"); // Replace with your actual next panel name
-            }
-        });
-        next.setBounds(830, 720, 80, 30); // To the right of the Back button
-        add(next);
-    }
+		JButton back = new JButton("Back");
+		back.addActionListener(new ActionListener() 
+		{
+			public void actionPerformed(ActionEvent e) 
+			{
+				layout.show(parent, "Instructions");
+			}
+		});
+		back.setBounds(730, 720, 80, 30); // Positioned in bottom right corner with space for "Next"
+		add(back);
 
-    public void paintComponent(Graphics g)
-    {
-        super.paintComponent(g);
-        g.drawImage(carOptions, 0, 0, 500 , 775, this);
-        Graphics2D g2d = (Graphics2D) g;
+		JButton next = new JButton("Next");
+		next.addActionListener(new ActionListener() 
+		{
+			public void actionPerformed(ActionEvent e) 
+			{
+				layout.show(parent, "Game"); // Replace with your actual next panel name
+			}
+		});
+		next.setBounds(830, 720, 80, 30); // To the right of the Back button
+		add(next);
+	}
 
-        // Draw gray box if clicked
-        if (xClick != 0)
-        {
-            g.setColor(new Color (0, 0, 0, 80));
-            g.fillRect(xClick, yClick, 97, 190);
-         // Define the width and height of the car area (same as the gray box)
-            int carWidth = 97;
-            int carHeight = 190;
+	public void paintComponent(Graphics g)
+	{
+		super.paintComponent(g);
+		g.drawImage(carOptions, 0, 0, 500 , 775, this);
+		Graphics2D g2d = (Graphics2D) g;
 
-            // Draw cropped section from carOptions into "Your Car" area
-            g.drawImage(carOptionsNoBackground, 530, 100, 550 + carWidth, 35 + carHeight, xClick, yClick,  xClick + carWidth, yClick + carHeight, this);
+		// Draw gray box if clicked
+		if (xClick != 0)
+		{
+			g.setColor(new Color (0, 0, 0, 80));
+			g.fillRect(xClick, yClick, 97, 190);
+			// Define the width and height of the car area (same as the gray box)
+			int carWidth = 97;
+			int carHeight = 190;	
 
-        }
+			// Draw cropped section from carOptions into "Your Car" area
+			g.drawImage(carOptionsNoBackgroundOriginal, 550, 95, 550 + carWidth, 95 + carHeight, xClick, yClick,  xClick + carWidth, yClick + carHeight, this);
 
-        // Draw blue hover rectangle if hovering
-        if (xHover != 0)
-        {
-            g.setColor(Color.BLUE);
-            java.awt.Stroke oldStroke = g2d.getStroke();
-            g2d.setStroke(new BasicStroke(5));
-            g.drawRect(xHover, yHover, 97, 190);
-            g2d.setStroke(oldStroke);
-        }
-        
-        g.setColor(new Color (31, 81, 255));
-        g.setFont(new Font ("Brush Script MT", Font.BOLD, 30));
-        g.drawString("Choose Your Car", 500, 30);
-        g.drawLine(500, 35, 933, 35);
-        g.setFont(new Font ("Amazone BT", Font.PLAIN, 15));
-        g.drawLine(550, 95, 600, 95);
-        g.drawString("Your Car", 550, 90);
-        g.drawLine(750, 95, 830, 95);
-        g.drawString("Opponents Car", 750, 90);
-    }
+			
+		}
+		
+		// Draw blue hover rectangle if hovering
+		if (xHover != 0)
+		{
+			g.setColor(Color.BLUE);
+			java.awt.Stroke oldStroke = g2d.getStroke();
+			g2d.setStroke(new BasicStroke(5));
+			g.drawRect(xHover, yHover, 97, 190);
+			g2d.setStroke(oldStroke);
+		}
 
-    public void mouseClicked(MouseEvent e) {}
+		g.setColor(new Color (31, 81, 255));
+		g.setFont(new Font ("Brush Script MT", Font.BOLD, 30));
+		g.drawString("Choose Your Car", 500, 30);
+		g.drawLine(500, 35, 933, 35);
+		g.setFont(new Font ("Amazone BT", Font.PLAIN, 15));
+		g.drawLine(550, 95, 600, 95);
+		g.drawString("Your Car", 550, 90);
+		g.drawLine(750, 95, 830, 95);
+		g.drawString("Opponents Car", 750, 90);
+	}
+	
 
-    public void mousePressed(MouseEvent e) 
-    {
-    	 x = e.getX();
-         y = e.getY();
-         boolean clicked = false; // Flag to check if clicked box is toggled
 
-         // Toggle logic for each box region
-         if (x > 4 && x < 103 && y > 0 && y < 195) 
-         {
-             if (xClick == 4 && yClick == 6) 
-             {
-                 xClick = 0;
-                 yClick = 0; // Reset if already clicked
-             } 
-             else 
-             {
-                 xClick = 4;
-                 yClick = 6;
-             }
-             clicked = true;
-         } 
-         else if (x > 102 && x < 203 && y > 0 && y < 195) 
-         {
-             if (xClick == 102 && yClick == 6) 
-             {
-                 xClick = 0;
-                 yClick = 0;
-             } 
-             else 
-             {
-                 xClick = 102;
-                 yClick = 6;
-             }
-             clicked = true;
-         } 
-         else if (x > 203 && x < 302 && y > 0 && y < 195) 
-         {
-             if (xClick == 203 && yClick == 6) 
-             {
-                 xClick = 0;
-                 yClick = 0;
-             } 
-             else 
-             {
-                 xClick = 203;
-                 yClick = 6;
-             }
-             clicked = true;
-         } 
-         else if (x > 302 && x < 400 && y > 0 && y < 195) 
-         {
-             if (xClick == 302 && yClick == 6) 
-             {
-                 xClick = 0;
-                 yClick = 0;
-             } 
-             else 
-             {
-                 xClick = 302;
-                 yClick = 6;
-             }
-             clicked = true;
-         } 
-         else if (x > 400 && x < 500 && y > 0 && y < 195) 
-         {
-             if (xClick == 400 && yClick == 6) 
-             {
-                 xClick = 0;
-                 yClick = 0;
-             } 
-             else 
-             {
-                 xClick = 400;
-                 yClick = 6;
-             }
-             clicked = true;
-         } 
-         else if (x > 4 && x < 103 && y > 195 && y < 387) 
-         {
-             if (xClick == 4 && yClick == 195) 
-             {
-                 xClick = 0;
-                 yClick = 0;
-             } 
-             else 
-             {
-                 xClick = 4;
-                 yClick = 195;
-             }
-             clicked = true;
-         } 
-         else if (x > 102 && x < 203 && y > 195 && y < 387) 
-         {
-             if (xClick == 102 && yClick == 195) 
-             {
-                 xClick = 0;
-                 yClick = 0;
-             } 
-             else 
-             {
-                 xClick = 102;
-                 yClick = 195;
-             }
-             clicked = true;
-         } 
-         else if (x > 203 && x < 302 && y > 195 && y < 387) 
-         {
-             if (xClick == 203 && yClick == 195) 
-             {
-                 xClick = 0;
-                 yClick = 0;
-             } 
-             else 
-             {
-                 xClick = 203;
-                 yClick = 195;
-             }
-             clicked = true;
-         } 
-         else if (x > 302 && x < 400 && y > 195 && y < 387) 
-         {
-             if (xClick == 302 && yClick == 195) 
-             {
-                 xClick = 0;
-                 yClick = 0;
-             } 
-             else 
-             {
-                 xClick = 302;
-                 yClick = 195;
-             }
-             clicked = true;
-         } 
-         else if (x > 400 && x < 500 && y > 195 && y < 387) 
-         {
-             if (xClick == 400 && yClick == 195) 
-             {
-                 xClick = 0;
-                 yClick = 0;
-             } 
-             else 
-             {
-                 xClick = 400;
-                 yClick = 195;
-             }
-             clicked = true;
-         } 
-         else if (x > 4 && x < 103 && y > 386 && y < 580) 
-         {
-             if (xClick == 4 && yClick == 386) 
-             {
-                 xClick = 0;
-                 yClick = 0;
-             } 
-             else 
-             {
-                 xClick = 4;
-                 yClick = 386;
-             }
-             clicked = true;
-         } 
-         else if (x > 103 && x < 203 && y > 386 && y < 580) 
-         {
-             if (xClick == 103 && yClick == 386) 
-             {
-                 xClick = 0;
-                 yClick = 0;
-             } 
-             else 
-             {
-                 xClick = 103;
-                 yClick = 386;
-             }
-             clicked = true;
-         } 
-         else if (x > 203 && x < 302 && y > 386 && y < 580) 
-         {
-             if (xClick == 203 && yClick == 386) 
-             {
-                 xClick = 0;
-                 yClick = 0;
-             } 
-             else 
-             {
-                 xClick = 203;
-                 yClick = 386;
-             }
-             clicked = true;
-         } 
-         else if (x > 302 && x < 400 && y > 386 && y < 580) 
-         {
-             if (xClick == 302 && yClick == 386) 
-             {
-                 xClick = 0;
-                 yClick = 0;
-             } 
-             else 
-             {
-                 xClick = 302;
-                 yClick = 386;
-             }
-             clicked = true;
-         } 
-         else if (x > 400 && x < 500 && y > 386 && y < 580) 
-         {
-             if (xClick == 400 && yClick == 386) 
-             {
-                 xClick = 0;
-                 yClick = 0;
-             } 
-             else 
-             {
-                 xClick = 400;
-                 yClick = 386;
-             }
-             clicked = true;
-         } 
-         else if (x > 4 && x < 103 && y > 580 && y < 772) 
-         {
-             if (xClick == 4 && yClick == 580) 
-             {
-                 xClick = 0;
-                 yClick = 0;
-             } 
-             else 
-             {
-                 xClick = 4;
-                 yClick = 580;
-             }
-             clicked = true;
-         } 
-         else if (x > 103 && x < 203 && y > 580 && y < 772) 
-         {
-             if (xClick == 103 && yClick == 580) 
-             {
-                 xClick = 0;
-                 yClick = 0;
-             } 
-             else 
-             {
-                 xClick = 103;
-                 yClick = 580;
-             }
-             clicked = true;
-         } 
-         else if (x > 203 && x < 302 && y > 580 && y < 772) 
-         {
-             if (xClick == 203 && yClick == 580) 
-             {
-                 xClick = 0;
-                 yClick = 0;
-             } 
-             else 
-             {
-                 xClick = 203;
-                 yClick = 580;
-             }
-             clicked = true;
-         } 
-         else if (x > 302 && x < 400 && y > 580 && y < 772) 
-         {
-             if (xClick == 302 && yClick == 580) 
-             {
-                 xClick = 0;
-                 yClick = 0;
-             } 
-             else 
-             {
-                 xClick = 302;
-                 yClick = 580;
-             }
-             clicked = true;
-         } 
-         else if (x > 400 && x < 500 && y > 580 && y < 772) 
-         {
-             if (xClick == 400 && yClick == 580) 
-             {
-                 xClick = 0;
-                 yClick = 0;
-             } 
-             else 
-             {
-                 xClick = 400;
-                 yClick = 580;
-             }
-             clicked = true;
-         } 
-         
-         if (!clicked) 
-         {
-             xClick = 0;
-             yClick = 0;
-         }
+	public void mouseClicked(MouseEvent e) {}
 
-         repaint();
-    }
-    public void mouseReleased(MouseEvent e) {}
-    public void mouseEntered(MouseEvent e) {}
-    public void mouseExited(MouseEvent e) 
-    {
-        xHover = 0;
-        yHover = 0;
-        xClick = 0;
-        xHover = 0;
-        repaint();
-    }
+	public void mousePressed(MouseEvent e) 
+	{
+		x = e.getX();
+		y = e.getY();
+		boolean clicked = false; // Flag to check if clicked box is toggled
 
-    public void mouseDragged(MouseEvent e) {}
+		// Toggle logic for each box region
+		if (x > 4 && x < 103 && y > 0 && y < 195) 
+		{
+			if (xClick == 4 && yClick == 6) 
+			{
+				xClick = 0;
+				yClick = 0; // Reset if already clicked
+			} 
+			else 
+			{
+				xClick = 4;
+				yClick = 6;
+			}
+			clicked = true;
+		} 
+		else if (x > 102 && x < 203 && y > 0 && y < 195) 
+		{
+			if (xClick == 102 && yClick == 6) 
+			{
+				xClick = 0;
+				yClick = 0;
+			} 
+			else 
+			{
+				xClick = 102;
+				yClick = 6;
+			}
+			clicked = true;
+		} 
+		else if (x > 203 && x < 302 && y > 0 && y < 195) 
+		{
+			if (xClick == 203 && yClick == 6) 
+			{
+				xClick = 0;
+				yClick = 0;
+			} 
+			else 
+			{
+				xClick = 203;
+				yClick = 6;
+			}
+			clicked = true;
+		} 
+		else if (x > 302 && x < 400 && y > 0 && y < 195) 
+		{
+			if (xClick == 302 && yClick == 6) 
+			{
+				xClick = 0;
+				yClick = 0;
+			} 
+			else 
+			{
+				xClick = 302;
+				yClick = 6;
+			}
+			clicked = true;
+		} 
+		else if (x > 400 && x < 500 && y > 0 && y < 195) 
+		{
+			if (xClick == 400 && yClick == 6) 
+			{
+				xClick = 0;
+				yClick = 0;
+			} 
+			else 
+			{
+				xClick = 400;
+				yClick = 6;
+			}
+			clicked = true;
+		} 
+		else if (x > 4 && x < 103 && y > 195 && y < 387) 
+		{
+			if (xClick == 4 && yClick == 195) 
+			{
+				xClick = 0;
+				yClick = 0;
+			} 
+			else 
+			{
+				xClick = 4;
+				yClick = 195;
+			}
+			clicked = true;
+		} 
+		else if (x > 102 && x < 203 && y > 195 && y < 387) 
+		{
+			if (xClick == 102 && yClick == 195) 
+			{
+				xClick = 0;
+				yClick = 0;
+			} 
+			else 
+			{
+				xClick = 102;
+				yClick = 195;
+			}
+			clicked = true;
+		} 
+		else if (x > 203 && x < 302 && y > 195 && y < 387) 
+		{
+			if (xClick == 203 && yClick == 195) 
+			{
+				xClick = 0;
+				yClick = 0;
+			} 
+			else 
+			{
+				xClick = 203;
+				yClick = 195;
+			}
+			clicked = true;
+		} 
+		else if (x > 302 && x < 400 && y > 195 && y < 387) 
+		{
+			if (xClick == 302 && yClick == 195) 
+			{
+				xClick = 0;
+				yClick = 0;
+			} 
+			else 
+			{
+				xClick = 302;
+				yClick = 195;
+			}
+			clicked = true;
+		} 
+		else if (x > 400 && x < 500 && y > 195 && y < 387) 
+		{
+			if (xClick == 400 && yClick == 195) 
+			{
+				xClick = 0;
+				yClick = 0;
+			} 
+			else 
+			{
+				xClick = 400;
+				yClick = 195;
+			}
+			clicked = true;
+		} 
+		else if (x > 4 && x < 103 && y > 386 && y < 580) 
+		{
+			if (xClick == 4 && yClick == 386) 
+			{
+				xClick = 0;
+				yClick = 0;
+			} 
+			else 
+			{
+				xClick = 4;
+				yClick = 386;
+			}
+			clicked = true;
+		} 
+		else if (x > 103 && x < 203 && y > 386 && y < 580) 
+		{
+			if (xClick == 103 && yClick == 386) 
+			{
+				xClick = 0;
+				yClick = 0;
+			} 
+			else 
+			{
+				xClick = 103;
+				yClick = 386;
+			}
+			clicked = true;
+		} 
+		else if (x > 203 && x < 302 && y > 386 && y < 580) 
+		{
+			if (xClick == 203 && yClick == 386) 
+			{
+				xClick = 0;
+				yClick = 0;
+			} 
+			else 
+			{
+				xClick = 203;
+				yClick = 386;
+			}
+			clicked = true;
+		} 
+		else if (x > 302 && x < 400 && y > 386 && y < 580) 
+		{
+			if (xClick == 302 && yClick == 386) 
+			{
+				xClick = 0;
+				yClick = 0;
+			} 
+			else 
+			{
+				xClick = 302;
+				yClick = 386;
+			}
+			clicked = true;
+		} 
+		else if (x > 400 && x < 500 && y > 386 && y < 580) 
+		{
+			if (xClick == 400 && yClick == 386) 
+			{
+				xClick = 0;
+				yClick = 0;
+			} 
+			else 
+			{
+				xClick = 400;
+				yClick = 386;
+			}
+			clicked = true;
+		} 
+		else if (x > 4 && x < 103 && y > 580 && y < 772) 
+		{
+			if (xClick == 4 && yClick == 580) 
+			{
+				xClick = 0;
+				yClick = 0;
+			} 
+			else 
+			{
+				xClick = 4;
+				yClick = 580;
+			}
+			clicked = true;
+		} 
+		else if (x > 103 && x < 203 && y > 580 && y < 772) 
+		{
+			if (xClick == 103 && yClick == 580) 
+			{
+				xClick = 0;
+				yClick = 0;
+			} 
+			else 
+			{
+				xClick = 103;
+				yClick = 580;
+			}
+			clicked = true;
+		} 
+		else if (x > 203 && x < 302 && y > 580 && y < 772) 
+		{
+			if (xClick == 203 && yClick == 580) 
+			{
+				xClick = 0;
+				yClick = 0;
+			} 
+			else 
+			{
+				xClick = 203;
+				yClick = 580;
+			}
+			clicked = true;
+		} 
+		else if (x > 302 && x < 400 && y > 580 && y < 772) 
+		{
+			if (xClick == 302 && yClick == 580) 
+			{
+				xClick = 0;
+				yClick = 0;
+			} 
+			else 
+			{
+				xClick = 302;
+				yClick = 580;
+			}
+			clicked = true;
+		} 
+		else if (x > 400 && x < 500 && y > 580 && y < 772) 
+		{
+			if (xClick == 400 && yClick == 580) 
+			{
+				xClick = 0;
+				yClick = 0;
+			} 
+			else 
+			{
+				xClick = 400;
+				yClick = 580;
+			}
+			clicked = true;
+		} 
 
-    public void mouseMoved(MouseEvent e) 
-    {
-        x = e.getX();
-        y = e.getY();
+		if (!clicked) 
+		{
+			xClick = 0;
+			yClick = 0;
+		}
 
-        // Update hover position for each region
-        if (x > 4 && x < 103 && y > 0 && y < 195)
+		repaint();
+	}
+	public void mouseReleased(MouseEvent e) {}
+	public void mouseEntered(MouseEvent e) {}
+	public void mouseExited(MouseEvent e) {}
+
+	public void mouseDragged(MouseEvent e) {}
+
+	public void mouseMoved(MouseEvent e) 
+	{
+		x = e.getX();
+		y = e.getY();
+
+		// Update hover position for each region
+		if (x > 4 && x < 103 && y > 0 && y < 195)
 		{
 			xHover = 4;
 			yHover = 6;
@@ -860,10 +856,9 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			xHover = 0;
 			yHover = 0;
 		}
-        // Repeat for all other regions (same logic as in mouseClicked)
 
-        repaint();
-    }
+		repaint();
+	}
 }
 
 
@@ -907,7 +902,7 @@ class HighScorePanel extends JPanel
 		this.layout = layout;
 		setLayout(new BorderLayout());
 		setBackground(Color.BLACK);
-		
+
 		JLabel label = new JLabel("High Scores Coming Soon", JLabel.CENTER);
 		label.setForeground(Color.WHITE);
 		label.setFont(new Font("Arial", Font.BOLD, 32));
