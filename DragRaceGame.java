@@ -47,6 +47,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.Timer;
@@ -322,24 +323,24 @@ class InstructionPanel extends JPanel
 		JTextPane instructions = new JTextPane();
 		instructions.setContentType("text/html");
 		instructions.setText(
-			"<html><div style='text-align: center; font-family: Arial; font-size: 10px; color: white;'>"
-			+ "<h2> Game Setup</h2>"
-			+ "<p>You control a race car that competes against a bot car.<br>"
-			+ "Answer correctly for speed boosts; wrong answers slow you down.</p>"
-			+ "<h2> How to Play</h2>"
-			+ "<p>Enter your name, pick your car color, choose difficulty,<br>"
-			+ "and press <b>Start Game</b> to begin.<br>"
-			+ "Answer questions using the buttons that appear.<br>"
-			+ "If the bot wins, you lose!</p>"
-			+ "<h2> Learning Features</h2>"
-			+ "<p>At the end, review your mistakes,<br>"
-			+ "see correct answers, and get helpful explanations.</p>"
-			+ "<h2> Winning the Game</h2>"
-			+ "<p>Beat the bot to the finish line!<br>"
-			+ "Track your progress with the progress bar,<br>"
-			+ "and aim for a high score!</p>"
-			+ "</div></html>"
-		); // Set the text with HTML formatting
+				"<html><div style='text-align: center; font-family: Arial; font-size: 10px; color: white;'>"
+						+ "<h2> Game Setup</h2>"
+						+ "<p>You control a race car that competes against a bot car.<br>"
+						+ "Answer correctly for speed boosts; wrong answers slow you down.</p>"
+						+ "<h2> How to Play</h2>"
+						+ "<p>Enter your name, pick your car color, choose difficulty,<br>"
+						+ "and press <b>Start Game</b> to begin.<br>"
+						+ "Answer questions using the buttons that appear.<br>"
+						+ "If the bot wins, you lose!</p>"
+						+ "<h2> Learning Features</h2>"
+						+ "<p>At the end, review your mistakes,<br>"
+						+ "see correct answers, and get helpful explanations.</p>"
+						+ "<h2> Winning the Game</h2>"
+						+ "<p>Beat the bot to the finish line!<br>"
+						+ "Track your progress with the progress bar,<br>"
+						+ "and aim for a high score!</p>"
+						+ "</div></html>"
+				); // Set the text with HTML formatting
 		instructions.setEditable(false);
 		instructions.setBackground(new Color(0, 0, 0, 150)); // Semi-transparent background
 		instructions.setOpaque(true);
@@ -400,7 +401,7 @@ class InstructionPanel extends JPanel
 			{
 				if (agreementCheckBox.isSelected())
 				{
-				 	agreementChecked = true;
+					agreementChecked = true;
 				}
 				else
 				{
@@ -416,16 +417,15 @@ class InstructionPanel extends JPanel
 	@Override
 	public void setVisible(boolean visible)
 	{
-	    super.setVisible(visible);
-	    if (visible)
-	    {
-	        agreementCheckBox.setSelected(false); // Reset the checkbox
-	        agreementChecked = false; // Reset the agreement flag
-	    }
+		super.setVisible(visible);
+		if (visible)
+		{
+			agreementCheckBox.setSelected(false); // Reset the checkbox
+			agreementChecked = false; // Reset the agreement flag
+		}
 	}
 
 }
-
 
 class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListener
 {
@@ -436,6 +436,10 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 	int x, y, xHover, yHover, xClick, yClick, opponentX, opponentY;
 	private JPanel parent;
 	private CardLayout layout;
+	private String name = "";
+	private boolean carSelected = false;
+	private boolean nameEntered = false;
+	private boolean difficultySelected = false;
 
 	public CarChoosePanel(GameHolder gameHolder, CardLayout layout)
 	{
@@ -497,12 +501,67 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				layout.show(parent, "Game"); // Replace with your actual next panel name
 			}
 		});
-		next.setBounds(830, 720, 80, 30); // To the right of the Back button
+		next.setBounds(830, 720, 80, 30); // Positioned in bottom right corner with space for "Back"
 		add(next);
 		JTextField nameField = new JTextField("Enter Your Name");
+		nameField.addMouseListener(new MouseListener()
+		{
+			@Override
+			public void mouseClicked(MouseEvent e)
+			{
+				if (nameField.getText().equals("Enter Your Name"))
+				{
+					nameField.setText("");
+				}
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {}
+			@Override
+			public void mouseReleased(MouseEvent e) {}
+			@Override
+			public void mouseEntered(MouseEvent e) {}
+			@Override
+			public void mouseExited(MouseEvent e) {}
+		});
+
+		nameField.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				if (nameField.getText().isEmpty())
+				{
+					nameField.setText("Enter Your Name");
+					nameEntered = false;
+					repaint();
+				}
+				else
+				{
+					name = nameField.getText() + ", ";
+					nameEntered = true;
+					repaint();
+				}
+			}
+		});
+
 		add(nameField);
-		nameField.setBounds(530, 305, 150, 30);
+		nameField.setBounds(515, 590, 400, 30);
 		nameField.setEditable(true);
+
+		JSlider difficultySlider = new JSlider(0, 100, 50);
+		difficultySlider.setMajorTickSpacing(20);
+		difficultySlider.setMinorTickSpacing(5);
+		difficultySlider.setPaintTicks(true);
+		difficultySlider.setPaintLabels(true);
+		difficultySlider.setBounds(515, 650, 400, 50);
+		add(difficultySlider);
+		JLabel difficultyLabel = new JLabel("Difficulty Level");
+		difficultyLabel.setBounds(500, 630, 400, 20);
+		difficultyLabel.setForeground(Color.BLACK);
+		difficultyLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+		add(difficultyLabel);
+
 		createCoordinatesForOpponent(); // Create opponent coordinates
 	}
 
@@ -633,7 +692,12 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		}
 		else
 		{
-			g.drawImage(EmptyCar, 530, 105, 530 + carWidth, 105 + carHeight, this);
+			g.drawImage(EmptyCar, 540, 105, carWidth, carHeight, this);
+			//add border to the empty car
+			java.awt.Stroke oldStroke = g2d.getStroke();
+			g2d.setStroke(new BasicStroke(2));
+			g.drawRect(540, 105, carWidth, carHeight);
+			g2d.setStroke(oldStroke);
 		}
 
 		// Draw blue hover rectangle if hovering
@@ -647,13 +711,30 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		}
 
 		g.setColor(new Color (31, 81, 255));
-		g.setFont(new Font ("Amazone BT", Font.BOLD, 30));
-		g.drawString("Choose Your Car", 500, 30);
+		g.setFont(new Font ("Amazone BT", Font.BOLD, 25));
+
+		if (nameEntered && carSelected)
+		{
+			g.drawString(name + "Get Ready to Play!", 500, 25);
+		}
+		else if (nameEntered && !carSelected)
+		{
+			g.drawString(name + "Select a Car", 500, 25);
+		}
+		else if (!nameEntered && carSelected)
+		{
+			g.drawString("Enter Your Name", 500, 25);
+		}
+		else if (!nameEntered && !carSelected)
+		{
+			g.drawString("Enter Your Name and Select a Car", 500, 25);
+		}
+
 		g.drawLine(500, 35, 933, 35);
 		g.setFont(new Font ("Amazone BT", Font.PLAIN, 15));
-		g.drawLine(553, 93, 620, 93);
+		g.drawLine(550, 93, 600, 93);
 		g.drawString("Your Car", 550, 90);
-		g.drawLine(730, 93, 870, 93);
+		g.drawLine(760, 93, 845, 93);
 		g.drawString("Opponents Car", 750, 90);
 	}
 
@@ -665,6 +746,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 	@Override
 	public void mousePressed(MouseEvent e)
 	{
+		//Number of cars: 20
 		x = e.getX();
 		y = e.getY();
 		boolean clicked = false; // Flag to check if clicked box is toggled
@@ -676,11 +758,13 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			{
 				xClick = 0;
 				yClick = 0; // Reset if already clicked
+				carSelected = false;
 			}
 			else
 			{
 				xClick = 4;
 				yClick = 6;
+				carSelected = true;
 			}
 			clicked = true;
 		}
@@ -690,11 +774,13 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			{
 				xClick = 0;
 				yClick = 0;
+				carSelected = false;
 			}
 			else
 			{
 				xClick = 102;
 				yClick = 6;
+				carSelected = true;
 			}
 			clicked = true;
 		}
@@ -704,11 +790,13 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			{
 				xClick = 0;
 				yClick = 0;
+				carSelected = false;
 			}
 			else
 			{
 				xClick = 203;
 				yClick = 6;
+				carSelected = true;
 			}
 			clicked = true;
 		}
@@ -718,11 +806,13 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			{
 				xClick = 0;
 				yClick = 0;
+				carSelected = false;
 			}
 			else
 			{
 				xClick = 302;
 				yClick = 6;
+				carSelected = true;
 			}
 			clicked = true;
 		}
@@ -732,11 +822,13 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			{
 				xClick = 0;
 				yClick = 0;
+				carSelected = false;
 			}
 			else
 			{
 				xClick = 400;
 				yClick = 6;
+				carSelected = true;
 			}
 			clicked = true;
 		}
@@ -746,11 +838,13 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			{
 				xClick = 0;
 				yClick = 0;
+				carSelected = false;
 			}
 			else
 			{
 				xClick = 4;
 				yClick = 195;
+				carSelected = true;
 			}
 			clicked = true;
 		}
@@ -760,11 +854,13 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			{
 				xClick = 0;
 				yClick = 0;
+				carSelected = false;
 			}
 			else
 			{
 				xClick = 102;
 				yClick = 195;
+				carSelected = true;
 			}
 			clicked = true;
 		}
@@ -774,11 +870,13 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			{
 				xClick = 0;
 				yClick = 0;
+				carSelected = false;
 			}
 			else
 			{
 				xClick = 203;
 				yClick = 195;
+				carSelected = true;
 			}
 			clicked = true;
 		}
@@ -788,11 +886,13 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			{
 				xClick = 0;
 				yClick = 0;
+				carSelected = false;	
 			}
 			else
 			{
 				xClick = 302;
 				yClick = 195;
+				carSelected = true;
 			}
 			clicked = true;
 		}
@@ -802,11 +902,13 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			{
 				xClick = 0;
 				yClick = 0;
+				carSelected = false;
 			}
 			else
 			{
 				xClick = 400;
 				yClick = 195;
+				carSelected = true;	
 			}
 			clicked = true;
 		}
@@ -816,11 +918,13 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			{
 				xClick = 0;
 				yClick = 0;
+				carSelected = false;	
 			}
 			else
 			{
 				xClick = 4;
 				yClick = 386;
+				carSelected = true;	
 			}
 			clicked = true;
 		}
@@ -830,11 +934,13 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			{
 				xClick = 0;
 				yClick = 0;
+				carSelected = false;	
 			}
 			else
 			{
 				xClick = 102 ;
 				yClick = 386;
+				carSelected = true;	
 			}
 			clicked = true;
 		}
@@ -844,11 +950,13 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			{
 				xClick = 0;
 				yClick = 0;
+				carSelected = false;		
 			}
 			else
 			{
 				xClick = 203;
 				yClick = 386;
+				carSelected = true;
 			}
 			clicked = true;
 		}
@@ -858,11 +966,13 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			{
 				xClick = 0;
 				yClick = 0;
+				carSelected = false;
 			}
 			else
 			{
 				xClick = 302;
 				yClick = 386;
+				carSelected = true;
 			}
 			clicked = true;
 		}
@@ -872,11 +982,13 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			{
 				xClick = 0;
 				yClick = 0;
+				carSelected = false;
 			}
 			else
 			{
 				xClick = 400;
 				yClick = 386;
+				carSelected = true;
 			}
 			clicked = true;
 		}
@@ -886,11 +998,13 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			{
 				xClick = 0;
 				yClick = 0;
+					carSelected = false;
 			}
 			else
 			{
 				xClick = 4;
 				yClick = 580;
+				carSelected = true;
 			}
 			clicked = true;
 		}
@@ -900,11 +1014,13 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			{
 				xClick = 0;
 				yClick = 0;
+				carSelected = false;
 			}
 			else
 			{
 				xClick = 102 ;
 				yClick = 580;
+				carSelected = true;
 			}
 			clicked = true;
 		}
@@ -914,11 +1030,13 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			{
 				xClick = 0;
 				yClick = 0;
+				carSelected = false;
 			}
 			else
 			{
 				xClick = 203;
 				yClick = 580;
+				carSelected = true;
 			}
 			clicked = true;
 		}
@@ -928,11 +1046,13 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			{
 				xClick = 0;
 				yClick = 0;
+				carSelected = false;
 			}
 			else
 			{
 				xClick = 302;
 				yClick = 580;
+				carSelected = true;
 			}
 			clicked = true;
 		}
@@ -942,11 +1062,14 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			{
 				xClick = 0;
 				yClick = 0;
+					carSelected = false;
+					
 			}
 			else
 			{
 				xClick = 400;
 				yClick = 580;
+				carSelected = true;
 			}
 			clicked = true;
 		}
@@ -955,6 +1078,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		{
 			xClick = 0;
 			yClick = 0;
+			carSelected = false;
 		}
 
 		repaint();
