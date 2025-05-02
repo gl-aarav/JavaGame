@@ -321,6 +321,7 @@ class InstructionPanel extends JPanel
 		JScrollPane scrollPane = new JScrollPane(instructions);
 
 		// Panel using BorderLayout (default for JFrame content pane)
+		JFrame frame = new Jf
 		frame.setLayout(new BorderLayout());
 		frame.add(scrollPane, BorderLayout.CENTER);
 		
