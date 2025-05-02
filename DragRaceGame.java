@@ -156,7 +156,7 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 			double ratio = (double) originalWidth / originalHeight;
 			int finalWidth = (int) (700 * ratio);
 			int finalHeight = 772;
-			int x  = (getWidth() - finalWidth) / 2;
+			int x = (getWidth() - finalWidth) / 2;
 			int y = (getHeight() - finalHeight) / 2;
 			Graphics2D g2d = (Graphics2D) g.create();
 			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
@@ -286,7 +286,46 @@ class InstructionPanel extends JPanel
 
 	public void showObjects() 
 	{
-		JTextField instructions = new JTextField("Hello");
+		JTextArea instructions = new JTextArea("🏁 Game Setup:\n"
+				+ "\n"
+				+ "You control a race car that competes against a bot car.\n"
+				+ "Both cars move from left to right across the screen.\n"
+				+ "Answering questions correctly gives your car a speed boost.\n"
+				+ "Answering incorrectly will slow your car down.\n"
+				+ "🎮 How to Play:\n"
+				+ "\n"
+				+ "Enter your name in the text field.\n"
+				+ "Choose your car color using the radio buttons.\n"
+				+ "Use the slider to select your difficulty level (easy, medium, hard).\n"
+				+ "Press the Start Game button to begin.\n"
+				+ "Questions will appear at the bottom of the screen.\n"
+				+ "Click the correct answer among the options (JButtons).\n"
+				+ "Your car will move based on your answer.\n"
+				+ "If the bot reaches the finish line before you, you lose!\n"
+				+ "📚 Learning Features:\n"
+				+ "\n"
+				+ "At the end of the game, you’ll see:\n"
+				+ "All questions you got wrong.\n"
+				+ "The correct answers.\n"
+				+ "Explanations to help you understand the solution.\n"
+				+ "🏆 Winning the Game:\n"
+				+ "\n"
+				+ "Reach the finish line before the bot!\n"
+				+ "The game tracks your progress using a progress bar.\n"
+				+ "Try to beat your previous high score (saved in a file)!\n");
+		
+		instructions.setEditable(false);
+		instructions.setLineWrap(true);
+		instructions.setWrapStyleWord(true);
+		
+		JScrollPane scrollPane = new JScrollPane(instructions);
+
+		// Panel using BorderLayout (default for JFrame content pane)
+		frame.setLayout(new BorderLayout());
+		frame.add(scrollPane, BorderLayout.CENTER);
+		
+
+
 		instructions.setForeground(Color.WHITE);
 		instructions.setBackground(Color.BLACK);
 		instructions.setEditable(false);
@@ -330,6 +369,8 @@ class InstructionPanel extends JPanel
 		add(label, BorderLayout.NORTH);
 
 		add(showButtons, BorderLayout.EAST);
+
+
 	}
 
 }
@@ -338,7 +379,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 {
 	private Image carOptions;
 	private Image carOptionsNoBackgroundOriginal;
-	int x, y, xHover, yHover, xClick, yClick;
+	int x, y, xHover, yHover, xClick, yClick, opponentX, opponentY;
 	private JPanel parent;
 	private CardLayout layout;
 
@@ -393,29 +434,134 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		});
 		next.setBounds(830, 720, 80, 30); // To the right of the Back button
 		add(next);
+		createCoordinatesForOpponent();
+	}
+
+	public void createCoordinatesForOpponent() 
+	{
+		int carNumber = (int)(Math.random()*25)+1;
+		if (carNumber == 1)
+		{
+			opponentX = 4;
+			opponentY = 6;
+		}
+		else if (carNumber == 2)
+		{
+			opponentX = 102;
+			opponentY = 6;
+		}
+		else if (carNumber == 3)
+		{
+			opponentX = 203;
+			opponentY = 6;
+		}
+		else if (carNumber == 4)
+		{
+			opponentX = 302;
+			opponentY = 6;
+		}
+		else if (carNumber == 5)
+		{
+			opponentX = 400;
+			opponentY = 6;
+		}
+		else if (carNumber == 6)
+		{
+			opponentX = 4;
+			opponentY = 195;
+		}
+		else if (carNumber == 7)
+		{
+			opponentX = 102;
+			opponentY = 195;
+		}
+		else if (carNumber == 8)
+		{
+			opponentX = 203;
+			opponentY = 195;
+		}
+		else if (carNumber == 9)
+		{
+			opponentX = 302;
+			opponentY = 195;
+		}
+		else if (carNumber == 10)
+		{
+			opponentX = 400;
+			opponentY = 195;
+		}
+		else if (carNumber == 11)
+		{
+			opponentX = 4;
+			opponentY = 386;
+		}
+		else if (carNumber == 12)
+		{
+			opponentX = 102 ;
+			opponentY = 386;
+		}
+		else if (carNumber == 13)
+		{
+			opponentX = 203;
+			opponentY = 386;
+		}
+		else if (carNumber == 14)
+		{
+			opponentX = 302;
+			opponentY = 386;
+		}
+		else if (carNumber == 15)
+		{
+			opponentX = 400;
+			opponentY = 580;
+		}
+		else if (carNumber == 16)
+		{
+			opponentX = 4;
+			opponentY = 580;
+		}
+		else if (carNumber == 17)
+		{
+			opponentX = 102;
+			opponentY = 580;
+		}
+		else if (carNumber == 18)
+		{
+			opponentX = 203;
+			opponentY = 580;
+		}
+		else if (carNumber == 19)
+		{
+			opponentX = 302;
+			opponentY = 580;
+		}
+		else if (carNumber == 20)
+		{
+			opponentX = 400;
+			opponentY = 580;
+		}
 	}
 
 	public void paintComponent(Graphics g)
 	{
+		int carWidth = 97;
+		int carHeight = 190;	
+
 		super.paintComponent(g);
 		g.drawImage(carOptions, 0, 0, 500 , 775, this);
 		Graphics2D g2d = (Graphics2D) g;
+
+		g.drawImage(carOptionsNoBackgroundOriginal, 755, 105, 755 + carWidth, 105 + carHeight, opponentX, opponentY, opponentX + carWidth, opponentY + carHeight, this);
 
 		// Draw gray box if clicked
 		if (xClick != 0)
 		{
 			g.setColor(new Color (0, 0, 0, 80));
 			g.fillRect(xClick, yClick, 97, 190);
-			// Define the width and height of the car area (same as the gray box)
-			int carWidth = 97;
-			int carHeight = 190;	
-
 			// Draw cropped section from carOptions into "Your Car" area
-			g.drawImage(carOptionsNoBackgroundOriginal, 550, 95, 550 + carWidth, 95 + carHeight, xClick, yClick,  xClick + carWidth, yClick + carHeight, this);
-
-			
+			g.drawImage(carOptionsNoBackgroundOriginal, 530, 105, 530 + carWidth, 105 + carHeight, xClick, yClick, xClick + carWidth, yClick + carHeight, this);
 		}
-		
+
 		// Draw blue hover rectangle if hovering
 		if (xHover != 0)
 		{
@@ -427,16 +573,16 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		}
 
 		g.setColor(new Color (31, 81, 255));
-		g.setFont(new Font ("Brush Script MT", Font.BOLD, 30));
+		g.setFont(new Font ("Amazone BT", Font.BOLD, 30));
 		g.drawString("Choose Your Car", 500, 30);
 		g.drawLine(500, 35, 933, 35);
 		g.setFont(new Font ("Amazone BT", Font.PLAIN, 15));
-		g.drawLine(550, 95, 600, 95);
+		g.drawLine(553, 93, 620, 93);
 		g.drawString("Your Car", 550, 90);
-		g.drawLine(750, 95, 830, 95);
+		g.drawLine(730, 93, 870, 93);
 		g.drawString("Opponents Car", 750, 90);
 	}
-	
+
 
 
 	public void mouseClicked(MouseEvent e) {}
@@ -448,7 +594,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		boolean clicked = false; // Flag to check if clicked box is toggled
 
 		// Toggle logic for each box region
-		if (x > 4 && x < 103 && y > 0 && y < 195) 
+		if (x > 4 && x < 102 && y > 0 && y < 195) 
 		{
 			if (xClick == 4 && yClick == 6) 
 			{
@@ -518,7 +664,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			}
 			clicked = true;
 		} 
-		else if (x > 4 && x < 103 && y > 195 && y < 387) 
+		else if (x > 4 && x < 102 && y > 195 && y < 387) 
 		{
 			if (xClick == 4 && yClick == 195) 
 			{
@@ -588,7 +734,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			}
 			clicked = true;
 		} 
-		else if (x > 4 && x < 103 && y > 386 && y < 580) 
+		else if (x > 4 && x < 102 && y > 386 && y < 580) 
 		{
 			if (xClick == 4 && yClick == 386) 
 			{
@@ -602,16 +748,16 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			}
 			clicked = true;
 		} 
-		else if (x > 103 && x < 203 && y > 386 && y < 580) 
+		else if (x > 102 && x < 203 && y > 386 && y < 580) 
 		{
-			if (xClick == 103 && yClick == 386) 
+			if (xClick == 102 && yClick == 386) 
 			{
 				xClick = 0;
 				yClick = 0;
 			} 
 			else 
 			{
-				xClick = 103;
+				xClick = 102 ;
 				yClick = 386;
 			}
 			clicked = true;
@@ -658,7 +804,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			}
 			clicked = true;
 		} 
-		else if (x > 4 && x < 103 && y > 580 && y < 772) 
+		else if (x > 4 && x < 102 && y > 580 && y < 772) 
 		{
 			if (xClick == 4 && yClick == 580) 
 			{
@@ -672,16 +818,16 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			}
 			clicked = true;
 		} 
-		else if (x > 103 && x < 203 && y > 580 && y < 772) 
+		else if (x > 102 && x < 203 && y > 580 && y < 772) 
 		{
-			if (xClick == 103 && yClick == 580) 
+			if (xClick == 102 && yClick == 580) 
 			{
 				xClick = 0;
 				yClick = 0;
 			} 
 			else 
 			{
-				xClick = 103;
+				xClick = 102 ;
 				yClick = 580;
 			}
 			clicked = true;
@@ -749,7 +895,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		y = e.getY();
 
 		// Update hover position for each region
-		if (x > 4 && x < 103 && y > 0 && y < 195)
+		if (x > 4 && x < 102 && y > 0 && y < 195)
 		{
 			xHover = 4;
 			yHover = 6;
@@ -775,7 +921,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			yHover = 6;
 		}
 
-		else if (x > 4 && x < 103 && y > 195 && y < 387)
+		else if (x > 4 && x < 102 && y > 195 && y < 387)
 		{
 			xHover = 4;
 			yHover = 195;
@@ -801,14 +947,14 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			yHover = 195;
 		}
 
-		else if (x > 4 && x < 103 && y > 386 && y < 580)
+		else if (x > 4 && x < 102 && y > 386 && y < 580)
 		{
 			xHover = 4;
 			yHover = 386;
 		}
-		else if (x > 103 && x < 203 && y > 386 && y < 580)
+		else if (x > 102 && x < 203 && y > 386 && y < 580)
 		{
-			xHover = 103;
+			xHover = 102 ;
 			yHover = 386;
 		}
 		else if (x > 203 && x < 302 && y > 386 && y < 580)
@@ -826,14 +972,14 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			xHover = 400;
 			yHover = 386;
 		}
-		else if (x > 4 && x < 103 && y > 580 && y < 772)
+		else if (x > 4 && x < 102 && y > 580 && y < 772)
 		{
 			xHover = 4;
 			yHover = 580;
 		}
-		else if (x > 103 && x < 203 && y > 580 && y < 772)
+		else if (x > 102 && x < 203 && y > 580 && y < 772)
 		{
-			xHover = 103;
+			xHover = 102 ;
 			yHover = 580;
 		}
 		else if (x > 203 && x < 302 && y > 580 && y < 772)
