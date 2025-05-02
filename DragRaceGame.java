@@ -47,6 +47,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.Timer;
 
@@ -498,6 +499,10 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		});
 		next.setBounds(830, 720, 80, 30); // To the right of the Back button
 		add(next);
+		JTextField nameField = new JTextField("Enter Your Name");
+		add(nameField);
+		nameField.setBounds(530, 305, 150, 30);
+		nameField.setEditable(true);
 		createCoordinatesForOpponent(); // Create opponent coordinates
 	}
 
