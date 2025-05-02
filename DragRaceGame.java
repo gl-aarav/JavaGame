@@ -2,15 +2,15 @@
  * Aarav Goyal
  * 4/23/2025
  * DragRaceGame.java
- * 
+ *
  * Week 1
  * 	- Add intro GIF and fade out animation
  * 	- Create welcome page
  * Week 2
- * 	- Create the instructions panel 
+ * 	- Create the instructions panel
  *  - Create select car panel
  * Week 3
- *  - Start on working to import all the files 
+ *  - Start on working to import all the files
  *  - Create basic functioning buttons
  * Week 4
  *  - Start the game panel
@@ -20,19 +20,38 @@
  *  - Create the learning panel
  * Week 6
  *  - Finishing touches
- */ 
+ */
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.io.IOException;
-import java.awt.image.BufferedImage;
 
-public class DragRaceGame 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.JTextPane;
+import javax.swing.Timer;
+
+public class DragRaceGame
 {
-	public static void main(String[] args) 
+	public static void main(String[] args)
 	{
 		JFrame frame = new JFrame("Drag Race!");
 		frame.setSize(933, 800);
@@ -44,11 +63,11 @@ public class DragRaceGame
 	}
 }
 
-class GameHolder extends JPanel 
+class GameHolder extends JPanel
 {
 	CardLayout layout;
 
-	public GameHolder() 
+	public GameHolder()
 	{
 		layout = new CardLayout();
 		setLayout(layout);
@@ -74,7 +93,7 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 {
 	private JPanel parent;
 	private CardLayout layout;
-	private float alpha = 1.0f; 
+	private float alpha = 1.0f;
 	private Timer timer;
 	private Image gifImage;
 	private boolean gifOrNo;
@@ -84,7 +103,7 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 	private boolean rightButtonPressed;
 	private boolean leftButtonHovered;
 	private boolean rightButtonHovered;
-	public WelcomePagePanel(JPanel gameHolder, CardLayout layout) 
+	public WelcomePagePanel(JPanel gameHolder, CardLayout layout)
 	{
 		leftButtonPressed = false;
 		rightButtonPressed = false;
@@ -104,19 +123,20 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 		setLayout(null);
 		setBackground(Color.BLACK);
 
-		gifImage = new ImageIcon("Start.gif").getImage(); 
-		try 
+		gifImage = new ImageIcon("Start.gif").getImage();
+		try
 		{
 			carBackground = ImageIO.read(new File("CarBackground.jpeg"));
-		} 
-		catch (IOException e) 
+		}
+		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
 
-		Timer delay = new Timer(7000, new ActionListener() 
+		Timer delay = new Timer(7000, new ActionListener()
 		{
-			public void actionPerformed(ActionEvent e) 
+			@Override
+			public void actionPerformed(ActionEvent e)
 			{
 				startFadeOut();
 			}
@@ -130,26 +150,28 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 	{
 		timer = new Timer(100, new ActionListener()
 		{
-			public void actionPerformed(ActionEvent e) 
+			@Override
+			public void actionPerformed(ActionEvent e)
 			{
-				alpha -= 0.05f; 
-				if (alpha <= 0) 
+				alpha -= 0.05f;
+				if (alpha <= 0)
 				{
 					alpha = 0;
 					timer.stop();
 					gifOrNo = false;
 				}
-				repaint(); 
+				repaint();
 			}
 		});
 		timer.start();
 	}
 
+	@Override
 	public void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
 
-		if (alpha > 0 && gifImage != null) 
+		if (alpha > 0 && gifImage != null)
 		{
 			int originalWidth = gifImage.getWidth(this);
 			int originalHeight = gifImage.getHeight(this);
@@ -160,7 +182,7 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 			int y = (getHeight() - finalHeight) / 2;
 			Graphics2D g2d = (Graphics2D) g.create();
 			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-			g2d.drawImage(gifImage, x, y, finalWidth, finalHeight, this); 
+			g2d.drawImage(gifImage, x, y, finalWidth, finalHeight, this);
 			g2d.dispose();
 		}
 		else
@@ -168,44 +190,45 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 			g.drawImage(carBackground, 0, 0, 933, 772, this);
 			Graphics2D g2d = (Graphics2D) g.create();
 
-			if (leftButtonPressed) 
+			if (leftButtonPressed)
 			{
 				g2d.setColor(new Color(0, 0, 0, 180));
-				g2d.fillRect(180, 684, 150, 33); 
+				g2d.fillRect(180, 684, 150, 33);
 			}
 
-			else if (rightButtonPressed) 
+			else if (rightButtonPressed)
 			{
-				g2d.setColor(new Color(0, 0, 0, 180)); 
-				g2d.fillRect(469, 683, 302, 33); 
+				g2d.setColor(new Color(0, 0, 0, 180));
+				g2d.fillRect(469, 683, 302, 33);
 			}
 			else if(leftButtonHovered)
 			{
 				g2d.setColor(new Color(0, 0, 0, 80));
-				g2d.fillRect(180, 684, 150, 33); 
+				g2d.fillRect(180, 684, 150, 33);
 			}
 			else if(rightButtonHovered)
 			{
-				g2d.setColor(new Color(0, 0, 0, 80)); 
-				g2d.fillRect(469, 683, 302, 33); 
+				g2d.setColor(new Color(0, 0, 0, 80));
+				g2d.fillRect(469, 683, 302, 33);
 			}
 
 		}
 	}
 
-	public void mousePressed(MouseEvent e) 
+	@Override
+	public void mousePressed(MouseEvent e)
 	{
 		int x = e.getX();
 		int y = e.getY();
 
 		if (!gifOrNo)
 		{
-			if (y > 684 && y < 717 && x > 185 && x < 329) 
+			if (y > 684 && y < 717 && x > 185 && x < 329)
 			{
 				leftButtonPressed = true;
 				repaint();
-			} 
-			else if (y > 685 && y < 716 && x > 469 && x < 771) 
+			}
+			else if (y > 685 && y < 716 && x > 469 && x < 771)
 			{
 				rightButtonPressed = true;
 				repaint();
@@ -213,18 +236,19 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 		}
 	}
 
-	public void mouseReleased(MouseEvent e) 
+	@Override
+	public void mouseReleased(MouseEvent e)
 	{
 		int x = e.getX();
 		int y = e.getY();
 
 		if (!gifOrNo)
 		{
-			if (leftButtonPressed && y > 670 && y < 717 && x > 181 && x < 329) 
+			if (leftButtonPressed && y > 670 && y < 717 && x > 181 && x < 329)
 			{
 				layout.show(parent, "Instructions");
-			} 
-			else if (rightButtonPressed && y > 685 && y < 716 && x > 469 && x < 771) 
+			}
+			else if (rightButtonPressed && y > 685 && y < 716 && x > 469 && x < 771)
 			{
 				layout.show(parent, "HighScores");
 			}
@@ -235,97 +259,86 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 		repaint();
 	}
 
+	@Override
 	public void mouseClicked(MouseEvent e) {}
+	@Override
 	public void mouseEntered(MouseEvent e) {}
-	public void mouseExited(MouseEvent e) 
+	@Override
+	public void mouseExited(MouseEvent e)
 	{
 		leftButtonHovered = false;
-		rightButtonHovered = false;	
+		rightButtonHovered = false;
 		leftButtonPressed = false;
-		rightButtonPressed = false;	
+		rightButtonPressed = false;
 	}
+	@Override
 	public void mouseDragged(MouseEvent e) {}
-	public void mouseMoved(MouseEvent e) 
+	@Override
+	public void mouseMoved(MouseEvent e)
 	{
 		int x = e.getX();
 		int y = e.getY();
 
 		if (!gifOrNo)
 		{
-			if (y > 684 && y < 717 && x > 185 && x < 329) 
+			if (y > 684 && y < 717 && x > 185 && x < 329)
 			{
 				leftButtonHovered = true;
-			} 
-			else if (y > 685 && y < 716 && x > 469 && x < 771) 
+			}
+			else if (y > 685 && y < 716 && x > 469 && x < 771)
 			{
-				rightButtonHovered = true;	
+				rightButtonHovered = true;
 			}
 			else
 			{
 				leftButtonHovered = false;
-				rightButtonHovered = false;	
+				rightButtonHovered = false;
 			}
 			repaint();
 		}
 	}
 }
 
-class InstructionPanel extends JPanel 
+class InstructionPanel extends JPanel
 {
 	private JPanel parent;
 	private CardLayout layout;
 
-	public InstructionPanel(GameHolder gameHolder, CardLayout layout) 
+	public InstructionPanel(GameHolder gameHolder, CardLayout layout)
 	{
 		this.parent = gameHolder;
 		this.layout = layout;
-		setLayout(new BorderLayout());	
-		setBackground(Color.BLUE); 
+		setLayout(new BorderLayout());
+		setBackground(Color.BLUE);
 		showObjects();
 	}
 
-	public void showObjects() 
+	public void showObjects()
 	{
-		JTextArea instructions = new JTextArea("🏁 Game Setup:\n"
-				+ "\n"
-				+ "You control a race car that competes against a bot car.\n"
-				+ "Both cars move from left to right across the screen.\n"
-				+ "Answering questions correctly gives your car a speed boost.\n"
-				+ "Answering incorrectly will slow your car down.\n"
-				+ "🎮 How to Play:\n"
-				+ "\n"
-				+ "Enter your name in the text field.\n"
-				+ "Choose your car color using the radio buttons.\n"
-				+ "Use the slider to select your difficulty level (easy, medium, hard).\n"
-				+ "Press the Start Game button to begin.\n"
-				+ "Questions will appear at the bottom of the screen.\n"
-				+ "Click the correct answer among the options (JButtons).\n"
-				+ "Your car will move based on your answer.\n"
-				+ "If the bot reaches the finish line before you, you lose!\n"
-				+ "📚 Learning Features:\n"
-				+ "\n"
-				+ "At the end of the game, you’ll see:\n"
-				+ "All questions you got wrong.\n"
-				+ "The correct answers.\n"
-				+ "Explanations to help you understand the solution.\n"
-				+ "🏆 Winning the Game:\n"
-				+ "\n"
-				+ "Reach the finish line before the bot!\n"
-				+ "The game tracks your progress using a progress bar.\n"
-				+ "Try to beat your previous high score (saved in a file)!\n");
-		
+		JTextPane instructions = new JTextPane();
+		instructions.setContentType("text/html");
+		instructions.setText(
+			"<html><div style='text-align: center; font-family: Arial; font-size: 12px; color: white;'>"
+			+ "<h2> Game Setup</h2>"
+			+ "<p>You control a race car that competes against a bot car.<br>"
+			+ "Answer correctly for speed boosts; wrong answers slow you down.</p>"
+			+ "<h2> How to Play</h2>"
+			+ "<p>Enter your name, pick your car color, choose difficulty,<br>"
+			+ "and press <b>Start Game</b> to begin.<br>"
+			+ "Answer questions using the buttons that appear.<br>"
+			+ "If the bot wins, you lose!</p>"
+			+ "<h2> Learning Features</h2>"
+			+ "<p>At the end, review your mistakes,<br>"
+			+ "see correct answers, and get helpful explanations.</p>"
+			+ "<h2> Winning the Game</h2>"
+			+ "<p>Beat the bot to the finish line!<br>"
+			+ "Track your progress with the progress bar,<br>"
+			+ "and aim for a high score!</p>"
+			+ "</div></html>"
+		);
 		instructions.setEditable(false);
-		instructions.setLineWrap(true);
-		instructions.setWrapStyleWord(true);
-		
-		JScrollPane scrollPane = new JScrollPane(instructions);
-
-		// Panel using BorderLayout (default for JFrame content pane)
-		JFrame frame = new Jf
-		frame.setLayout(new BorderLayout());
-		frame.add(scrollPane, BorderLayout.CENTER);
-		
-
+		instructions.setBackground(new Color(0, 0, 0, 150));
+		instructions.setOpaque(true);
 
 		instructions.setForeground(Color.WHITE);
 		instructions.setBackground(Color.BLACK);
@@ -333,13 +346,11 @@ class InstructionPanel extends JPanel
 		instructions.setBackground(Color.BLACK);
 		add(instructions, BorderLayout.CENTER);
 
-		JPanel showButtons = new JPanel (new GridLayout(1,1));
-		showButtons.setBackground(Color.BLUE);
-
 		JButton back = new JButton("   Back   ");
-		back.addActionListener(new ActionListener() 
+		back.addActionListener(new ActionListener()
 		{
-			public void actionPerformed(ActionEvent e) 
+			@Override
+			public void actionPerformed(ActionEvent e)
 			{
 				layout.show(parent, "Welcome");
 			}
@@ -352,29 +363,30 @@ class InstructionPanel extends JPanel
 		back.setBorderPainted(false);
 		add(back, BorderLayout.WEST);
 		JButton next = new JButton("   Next   ");
-		next.addActionListener(new ActionListener() 
+		next.addActionListener(new ActionListener()
 		{
-			public void actionPerformed(ActionEvent e) 
+			@Override
+			public void actionPerformed(ActionEvent e)
 			{
 				layout.show(parent, "ChooseCar");
 			}
-		});	
+		});
+
 		next.setBackground(Color.BLACK);
 		next.setBorderPainted(false);
 		next.setForeground(Color.WHITE);
 		next.setOpaque(true);
-		showButtons.add(next);
+		add(next, BorderLayout.EAST);
 
 		ImageIcon icon = new ImageIcon("Instructions.png");
 		JLabel label = new JLabel(icon);
 		add(label, BorderLayout.NORTH);
 
-		add(showButtons, BorderLayout.EAST);
-
 
 	}
 
 }
+
 
 class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListener
 {
@@ -384,7 +396,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 	private JPanel parent;
 	private CardLayout layout;
 
-	public CarChoosePanel(GameHolder gameHolder, CardLayout layout) 
+	public CarChoosePanel(GameHolder gameHolder, CardLayout layout)
 	{
 		this.parent = gameHolder;
 		this.layout = layout;
@@ -396,28 +408,29 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 
 	public void addComponents()
 	{
-		try 
+		try
 		{
 			carOptions = ImageIO.read(new File("CarOptions.png"));
-		} 
-		catch (IOException e) 
+		}
+		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
 
-		try 
+		try
 		{
 			carOptionsNoBackgroundOriginal = ImageIO.read(new File("CarOptionsClearBackground.png"));
-		} 
-		catch (IOException e) 
+		}
+		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
 
 		JButton back = new JButton("Back");
-		back.addActionListener(new ActionListener() 
+		back.addActionListener(new ActionListener()
 		{
-			public void actionPerformed(ActionEvent e) 
+			@Override
+			public void actionPerformed(ActionEvent e)
 			{
 				layout.show(parent, "Instructions");
 			}
@@ -426,9 +439,10 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		add(back);
 
 		JButton next = new JButton("Next");
-		next.addActionListener(new ActionListener() 
+		next.addActionListener(new ActionListener()
 		{
-			public void actionPerformed(ActionEvent e) 
+			@Override
+			public void actionPerformed(ActionEvent e)
 			{
 				layout.show(parent, "Game"); // Replace with your actual next panel name
 			}
@@ -438,7 +452,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		createCoordinatesForOpponent();
 	}
 
-	public void createCoordinatesForOpponent() 
+	public void createCoordinatesForOpponent()
 	{
 		int carNumber = (int)(Math.random()*25)+1;
 		if (carNumber == 1)
@@ -541,12 +555,17 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			opponentX = 400;
 			opponentY = 580;
 		}
+		JTextField nameField = new JTextField("Enter Your Name");
+		add(nameField);
+		nameField.setBounds(530, 305, 150, 30);
+		nameField.setEditable(true);
 	}
 
+	@Override
 	public void paintComponent(Graphics g)
 	{
 		int carWidth = 97;
-		int carHeight = 190;	
+		int carHeight = 190;
 
 		super.paintComponent(g);
 		g.drawImage(carOptions, 0, 0, 500 , 775, this);
@@ -586,297 +605,299 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 
 
 
+	@Override
 	public void mouseClicked(MouseEvent e) {}
 
-	public void mousePressed(MouseEvent e) 
+	@Override
+	public void mousePressed(MouseEvent e)
 	{
 		x = e.getX();
 		y = e.getY();
 		boolean clicked = false; // Flag to check if clicked box is toggled
 
 		// Toggle logic for each box region
-		if (x > 4 && x < 102 && y > 0 && y < 195) 
+		if (x > 4 && x < 102 && y > 0 && y < 195)
 		{
-			if (xClick == 4 && yClick == 6) 
+			if (xClick == 4 && yClick == 6)
 			{
 				xClick = 0;
 				yClick = 0; // Reset if already clicked
-			} 
-			else 
+			}
+			else
 			{
 				xClick = 4;
 				yClick = 6;
 			}
 			clicked = true;
-		} 
-		else if (x > 102 && x < 203 && y > 0 && y < 195) 
+		}
+		else if (x > 102 && x < 203 && y > 0 && y < 195)
 		{
-			if (xClick == 102 && yClick == 6) 
+			if (xClick == 102 && yClick == 6)
 			{
 				xClick = 0;
 				yClick = 0;
-			} 
-			else 
+			}
+			else
 			{
 				xClick = 102;
 				yClick = 6;
 			}
 			clicked = true;
-		} 
-		else if (x > 203 && x < 302 && y > 0 && y < 195) 
+		}
+		else if (x > 203 && x < 302 && y > 0 && y < 195)
 		{
-			if (xClick == 203 && yClick == 6) 
+			if (xClick == 203 && yClick == 6)
 			{
 				xClick = 0;
 				yClick = 0;
-			} 
-			else 
+			}
+			else
 			{
 				xClick = 203;
 				yClick = 6;
 			}
 			clicked = true;
-		} 
-		else if (x > 302 && x < 400 && y > 0 && y < 195) 
+		}
+		else if (x > 302 && x < 400 && y > 0 && y < 195)
 		{
-			if (xClick == 302 && yClick == 6) 
+			if (xClick == 302 && yClick == 6)
 			{
 				xClick = 0;
 				yClick = 0;
-			} 
-			else 
+			}
+			else
 			{
 				xClick = 302;
 				yClick = 6;
 			}
 			clicked = true;
-		} 
-		else if (x > 400 && x < 500 && y > 0 && y < 195) 
+		}
+		else if (x > 400 && x < 500 && y > 0 && y < 195)
 		{
-			if (xClick == 400 && yClick == 6) 
+			if (xClick == 400 && yClick == 6)
 			{
 				xClick = 0;
 				yClick = 0;
-			} 
-			else 
+			}
+			else
 			{
 				xClick = 400;
 				yClick = 6;
 			}
 			clicked = true;
-		} 
-		else if (x > 4 && x < 102 && y > 195 && y < 387) 
+		}
+		else if (x > 4 && x < 102 && y > 195 && y < 387)
 		{
-			if (xClick == 4 && yClick == 195) 
+			if (xClick == 4 && yClick == 195)
 			{
 				xClick = 0;
 				yClick = 0;
-			} 
-			else 
+			}
+			else
 			{
 				xClick = 4;
 				yClick = 195;
 			}
 			clicked = true;
-		} 
-		else if (x > 102 && x < 203 && y > 195 && y < 387) 
+		}
+		else if (x > 102 && x < 203 && y > 195 && y < 387)
 		{
-			if (xClick == 102 && yClick == 195) 
+			if (xClick == 102 && yClick == 195)
 			{
 				xClick = 0;
 				yClick = 0;
-			} 
-			else 
+			}
+			else
 			{
 				xClick = 102;
 				yClick = 195;
 			}
 			clicked = true;
-		} 
-		else if (x > 203 && x < 302 && y > 195 && y < 387) 
+		}
+		else if (x > 203 && x < 302 && y > 195 && y < 387)
 		{
-			if (xClick == 203 && yClick == 195) 
+			if (xClick == 203 && yClick == 195)
 			{
 				xClick = 0;
 				yClick = 0;
-			} 
-			else 
+			}
+			else
 			{
 				xClick = 203;
 				yClick = 195;
 			}
 			clicked = true;
-		} 
-		else if (x > 302 && x < 400 && y > 195 && y < 387) 
+		}
+		else if (x > 302 && x < 400 && y > 195 && y < 387)
 		{
-			if (xClick == 302 && yClick == 195) 
+			if (xClick == 302 && yClick == 195)
 			{
 				xClick = 0;
 				yClick = 0;
-			} 
-			else 
+			}
+			else
 			{
 				xClick = 302;
 				yClick = 195;
 			}
 			clicked = true;
-		} 
-		else if (x > 400 && x < 500 && y > 195 && y < 387) 
+		}
+		else if (x > 400 && x < 500 && y > 195 && y < 387)
 		{
-			if (xClick == 400 && yClick == 195) 
+			if (xClick == 400 && yClick == 195)
 			{
 				xClick = 0;
 				yClick = 0;
-			} 
-			else 
+			}
+			else
 			{
 				xClick = 400;
 				yClick = 195;
 			}
 			clicked = true;
-		} 
-		else if (x > 4 && x < 102 && y > 386 && y < 580) 
+		}
+		else if (x > 4 && x < 102 && y > 386 && y < 580)
 		{
-			if (xClick == 4 && yClick == 386) 
+			if (xClick == 4 && yClick == 386)
 			{
 				xClick = 0;
 				yClick = 0;
-			} 
-			else 
+			}
+			else
 			{
 				xClick = 4;
 				yClick = 386;
 			}
 			clicked = true;
-		} 
-		else if (x > 102 && x < 203 && y > 386 && y < 580) 
+		}
+		else if (x > 102 && x < 203 && y > 386 && y < 580)
 		{
-			if (xClick == 102 && yClick == 386) 
+			if (xClick == 102 && yClick == 386)
 			{
 				xClick = 0;
 				yClick = 0;
-			} 
-			else 
+			}
+			else
 			{
 				xClick = 102 ;
 				yClick = 386;
 			}
 			clicked = true;
-		} 
-		else if (x > 203 && x < 302 && y > 386 && y < 580) 
+		}
+		else if (x > 203 && x < 302 && y > 386 && y < 580)
 		{
-			if (xClick == 203 && yClick == 386) 
+			if (xClick == 203 && yClick == 386)
 			{
 				xClick = 0;
 				yClick = 0;
-			} 
-			else 
+			}
+			else
 			{
 				xClick = 203;
 				yClick = 386;
 			}
 			clicked = true;
-		} 
-		else if (x > 302 && x < 400 && y > 386 && y < 580) 
+		}
+		else if (x > 302 && x < 400 && y > 386 && y < 580)
 		{
-			if (xClick == 302 && yClick == 386) 
+			if (xClick == 302 && yClick == 386)
 			{
 				xClick = 0;
 				yClick = 0;
-			} 
-			else 
+			}
+			else
 			{
 				xClick = 302;
 				yClick = 386;
 			}
 			clicked = true;
-		} 
-		else if (x > 400 && x < 500 && y > 386 && y < 580) 
+		}
+		else if (x > 400 && x < 500 && y > 386 && y < 580)
 		{
-			if (xClick == 400 && yClick == 386) 
+			if (xClick == 400 && yClick == 386)
 			{
 				xClick = 0;
 				yClick = 0;
-			} 
-			else 
+			}
+			else
 			{
 				xClick = 400;
 				yClick = 386;
 			}
 			clicked = true;
-		} 
-		else if (x > 4 && x < 102 && y > 580 && y < 772) 
+		}
+		else if (x > 4 && x < 102 && y > 580 && y < 772)
 		{
-			if (xClick == 4 && yClick == 580) 
+			if (xClick == 4 && yClick == 580)
 			{
 				xClick = 0;
 				yClick = 0;
-			} 
-			else 
+			}
+			else
 			{
 				xClick = 4;
 				yClick = 580;
 			}
 			clicked = true;
-		} 
-		else if (x > 102 && x < 203 && y > 580 && y < 772) 
+		}
+		else if (x > 102 && x < 203 && y > 580 && y < 772)
 		{
-			if (xClick == 102 && yClick == 580) 
+			if (xClick == 102 && yClick == 580)
 			{
 				xClick = 0;
 				yClick = 0;
-			} 
-			else 
+			}
+			else
 			{
 				xClick = 102 ;
 				yClick = 580;
 			}
 			clicked = true;
-		} 
-		else if (x > 203 && x < 302 && y > 580 && y < 772) 
+		}
+		else if (x > 203 && x < 302 && y > 580 && y < 772)
 		{
-			if (xClick == 203 && yClick == 580) 
+			if (xClick == 203 && yClick == 580)
 			{
 				xClick = 0;
 				yClick = 0;
-			} 
-			else 
+			}
+			else
 			{
 				xClick = 203;
 				yClick = 580;
 			}
 			clicked = true;
-		} 
-		else if (x > 302 && x < 400 && y > 580 && y < 772) 
+		}
+		else if (x > 302 && x < 400 && y > 580 && y < 772)
 		{
-			if (xClick == 302 && yClick == 580) 
+			if (xClick == 302 && yClick == 580)
 			{
 				xClick = 0;
 				yClick = 0;
-			} 
-			else 
+			}
+			else
 			{
 				xClick = 302;
 				yClick = 580;
 			}
 			clicked = true;
-		} 
-		else if (x > 400 && x < 500 && y > 580 && y < 772) 
+		}
+		else if (x > 400 && x < 500 && y > 580 && y < 772)
 		{
-			if (xClick == 400 && yClick == 580) 
+			if (xClick == 400 && yClick == 580)
 			{
 				xClick = 0;
 				yClick = 0;
-			} 
-			else 
+			}
+			else
 			{
 				xClick = 400;
 				yClick = 580;
 			}
 			clicked = true;
-		} 
+		}
 
-		if (!clicked) 
+		if (!clicked)
 		{
 			xClick = 0;
 			yClick = 0;
@@ -884,13 +905,18 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 
 		repaint();
 	}
+	@Override
 	public void mouseReleased(MouseEvent e) {}
+	@Override
 	public void mouseEntered(MouseEvent e) {}
+	@Override
 	public void mouseExited(MouseEvent e) {}
 
+	@Override
 	public void mouseDragged(MouseEvent e) {}
 
-	public void mouseMoved(MouseEvent e) 
+	@Override
+	public void mouseMoved(MouseEvent e)
 	{
 		x = e.getX();
 		y = e.getY();
@@ -998,7 +1024,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			xHover = 400;
 			yHover = 580;
 		}
-		else 
+		else
 		{
 			xHover = 0;
 			yHover = 0;
@@ -1029,6 +1055,7 @@ class GamePanel extends JPanel
 		JButton back = new JButton("Back to Car Select");
 		back.addActionListener(new ActionListener()
 		{
+			@Override
 			public void actionPerformed(ActionEvent e)
 			{
 				layout.show(parent, "ChooseCar");
@@ -1058,6 +1085,7 @@ class HighScorePanel extends JPanel
 		JButton back = new JButton("Back");
 		back.addActionListener(new ActionListener()
 		{
+			@Override
 			public void actionPerformed(ActionEvent e)
 			{
 				layout.show(parent, "Welcome");
