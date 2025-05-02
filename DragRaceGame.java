@@ -20,6 +20,7 @@
  *  - Create the learning panel
  * Week 6
  *  - Finishing touches
+ *  - Add high scores panel
  */
 
 import java.awt.AlphaComposite;
@@ -42,10 +43,10 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.Timer;
 
@@ -303,13 +304,15 @@ class InstructionPanel extends JPanel
 {
 	private JPanel parent;
 	private CardLayout layout;
+	private boolean agreementChecked;
+	JCheckBox agreementCheckBox = new JCheckBox("I agree to the terms and conditions");;
 
 	public InstructionPanel(GameHolder gameHolder, CardLayout layout)
 	{
 		this.parent = gameHolder;
 		this.layout = layout;
 		setLayout(new BorderLayout());
-		setBackground(Color.BLUE);
+		setBackground(Color.BLACK);
 		showObjects();
 	}
 
@@ -318,7 +321,7 @@ class InstructionPanel extends JPanel
 		JTextPane instructions = new JTextPane();
 		instructions.setContentType("text/html");
 		instructions.setText(
-			"<html><div style='text-align: center; font-family: Arial; font-size: 12px; color: white;'>"
+			"<html><div style='text-align: center; font-family: Arial; font-size: 10px; color: white;'>"
 			+ "<h2> Game Setup</h2>"
 			+ "<p>You control a race car that competes against a bot car.<br>"
 			+ "Answer correctly for speed boosts; wrong answers slow you down.</p>"
@@ -335,9 +338,9 @@ class InstructionPanel extends JPanel
 			+ "Track your progress with the progress bar,<br>"
 			+ "and aim for a high score!</p>"
 			+ "</div></html>"
-		);
+		); // Set the text with HTML formatting
 		instructions.setEditable(false);
-		instructions.setBackground(new Color(0, 0, 0, 150));
+		instructions.setBackground(new Color(0, 0, 0, 150)); // Semi-transparent background
 		instructions.setOpaque(true);
 
 		instructions.setForeground(Color.WHITE);
@@ -368,7 +371,16 @@ class InstructionPanel extends JPanel
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				layout.show(parent, "ChooseCar");
+				if (!agreementChecked)
+				{
+					// Show a message dialog if the agreement is not checked
+					javax.swing.JOptionPane.showMessageDialog(parent, "Please agree to the terms and conditions to proceed.", "Agreement Required", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+				}
+				else if (agreementChecked)
+				{
+					layout.show(parent, "ChooseCar");
+					agreementChecked = false; // Reset for next time
+				}
 			}
 		});
 
@@ -378,11 +390,37 @@ class InstructionPanel extends JPanel
 		next.setOpaque(true);
 		add(next, BorderLayout.EAST);
 
+		agreementCheckBox.setForeground(Color.WHITE);
+		agreementCheckBox.setBackground(Color.BLACK);
+		agreementCheckBox.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				if (agreementCheckBox.isSelected())
+				{
+				 	agreementChecked = true;
+				}
+				else
+				{
+					agreementChecked = false;
+				}
+			}
+		});
+		add(agreementCheckBox, BorderLayout.SOUTH);
 		ImageIcon icon = new ImageIcon("Instructions.png");
 		JLabel label = new JLabel(icon);
 		add(label, BorderLayout.NORTH);
-
-
+	}
+	@Override
+	public void setVisible(boolean visible)
+	{
+	    super.setVisible(visible);
+	    if (visible)
+	    {
+	        agreementCheckBox.setSelected(false); // Reset the checkbox
+	        agreementChecked = false; // Reset the agreement flag
+	    }
 	}
 
 }
@@ -390,8 +428,10 @@ class InstructionPanel extends JPanel
 
 class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListener
 {
+	// This class represents the car selection panel where players can choose their car and enter their name.
 	private Image carOptions;
 	private Image carOptionsNoBackgroundOriginal;
+	private Image EmptyCar;
 	int x, y, xHover, yHover, xClick, yClick, opponentX, opponentY;
 	private JPanel parent;
 	private CardLayout layout;
@@ -419,7 +459,16 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 
 		try
 		{
-			carOptionsNoBackgroundOriginal = ImageIO.read(new File("CarOptionsClearBackground.png"));
+			carOptionsNoBackgroundOriginal = ImageIO.read(new File("CarOptionsClearBackground.png")); // Load the image without background
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+
+		try
+		{
+			EmptyCar = ImageIO.read(new File("EmptyCar.jpg")); // Load the empty car image
 		}
 		catch (IOException e)
 		{
@@ -449,7 +498,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		});
 		next.setBounds(830, 720, 80, 30); // To the right of the Back button
 		add(next);
-		createCoordinatesForOpponent();
+		createCoordinatesForOpponent(); // Create opponent coordinates
 	}
 
 	public void createCoordinatesForOpponent()
@@ -555,10 +604,6 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			opponentX = 400;
 			opponentY = 580;
 		}
-		JTextField nameField = new JTextField("Enter Your Name");
-		add(nameField);
-		nameField.setBounds(530, 305, 150, 30);
-		nameField.setEditable(true);
 	}
 
 	@Override
@@ -580,6 +625,10 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			g.fillRect(xClick, yClick, 97, 190);
 			// Draw cropped section from carOptions into "Your Car" area
 			g.drawImage(carOptionsNoBackgroundOriginal, 530, 105, 530 + carWidth, 105 + carHeight, xClick, yClick, xClick + carWidth, yClick + carHeight, this);
+		}
+		else
+		{
+			g.drawImage(EmptyCar, 530, 105, 530 + carWidth, 105 + carHeight, this);
 		}
 
 		// Draw blue hover rectangle if hovering
