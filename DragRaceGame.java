@@ -523,7 +523,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		addComponents();
 		try
 		{
-			imageForOpponent = ImageIO.read(new File("Bicycle.png")); // Default to easy mode
+			imageForOpponent = ImageIO.read(new File("CarNormal.png")); // Default to easy mode
 		}
 		catch (IOException e)
 		{
