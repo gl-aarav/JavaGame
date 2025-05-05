@@ -39,8 +39,16 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.FloatControl;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -106,6 +114,11 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 	private boolean rightButtonPressed;
 	private boolean leftButtonHovered;
 	private boolean rightButtonHovered;
+	private SoundPlayer buttonClickSound;
+	private SoundPlayer carAccelerationSound;
+	private JButton muteButton;
+	private boolean isMuted = false;
+
 	public WelcomePagePanel(JPanel gameHolder, CardLayout layout)
 	{
 		leftButtonPressed = false;
@@ -119,7 +132,49 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 		addMouseMotionListener(this);
 		startGIF();
 		gifOrNo = true;
+		buttonClickSound = new SoundPlayer("buttonClick.wav");
+		carAccelerationSound = new SoundPlayer("accelerate.wav");
+		// Inside the WelcomePagePanel constructor
+		Timer soundDelay = new Timer(1000, new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				carAccelerationSound.play(); // Play the sound after 1 second
+			}
+		});
+		soundDelay.setRepeats(false); // Ensure the timer only runs once
+		soundDelay.start(); // Start the timer
+
+		// Add mute button
+		muteButton = new JButton(new ImageIcon("unmute.jpg"));
+		muteButton.setVisible(false);
+		muteButton.setBounds(10, 10, 50, 50); // Position in the top-left corner
+		muteButton.setBorderPainted(false);
+		muteButton.setContentAreaFilled(false);
+		muteButton.setFocusPainted(false);
+		muteButton.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				isMuted = !isMuted;
+				if (isMuted)
+				{
+					SoundPlayer.setMuted(isMuted);
+					muteButton.setIcon(new ImageIcon("mute.jpg"));
+				}
+				else
+				{
+					SoundPlayer.setMuted(isMuted);
+					muteButton.setIcon(new ImageIcon("unmute.jpg"));
+
+				}
+			}
+		});
+		add(muteButton);
 	}
+
 
 	public void startGIF()
 	{
@@ -136,7 +191,7 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 			e.printStackTrace();
 		}
 
-		Timer delay = new Timer(7000, new ActionListener()
+		Timer delay = new Timer(7500, new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent e)
@@ -151,6 +206,7 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 
 	public void startFadeOut()
 	{
+		//play the car acceleration sound
 		timer = new Timer(100, new ActionListener()
 		{
 			@Override
@@ -162,6 +218,8 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 					alpha = 0;
 					timer.stop();
 					gifOrNo = false;
+					muteButton.setVisible(true); // Show the mute button
+					carAccelerationSound.stop(); // Stop the car acceleration sound
 				}
 				repaint();
 			}
@@ -230,11 +288,13 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 			{
 				leftButtonPressed = true;
 				repaint();
+				buttonClickSound.play(); // Play button click sound
 			}
 			else if (y > 685 && y < 716 && x > 469 && x < 771)
 			{
 				rightButtonPressed = true;
 				repaint();
+				buttonClickSound.play(); // Play button click sound
 			}
 		}
 	}
@@ -304,10 +364,11 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 
 class InstructionPanel extends JPanel
 {
+	private SoundPlayer buttonClickSound, NotificationSound;
 	private JPanel parent;
 	private CardLayout layout;
 	private boolean agreementChecked;
-	JCheckBox agreementCheckBox = new JCheckBox("I agree to the terms and conditions");;
+	JCheckBox agreementCheckBox = new JCheckBox("I agree to the terms and conditions");
 
 	public InstructionPanel(GameHolder gameHolder, CardLayout layout)
 	{
@@ -316,6 +377,8 @@ class InstructionPanel extends JPanel
 		setLayout(new BorderLayout());
 		setBackground(Color.BLACK);
 		showObjects();
+		buttonClickSound = new SoundPlayer("buttonClick.wav");
+		NotificationSound = new SoundPlayer("Notification.wav");
 	}
 
 	public void showObjects()
@@ -358,6 +421,7 @@ class InstructionPanel extends JPanel
 			public void actionPerformed(ActionEvent e)
 			{
 				layout.show(parent, "Welcome");
+				buttonClickSound.play(); // Play button click sound
 			}
 		});
 
@@ -375,11 +439,14 @@ class InstructionPanel extends JPanel
 			{
 				if (!agreementChecked)
 				{
+					NotificationSound.play(); // Play notification sound
 					// Show a message dialog if the agreement is not checked
 					javax.swing.JOptionPane.showMessageDialog(parent, "Please agree to the terms and conditions to proceed.", "Agreement Required", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+					buttonClickSound.play(); // Play button click sound
 				}
 				else if (agreementChecked)
 				{
+					buttonClickSound.play(); // Play button click sound
 					layout.show(parent, "ChooseCar");
 					agreementChecked = false; // Reset for next time
 				}
@@ -399,6 +466,7 @@ class InstructionPanel extends JPanel
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
+				buttonClickSound.play(); // Play button click sound
 				if (agreementCheckBox.isSelected())
 				{
 					agreementChecked = true;
@@ -433,13 +501,17 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 	private Image carOptions;
 	private Image carOptionsNoBackgroundOriginal;
 	private Image EmptyCar;
+	private Image imageForOpponent;
 	int x, y, xHover, yHover, xClick, yClick, opponentX, opponentY;
 	private JPanel parent;
 	private CardLayout layout;
 	private String name = "";
 	private boolean carSelected = false;
 	private boolean nameEntered = false;
-	private boolean difficultySelected = false;
+	private SoundPlayer carSelectSound;
+	private SoundPlayer buttonClickSound;
+	private JLabel carStatsLabel;
+	private String carStats = "No car selected"; // Placeholder for car stats
 
 	public CarChoosePanel(GameHolder gameHolder, CardLayout layout)
 	{
@@ -449,6 +521,25 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		addMouseMotionListener(this);
 		setLayout(null);
 		addComponents();
+		try
+		{
+			imageForOpponent = ImageIO.read(new File("Bicycle.png")); // Default to easy mode
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		carSelectSound = new SoundPlayer("carSelect.wav");
+		buttonClickSound = new SoundPlayer("buttonClick.wav");
+
+		try
+		{
+			imageForOpponent = ImageIO.read(new File("Bicycle.png")); // Default to easy mode
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	public void addComponents()
@@ -456,24 +547,8 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		try
 		{
 			carOptions = ImageIO.read(new File("CarOptions.png"));
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-
-		try
-		{
-			carOptionsNoBackgroundOriginal = ImageIO.read(new File("CarOptionsClearBackground.png")); // Load the image without background
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-
-		try
-		{
 			EmptyCar = ImageIO.read(new File("EmptyCar.jpg")); // Load the empty car image
+			carOptionsNoBackgroundOriginal = ImageIO.read(new File("CarOptionsClearBackground.png")); // Load the image without background
 		}
 		catch (IOException e)
 		{
@@ -486,10 +561,11 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
+				buttonClickSound.play(); // Play button click sound
 				layout.show(parent, "Instructions");
 			}
 		});
-		back.setBounds(730, 720, 80, 30); // Positioned in bottom right corner with space for "Next"
+		back.setBounds(730, 720, 80, 30);
 		add(back);
 
 		JButton next = new JButton("Next");
@@ -498,10 +574,11 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				layout.show(parent, "Game"); // Replace with your actual next panel name
+				buttonClickSound.play(); // Play button click sound
+				layout.show(parent, "Game");
 			}
 		});
-		next.setBounds(830, 720, 80, 30); // Positioned in bottom right corner with space for "Back"
+		next.setBounds(830, 720, 80, 30);
 		add(next);
 		JTextField nameField = new JTextField("Enter Your Name");
 		nameField.addMouseListener(new MouseListener()
@@ -525,16 +602,44 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			public void mouseExited(MouseEvent e) {}
 		});
 
+		nameField.addFocusListener(new java.awt.event.FocusListener()
+		{
+			@Override
+			public void focusGained(java.awt.event.FocusEvent e)
+			{
+				buttonClickSound.play(); // Play button click sound
+				if (nameField.getText().equals("Enter Your Name"))
+				{
+					nameField.setText(""); // Clear the placeholder text
+				}
+			}
+
+			@Override
+			public void focusLost(java.awt.event.FocusEvent e)
+			{
+				if (nameField.getText().isEmpty())
+				{
+					nameField.setText("Enter Your Name"); // Reset placeholder text if empty
+				}
+			}
+		});
+
 		nameField.addActionListener(new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				if (nameField.getText().isEmpty())
+				if (nameField.getText().isEmpty() || nameField.getText().equals("Enter Your Name"))
 				{
+					// Reset the name field if empty or default text
 					nameField.setText("Enter Your Name");
 					nameEntered = false;
 					repaint();
+				}
+				else if (nameField.getText().length() > 13)
+				{
+					// Limit the name to 16 characters
+					nameField.setText(nameField.getText().substring(0,13));
 				}
 				else
 				{
@@ -549,125 +654,62 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		nameField.setBounds(515, 590, 400, 30);
 		nameField.setEditable(true);
 
+		//Add Easy medium and hard labels
 		JSlider difficultySlider = new JSlider(0, 100, 50);
 		difficultySlider.setMajorTickSpacing(20);
 		difficultySlider.setMinorTickSpacing(5);
 		difficultySlider.setPaintTicks(true);
 		difficultySlider.setPaintLabels(true);
+		difficultySlider.setValue(50); // Default to medium difficulty
 		difficultySlider.setBounds(515, 650, 400, 50);
+
+		difficultySlider.addChangeListener(e ->
+		{
+			int value = difficultySlider.getValue();
+			try
+			{
+				if (value < 20)
+				{
+					imageForOpponent = ImageIO.read(new File("Bicycle.png")); // Easy mode
+				}
+				else if (value < 40)
+				{
+					imageForOpponent = ImageIO.read(new File("Motorcycle.png"));
+				}
+				else if (value < 60)
+				{
+					imageForOpponent = ImageIO.read(new File("CarNormal.png"));
+				}
+				else if (value < 80)
+				{
+					imageForOpponent = ImageIO.read(new File("CarSport.png"));
+				} else
+				{
+					imageForOpponent = ImageIO.read(new File("Rocket.png"));
+				}
+			}
+			catch (IOException ex)
+			{
+				ex.printStackTrace();
+			}
+			repaint(); // Ensure the panel updates
+		});
+
 		add(difficultySlider);
+
 		JLabel difficultyLabel = new JLabel("Difficulty Level");
 		difficultyLabel.setBounds(500, 630, 400, 20);
 		difficultyLabel.setForeground(Color.BLACK);
 		difficultyLabel.setFont(new Font("Arial", Font.PLAIN, 12));
 		add(difficultyLabel);
+		carStatsLabel = new JLabel(carStats);
+		carStatsLabel.setBounds(540, 300, 300, 150); // Increase width and height
+		carStatsLabel.setFont(new Font("Arial", Font.BOLD, 16));
+		carStatsLabel.setForeground(Color.BLUE);
+		carStatsLabel.setVerticalAlignment(JLabel.TOP); // Align text to the top
+		carStatsLabel.setHorizontalAlignment(JLabel.LEFT); // Align text to the left
+		add(carStatsLabel);
 
-		createCoordinatesForOpponent(); // Create opponent coordinates
-	}
-
-	public void createCoordinatesForOpponent()
-	{
-		int carNumber = (int)(Math.random()*25)+1;
-		if (carNumber == 1)
-		{
-			opponentX = 4;
-			opponentY = 6;
-		}
-		else if (carNumber == 2)
-		{
-			opponentX = 102;
-			opponentY = 6;
-		}
-		else if (carNumber == 3)
-		{
-			opponentX = 203;
-			opponentY = 6;
-		}
-		else if (carNumber == 4)
-		{
-			opponentX = 302;
-			opponentY = 6;
-		}
-		else if (carNumber == 5)
-		{
-			opponentX = 400;
-			opponentY = 6;
-		}
-		else if (carNumber == 6)
-		{
-			opponentX = 4;
-			opponentY = 195;
-		}
-		else if (carNumber == 7)
-		{
-			opponentX = 102;
-			opponentY = 195;
-		}
-		else if (carNumber == 8)
-		{
-			opponentX = 203;
-			opponentY = 195;
-		}
-		else if (carNumber == 9)
-		{
-			opponentX = 302;
-			opponentY = 195;
-		}
-		else if (carNumber == 10)
-		{
-			opponentX = 400;
-			opponentY = 195;
-		}
-		else if (carNumber == 11)
-		{
-			opponentX = 4;
-			opponentY = 386;
-		}
-		else if (carNumber == 12)
-		{
-			opponentX = 102 ;
-			opponentY = 386;
-		}
-		else if (carNumber == 13)
-		{
-			opponentX = 203;
-			opponentY = 386;
-		}
-		else if (carNumber == 14)
-		{
-			opponentX = 302;
-			opponentY = 386;
-		}
-		else if (carNumber == 15)
-		{
-			opponentX = 400;
-			opponentY = 580;
-		}
-		else if (carNumber == 16)
-		{
-			opponentX = 4;
-			opponentY = 580;
-		}
-		else if (carNumber == 17)
-		{
-			opponentX = 102;
-			opponentY = 580;
-		}
-		else if (carNumber == 18)
-		{
-			opponentX = 203;
-			opponentY = 580;
-		}
-		else if (carNumber == 19)
-		{
-			opponentX = 302;
-			opponentY = 580;
-		}
-		else if (carNumber == 20)
-		{
-			opponentX = 400;
-			opponentY = 580;
-		}
 	}
 
 	@Override
@@ -680,11 +722,12 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		g.drawImage(carOptions, 0, 0, 500 , 775, this);
 		Graphics2D g2d = (Graphics2D) g;
 
-		g.drawImage(carOptionsNoBackgroundOriginal, 755, 105, 755 + carWidth, 105 + carHeight, opponentX, opponentY, opponentX + carWidth, opponentY + carHeight, this);
+		g.drawImage(imageForOpponent, 755, 105, carWidth, carHeight, this);
 
 		// Draw gray box if clicked
 		if (xClick != 0)
 		{
+			carSelected = true; // Set carSelected to true if a car is clicked
 			g.setColor(new Color (0, 0, 0, 80));
 			g.fillRect(xClick, yClick, 97, 190);
 			// Draw cropped section from carOptions into "Your Car" area
@@ -692,6 +735,9 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		}
 		else
 		{
+			carStats = "No car selected"; // Reset the car stats
+			carStatsLabel.setText(carStats); // Update the label text
+			carSelected = false; // Reset carSelected if no car is clicked
 			g.drawImage(EmptyCar, 540, 105, carWidth, carHeight, this);
 			//add border to the empty car
 			java.awt.Stroke oldStroke = g2d.getStroke();
@@ -734,6 +780,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		g.setFont(new Font ("Amazone BT", Font.PLAIN, 15));
 		g.drawLine(550, 93, 600, 93);
 		g.drawString("Your Car", 550, 90);
+		g.setColor(Color.BLUE);
 		g.drawLine(760, 93, 845, 93);
 		g.drawString("Opponents Car", 750, 90);
 	}
@@ -746,12 +793,12 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 	@Override
 	public void mousePressed(MouseEvent e)
 	{
+
 		//Number of cars: 20
 		x = e.getX();
 		y = e.getY();
-		boolean clicked = false; // Flag to check if clicked box is toggled
+		boolean clicked = true; // Flag to check if clicked box is toggled
 
-		// Toggle logic for each box region
 		if (x > 4 && x < 102 && y > 0 && y < 195)
 		{
 			if (xClick == 4 && yClick == 6)
@@ -765,6 +812,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 4;
 				yClick = 6;
 				carSelected = true;
+				carSelectSound.play(); // Play car select sound
 			}
 			clicked = true;
 		}
@@ -781,6 +829,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 102;
 				yClick = 6;
 				carSelected = true;
+				carSelectSound.play(); // Play car select sound
 			}
 			clicked = true;
 		}
@@ -791,12 +840,14 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+
 			}
 			else
 			{
 				xClick = 203;
 				yClick = 6;
 				carSelected = true;
+				carSelectSound.play(); // Play car select sound
 			}
 			clicked = true;
 		}
@@ -807,12 +858,14 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+
 			}
 			else
 			{
 				xClick = 302;
 				yClick = 6;
 				carSelected = true;
+				carSelectSound.play(); // Play car select sound
 			}
 			clicked = true;
 		}
@@ -823,12 +876,14 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+
 			}
 			else
 			{
 				xClick = 400;
 				yClick = 6;
 				carSelected = true;
+				carSelectSound.play(); // Play car select sound
 			}
 			clicked = true;
 		}
@@ -839,12 +894,14 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+
 			}
 			else
 			{
 				xClick = 4;
 				yClick = 195;
 				carSelected = true;
+				carSelectSound.play(); // Play car select sound
 			}
 			clicked = true;
 		}
@@ -855,12 +912,14 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+
 			}
 			else
 			{
 				xClick = 102;
 				yClick = 195;
 				carSelected = true;
+				carSelectSound.play(); // Play car select sound
 			}
 			clicked = true;
 		}
@@ -871,12 +930,14 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+
 			}
 			else
 			{
 				xClick = 203;
 				yClick = 195;
 				carSelected = true;
+				carSelectSound.play(); // Play car select sound
 			}
 			clicked = true;
 		}
@@ -886,13 +947,15 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			{
 				xClick = 0;
 				yClick = 0;
-				carSelected = false;	
+				carSelected = false;
+
 			}
 			else
 			{
 				xClick = 302;
 				yClick = 195;
 				carSelected = true;
+				carSelectSound.play(); // Play car select sound
 			}
 			clicked = true;
 		}
@@ -903,12 +966,14 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+
 			}
 			else
 			{
 				xClick = 400;
 				yClick = 195;
-				carSelected = true;	
+				carSelected = true;
+				carSelectSound.play(); // Play car select sound
 			}
 			clicked = true;
 		}
@@ -918,13 +983,15 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			{
 				xClick = 0;
 				yClick = 0;
-				carSelected = false;	
+				carSelected = false;
+
 			}
 			else
 			{
 				xClick = 4;
 				yClick = 386;
-				carSelected = true;	
+				carSelected = true;
+				carSelectSound.play(); // Play car select sound
 			}
 			clicked = true;
 		}
@@ -934,13 +1001,15 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			{
 				xClick = 0;
 				yClick = 0;
-				carSelected = false;	
+				carSelected = false;
+
 			}
 			else
 			{
 				xClick = 102 ;
 				yClick = 386;
-				carSelected = true;	
+				carSelected = true;
+				carSelectSound.play(); // Play car select sound
 			}
 			clicked = true;
 		}
@@ -950,13 +1019,15 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			{
 				xClick = 0;
 				yClick = 0;
-				carSelected = false;		
+				carSelected = false;
+
 			}
 			else
 			{
 				xClick = 203;
 				yClick = 386;
 				carSelected = true;
+				carSelectSound.play(); // Play car select sound
 			}
 			clicked = true;
 		}
@@ -967,12 +1038,14 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+
 			}
 			else
 			{
 				xClick = 302;
 				yClick = 386;
 				carSelected = true;
+				carSelectSound.play(); // Play car select sound
 			}
 			clicked = true;
 		}
@@ -983,12 +1056,14 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+
 			}
 			else
 			{
 				xClick = 400;
 				yClick = 386;
 				carSelected = true;
+				carSelectSound.play(); // Play car select sound
 			}
 			clicked = true;
 		}
@@ -998,13 +1073,15 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			{
 				xClick = 0;
 				yClick = 0;
-					carSelected = false;
+				carSelected = false;
+
 			}
 			else
 			{
 				xClick = 4;
 				yClick = 580;
 				carSelected = true;
+				carSelectSound.play(); // Play car select sound
 			}
 			clicked = true;
 		}
@@ -1015,12 +1092,14 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+
 			}
 			else
 			{
 				xClick = 102 ;
 				yClick = 580;
 				carSelected = true;
+				carSelectSound.play(); // Play car select sound
 			}
 			clicked = true;
 		}
@@ -1031,12 +1110,14 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+
 			}
 			else
 			{
 				xClick = 203;
 				yClick = 580;
 				carSelected = true;
+				carSelectSound.play(); // Play car select sound
 			}
 			clicked = true;
 		}
@@ -1047,12 +1128,14 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+
 			}
 			else
 			{
 				xClick = 302;
 				yClick = 580;
 				carSelected = true;
+				carSelectSound.play(); // Play car select sound
 			}
 			clicked = true;
 		}
@@ -1062,14 +1145,15 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			{
 				xClick = 0;
 				yClick = 0;
-					carSelected = false;
-					
+				carSelected = false;
+
 			}
 			else
 			{
 				xClick = 400;
 				yClick = 580;
 				carSelected = true;
+				carSelectSound.play(); // Play car select sound
 			}
 			clicked = true;
 		}
@@ -1079,6 +1163,112 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			xClick = 0;
 			yClick = 0;
 			carSelected = false;
+		}
+
+		//THIS IS A TENTATIVE SOLUTION FOR CAR COLORS, TYPES, CONDITIONS AND ENGINE TYPES, WILL BE MODIFIED LATER
+		if (carSelected)
+		{
+			Map<String, String> carColors = new HashMap<>();
+			carColors.put("6,4", "Blue");
+			carColors.put("6,102", "Blue");
+			carColors.put("6,203", "Blue");
+			carColors.put("6,302", "Blue");
+			carColors.put("6,400", "Blue");
+			carColors.put("195,4", "Green");
+			carColors.put("195,102", "Green");
+			carColors.put("195,203", "Green");
+			carColors.put("195,302", "Green");
+			carColors.put("195,400", "Green");
+			carColors.put("386,4", "Red");
+			carColors.put("386,102", "Red");
+			carColors.put("386,203", "Red");
+			carColors.put("386,302", "Red");
+			carColors.put("386,400", "Red");
+			carColors.put("580,4", "Yellow");
+			carColors.put("580,102", "Yellow");
+			carColors.put("580,203", "Yellow");
+			carColors.put("580,302", "Yellow");
+			carColors.put("580,400", "Yellow");
+
+			Map<String, String> carTypes = new HashMap<>();
+			carTypes.put("6,4", "Sedan");
+			carTypes.put("6,102", "SUV");
+			carTypes.put("6,203", "Truck");
+			carTypes.put("6,302", "Coupe");
+			carTypes.put("6,400", "Convertible");
+			carTypes.put("195,4", "Hatchback");
+			carTypes.put("195,102", "Van");
+			carTypes.put("195,203", "Wagon");
+			carTypes.put("195,302", "Sports");
+			carTypes.put("195,400", "Luxury");
+			carTypes.put("386,4", "Electric");
+			carTypes.put("386,102", "Hybrid");
+			carTypes.put("386,203", "Diesel");
+			carTypes.put("386,302", "Petrol");
+			carTypes.put("386,400", "CNG");
+			carTypes.put("580,4", "Off-Road");
+			carTypes.put("580,102", "Compact");
+			carTypes.put("580,203", "Mini");
+			carTypes.put("580,302", "Pickup");
+			carTypes.put("580,400", "Muscle");
+
+			Map<String, String> carConditions = new HashMap<>();
+			carConditions.put("6,4", "New");
+			carConditions.put("6,102", "Used");
+			carConditions.put("6,203", "Certified");
+			carConditions.put("6,302", "New");
+			carConditions.put("6,400", "Used");
+			carConditions.put("195,4", "Certified");
+			carConditions.put("195,102", "New");
+			carConditions.put("195,203", "Used");
+			carConditions.put("195,302", "Certified");
+			carConditions.put("195,400", "New");
+			carConditions.put("386,4", "Used");
+			carConditions.put("386,102", "Certified");
+			carConditions.put("386,203", "New");
+			carConditions.put("386,302", "Used");
+			carConditions.put("386,400", "Certified");
+			carConditions.put("580,4", "New");
+			carConditions.put("580,102", "Used");
+			carConditions.put("580,203", "Certified");
+			carConditions.put("580,302", "New");
+			carConditions.put("580,400", "Used");
+
+			Map<String, String> engineTypes = new HashMap<>();
+			engineTypes.put("6,4", "V12");
+			engineTypes.put("6,102", "V8");
+			engineTypes.put("6,203", "Inline-4");
+			engineTypes.put("6,302", "Electric");
+			engineTypes.put("6,400", "Hybrid");
+			engineTypes.put("195,4", "Diesel");
+			engineTypes.put("195,102", "Petrol");
+			engineTypes.put("195,203", "CNG");
+			engineTypes.put("195,302", "Electric");
+			engineTypes.put("195,400", "Hybrid");
+			engineTypes.put("386,4", "V6");
+			engineTypes.put("386,102", "V8");
+			engineTypes.put("386,203", "Inline-4");
+			engineTypes.put("386,302", "Electric");
+			engineTypes.put("386,400", "Hybrid");
+			engineTypes.put("580,4", "Diesel");
+			engineTypes.put("580,102", "Petrol");
+			engineTypes.put("580,203", "CNG");
+			engineTypes.put("580,302", "Electric");
+			engineTypes.put("580,400", "Hybrid");
+
+			String key = yClick + "," + xClick;
+			if (carColors.containsKey(key) && carSelected)
+			{
+				carStats = "<html>Car Stats:<br>"
+						+ "- Color: " + carColors.get(key) + "<br>"
+						+ "- Type: " + carTypes.get(key) + "<br>"
+						+ "- Condition: " + carConditions.get(key) + "<br>"
+						+ "- Engine Type: " + engineTypes.get(key) + "</html>";
+				carStatsLabel.setText(carStats); // Update the label text
+				carStatsLabel.revalidate(); // Ensure the label is revalidated
+				carStatsLabel.repaint(); // Repaint the label to reflect changes
+			}
+
 		}
 
 		repaint();
