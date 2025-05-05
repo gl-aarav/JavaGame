@@ -1433,6 +1433,69 @@ class GamePanel extends JPanel
 	}
 }
 
+class SoundPlayer
+{
+	private Clip clip;
+	private FloatControl volumeControl;
+	private static boolean isMuted = false; // Global mute flag
+
+	// Constructor to load the sound file
+	public SoundPlayer(String filePath)
+	{
+		try
+		{
+			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(filePath));
+			clip = AudioSystem.getClip();
+			clip.open(audioInputStream);
+
+			// Get the volume control
+			volumeControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+		}
+		catch (UnsupportedAudioFileException | IOException | LineUnavailableException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	// Play the sound
+	public void play()
+	{
+		if (clip != null && !isMuted)
+		{ // Check if not muted
+			clip.setFramePosition(0); // Rewind to the beginning
+			clip.start();
+		}
+	}
+
+	// Set volume (range: 0.0 to 1.0)
+	public void setVolume(float volume)
+	{
+		if (volumeControl != null && !isMuted)
+		{ // Check if not muted
+			float min = volumeControl.getMinimum();
+			float max = volumeControl.getMaximum();
+			float gain = min + (max - min) * volume; // Scale volume to gain range
+			volumeControl.setValue(gain);
+		}
+	}
+
+	// Stop the sound
+	public void stop()
+	{
+		if (clip != null)
+		{
+			clip.stop();
+		}
+	}
+
+	// Static method to mute or unmute all sounds
+	public static void setMuted(boolean muted)
+	{
+		isMuted = muted;
+	}
+}
+
+
 class HighScorePanel extends JPanel
 {
 	private JPanel parent;
