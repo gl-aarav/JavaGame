@@ -512,6 +512,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 	private SoundPlayer buttonClickSound;
 	private JLabel carStatsLabel;
 	private String carStats = "No car selected"; // Placeholder for car stats
+	private boolean opponentCarSelected = false;
 
 	public CarChoosePanel(GameHolder gameHolder, CardLayout layout)
 	{
@@ -521,25 +522,10 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		addMouseMotionListener(this);
 		setLayout(null);
 		addComponents();
-		try
-		{
-			imageForOpponent = ImageIO.read(new File("CarNormal.png")); // Default to easy mode
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
+
 		carSelectSound = new SoundPlayer("carSelect.wav");
 		buttonClickSound = new SoundPlayer("buttonClick.wav");
-
-		try
-		{
-			imageForOpponent = ImageIO.read(new File("Bicycle.png")); // Default to easy mode
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
+		imageForOpponent = null;
 	}
 
 	public void addComponents()
@@ -668,6 +654,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			int value = difficultySlider.getValue();
 			try
 			{
+				opponentCarSelected = true; // Set to true when the slider is moved
 				if (value < 20)
 				{
 					imageForOpponent = ImageIO.read(new File("Bicycle.png")); // Easy mode
@@ -683,7 +670,8 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				else if (value < 80)
 				{
 					imageForOpponent = ImageIO.read(new File("CarSport.png"));
-				} else
+				}
+				else
 				{
 					imageForOpponent = ImageIO.read(new File("Rocket.png"));
 				}
@@ -723,6 +711,19 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		Graphics2D g2d = (Graphics2D) g;
 
 		g.drawImage(imageForOpponent, 755, 105, carWidth, carHeight, this);
+
+		if (!opponentCarSelected)
+		{
+			g.drawImage(EmptyCar, 755, 105, carWidth, carHeight, this);
+			java.awt.Stroke oldStroke = g2d.getStroke();
+			g2d.setStroke(new BasicStroke(2));
+			g.drawRect(755, 105, carWidth, carHeight);
+			g2d.setStroke(oldStroke);
+		}
+		else
+		{
+			g.drawImage(imageForOpponent, 755, 105, carWidth, carHeight, this);
+		}
 
 		// Draw gray box if clicked
 		if (xClick != 0)
@@ -1170,91 +1171,103 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		{
 			Map<String, String> carColors = new HashMap<>();
 			carColors.put("6,4", "Blue");
-			carColors.put("6,102", "Blue");
+			carColors.put("6,102", "Dark Blue");
 			carColors.put("6,203", "Blue");
 			carColors.put("6,302", "Blue");
 			carColors.put("6,400", "Blue");
+
 			carColors.put("195,4", "Green");
-			carColors.put("195,102", "Green");
-			carColors.put("195,203", "Green");
-			carColors.put("195,302", "Green");
+			carColors.put("195,102", "Dark Green");
+			carColors.put("195,203", "Olive Green");
+			carColors.put("195,302", "Dark Green");
 			carColors.put("195,400", "Green");
-			carColors.put("386,4", "Red");
+
+			carColors.put("386,4", "Dark Red");
 			carColors.put("386,102", "Red");
-			carColors.put("386,203", "Red");
+			carColors.put("386,203", "Maroon Red");
 			carColors.put("386,302", "Red");
-			carColors.put("386,400", "Red");
+			carColors.put("386,400", "Dark Red");
+
 			carColors.put("580,4", "Yellow");
-			carColors.put("580,102", "Yellow");
-			carColors.put("580,203", "Yellow");
+			carColors.put("580,102", "Gold Yellow");
+			carColors.put("580,203", "Gold Yellow");
 			carColors.put("580,302", "Yellow");
 			carColors.put("580,400", "Yellow");
 
 			Map<String, String> carTypes = new HashMap<>();
-			carTypes.put("6,4", "Sedan");
-			carTypes.put("6,102", "SUV");
-			carTypes.put("6,203", "Truck");
-			carTypes.put("6,302", "Coupe");
-			carTypes.put("6,400", "Convertible");
-			carTypes.put("195,4", "Hatchback");
-			carTypes.put("195,102", "Van");
-			carTypes.put("195,203", "Wagon");
-			carTypes.put("195,302", "Sports");
-			carTypes.put("195,400", "Luxury");
-			carTypes.put("386,4", "Electric");
-			carTypes.put("386,102", "Hybrid");
-			carTypes.put("386,203", "Diesel");
-			carTypes.put("386,302", "Petrol");
-			carTypes.put("386,400", "CNG");
-			carTypes.put("580,4", "Off-Road");
-			carTypes.put("580,102", "Compact");
-			carTypes.put("580,203", "Mini");
-			carTypes.put("580,302", "Pickup");
-			carTypes.put("580,400", "Muscle");
+			carTypes.put("6,4", "Sport");
+			carTypes.put("6,102", "SuperSport");
+			carTypes.put("6,203", "Coupe");
+			carTypes.put("6,302", "Mid-Size SUV");
+			carTypes.put("6,400", "Full-Size SUV");
+
+			carTypes.put("195,4", "Sport");
+			carTypes.put("195,102", "Hyper");
+			carTypes.put("195,203", "Coupe");
+			carTypes.put("195,302", "Luxury");
+			carTypes.put("195,400", "Hatchback");
+
+			carTypes.put("386,4", "SuperSport");
+			carTypes.put("386,102", "Sport");
+			carTypes.put("386,203", "Coupe");
+			carTypes.put("386,302", "Crossover");
+			carTypes.put("386,400", "Luxury");
+
+			carTypes.put("580,4", "Hybrid");
+			carTypes.put("580,102", "Hyper");
+			carTypes.put("580,203", "Coupe");
+			carTypes.put("580,302", "Compact");
+			carTypes.put("580,400", "Mini-Van");
 
 			Map<String, String> carConditions = new HashMap<>();
 			carConditions.put("6,4", "New");
-			carConditions.put("6,102", "Used");
-			carConditions.put("6,203", "Certified");
+			carConditions.put("6,102", "New");
+			carConditions.put("6,203", "1 Year Used");
 			carConditions.put("6,302", "New");
-			carConditions.put("6,400", "Used");
-			carConditions.put("195,4", "Certified");
+			carConditions.put("6,400", "5 Years Used");
+
+			carConditions.put("195,4", "New");
 			carConditions.put("195,102", "New");
-			carConditions.put("195,203", "Used");
+			carConditions.put("195,203", "2 Years Used");
 			carConditions.put("195,302", "Certified");
-			carConditions.put("195,400", "New");
-			carConditions.put("386,4", "Used");
+			carConditions.put("195,400", "1/2 Years Used");
+
+			carConditions.put("386,4", "New");
 			carConditions.put("386,102", "Certified");
 			carConditions.put("386,203", "New");
-			carConditions.put("386,302", "Used");
-			carConditions.put("386,400", "Certified");
+			carConditions.put("386,302", "6 Years Used");
+			carConditions.put("386,400", "Refurbished");
+
 			carConditions.put("580,4", "New");
-			carConditions.put("580,102", "Used");
+			carConditions.put("580,102", "1 Year Used");
 			carConditions.put("580,203", "Certified");
-			carConditions.put("580,302", "New");
-			carConditions.put("580,400", "Used");
+			carConditions.put("580,302", "Refurbished");
+			carConditions.put("580,400", "New");
 
 			Map<String, String> engineTypes = new HashMap<>();
-			engineTypes.put("6,4", "V12");
-			engineTypes.put("6,102", "V8");
-			engineTypes.put("6,203", "Inline-4");
+			engineTypes.put("6,4", "V8");
+			engineTypes.put("6,102", "Supercharged V12");
+			engineTypes.put("6,203", "V6");
 			engineTypes.put("6,302", "Electric");
-			engineTypes.put("6,400", "Hybrid");
-			engineTypes.put("195,4", "Diesel");
-			engineTypes.put("195,102", "Petrol");
-			engineTypes.put("195,203", "CNG");
-			engineTypes.put("195,302", "Electric");
-			engineTypes.put("195,400", "Hybrid");
-			engineTypes.put("386,4", "V6");
-			engineTypes.put("386,102", "V8");
-			engineTypes.put("386,203", "Inline-4");
-			engineTypes.put("386,302", "Electric");
-			engineTypes.put("386,400", "Hybrid");
-			engineTypes.put("580,4", "Diesel");
-			engineTypes.put("580,102", "Petrol");
-			engineTypes.put("580,203", "CNG");
-			engineTypes.put("580,302", "Electric");
-			engineTypes.put("580,400", "Hybrid");
+			engineTypes.put("6,400", "V8");
+
+			engineTypes.put("195,4", "V8");
+			engineTypes.put("195,102", "Supercharged V16");
+			engineTypes.put("195,203", "");
+			engineTypes.put("195,302", "");
+			engineTypes.put("195,400", "");
+
+			engineTypes.put("386,4", "");
+			engineTypes.put("386,102", "");
+			engineTypes.put("386,203", "");
+			engineTypes.put("386,302", "");
+			engineTypes.put("386,400", "");
+
+			engineTypes.put("580,4", "Hybrid");
+			engineTypes.put("580,102", "");
+			engineTypes.put("580,203", "");
+			engineTypes.put("580,302", "V6");
+			engineTypes.put("580,400", "V8");
 
 			String key = yClick + "," + xClick;
 			if (carColors.containsKey(key) && carSelected)
