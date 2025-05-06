@@ -1244,31 +1244,6 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			carConditions.put("580,302", "Refurbished");
 			carConditions.put("580,400", "New");
 
-			Map<String, String> engineTypes = new HashMap<>();
-			engineTypes.put("6,4", "V8");
-			engineTypes.put("6,102", "Supercharged V12");
-			engineTypes.put("6,203", "V6");
-			engineTypes.put("6,302", "Electric");
-			engineTypes.put("6,400", "V8");
-
-			engineTypes.put("195,4", "V8");
-			engineTypes.put("195,102", "Supercharged V16");
-			engineTypes.put("195,203", "");
-			engineTypes.put("195,302", "");
-			engineTypes.put("195,400", "");
-
-			engineTypes.put("386,4", "");
-			engineTypes.put("386,102", "");
-			engineTypes.put("386,203", "");
-			engineTypes.put("386,302", "");
-			engineTypes.put("386,400", "");
-
-			engineTypes.put("580,4", "Hybrid");
-			engineTypes.put("580,102", "");
-			engineTypes.put("580,203", "");
-			engineTypes.put("580,302", "V6");
-			engineTypes.put("580,400", "V8");
-
 			String key = yClick + "," + xClick;
 			if (carColors.containsKey(key) && carSelected)
 			{
@@ -1276,7 +1251,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 						+ "- Color: " + carColors.get(key) + "<br>"
 						+ "- Type: " + carTypes.get(key) + "<br>"
 						+ "- Condition: " + carConditions.get(key) + "<br>"
-						+ "- Engine Type: " + engineTypes.get(key) + "</html>";
+						+ "- Engine Type: " + "</html>";
 				carStatsLabel.setText(carStats); // Update the label text
 				carStatsLabel.revalidate(); // Ensure the label is revalidated
 				carStatsLabel.repaint(); // Repaint the label to reflect changes
