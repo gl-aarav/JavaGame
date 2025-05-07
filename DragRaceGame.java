@@ -28,10 +28,12 @@ import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -58,21 +60,29 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
-public class DragRaceGame
+public class DragRaceGame 
 {
-	public static void main(String[] args)
+	public static void main(String[] args) 
 	{
 		JFrame frame = new JFrame("Drag Race!");
-		frame.setSize(933, 800);
+		frame.setSize(1166, 1003);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setLocation(0, 0);
 		frame.setResizable(true);
 		frame.getContentPane().add(new GameHolder());
+
+		// Center the window on the screen
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		int x = (screenSize.width - frame.getWidth()) / 2;
+		int y = (screenSize.height - frame.getHeight()) / 2 - 5;
+		frame.setLocation(x, y);
+
 		frame.setVisible(true);
 	}
 }
+
 
 class GameHolder extends JPanel
 {
@@ -234,11 +244,8 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 
 		if (alpha > 0 && gifImage != null)
 		{
-			int originalWidth = gifImage.getWidth(this);
-			int originalHeight = gifImage.getHeight(this);
-			double ratio = (double) originalWidth / originalHeight;
-			int finalWidth = (int) (700 * ratio);
-			int finalHeight = 772;
+			int finalWidth = 1166;
+			int finalHeight = 975;
 			int x = (getWidth() - finalWidth) / 2;
 			int y = (getHeight() - finalHeight) / 2;
 			Graphics2D g2d = (Graphics2D) g.create();
@@ -248,29 +255,29 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 		}
 		else
 		{
-			g.drawImage(carBackground, 0, 0, 933, 772, this);
+			g.drawImage(carBackground, 0, 0, 1166, 972, this);
 			Graphics2D g2d = (Graphics2D) g.create();
 
 			if (leftButtonPressed)
 			{
 				g2d.setColor(new Color(0, 0, 0, 180));
-				g2d.fillRect(180, 684, 150, 33);
+				g2d.fillRect(225, 855, 189, 53);
 			}
 
 			else if (rightButtonPressed)
 			{
 				g2d.setColor(new Color(0, 0, 0, 180));
-				g2d.fillRect(469, 683, 302, 33);
+				g2d.fillRect(586, 853, 376, 53);
 			}
 			else if(leftButtonHovered)
 			{
 				g2d.setColor(new Color(0, 0, 0, 80));
-				g2d.fillRect(180, 684, 150, 33);
+				g2d.fillRect(224, 855, 188, 53);
 			}
 			else if(rightButtonHovered)
 			{
 				g2d.setColor(new Color(0, 0, 0, 80));
-				g2d.fillRect(469, 683, 302, 33);
+				g2d.fillRect(586, 853, 376, 53);
 			}
 
 		}
@@ -284,13 +291,13 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 
 		if (!gifOrNo)
 		{
-			if (y > 684 && y < 717 && x > 185 && x < 329)
+			if (y > 855 && y < 896 && x > 232 && x < 412)
 			{
 				leftButtonPressed = true;
 				repaint();
 				buttonClickSound.play(); // Play button click sound
 			}
-			else if (y > 685 && y < 716 && x > 469 && x < 771)
+			else if (y > 855 && y < 896 && x > 587 && x < 964)
 			{
 				rightButtonPressed = true;
 				repaint();
@@ -307,11 +314,11 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 
 		if (!gifOrNo)
 		{
-			if (leftButtonPressed && y > 670 && y < 717 && x > 181 && x < 329)
+			if (leftButtonPressed && y > 855 && y < 896 && x > 232 && x < 412)
 			{
 				layout.show(parent, "Instructions");
 			}
-			else if (rightButtonPressed && y > 685 && y < 716 && x > 469 && x < 771)
+			else if (rightButtonPressed && y > 855 && y < 896 && x > 587 && x < 964)
 			{
 				layout.show(parent, "HighScores");
 			}
@@ -344,11 +351,11 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 
 		if (!gifOrNo)
 		{
-			if (y > 684 && y < 717 && x > 185 && x < 329)
+			if (y > 855 && y < 896 && x > 232 && x < 412)
 			{
 				leftButtonHovered = true;
 			}
-			else if (y > 685 && y < 716 && x > 469 && x < 771)
+			else if (y > 856 && y < 895 && x > 587 && x < 964)
 			{
 				rightButtonHovered = true;
 			}
@@ -551,7 +558,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				layout.show(parent, "Instructions");
 			}
 		});
-		back.setBounds(730, 720, 80, 30);
+		back.setBounds(912, 900, 100, 38);
 		add(back);
 
 		JButton next = new JButton("Next");
@@ -564,7 +571,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				layout.show(parent, "Game");
 			}
 		});
-		next.setBounds(830, 720, 80, 30);
+		next.setBounds(1037, 900, 100, 38);
 		add(next);
 		JTextField nameField = new JTextField("Enter Your Name");
 		nameField.addMouseListener(new MouseListener()
@@ -637,7 +644,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		});
 
 		add(nameField);
-		nameField.setBounds(515, 590, 400, 30);
+		nameField.setBounds(643, 737, 500, 38);
 		nameField.setEditable(true);
 
 		//Add Easy medium and hard labels
@@ -647,7 +654,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		difficultySlider.setPaintTicks(true);
 		difficultySlider.setPaintLabels(true);
 		difficultySlider.setValue(50); // Default to medium difficulty
-		difficultySlider.setBounds(515, 650, 400, 50);
+		difficultySlider.setBounds(643, 812, 500, 62);
 
 		difficultySlider.addChangeListener(e ->
 		{
@@ -686,12 +693,12 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		add(difficultySlider);
 
 		JLabel difficultyLabel = new JLabel("Difficulty Level");
-		difficultyLabel.setBounds(500, 630, 400, 20);
+		difficultyLabel.setBounds(625, 787, 500, 25);
 		difficultyLabel.setForeground(Color.BLACK);
-		difficultyLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+		difficultyLabel.setFont(new Font("Arial", Font.PLAIN, 15));
 		add(difficultyLabel);
 		carStatsLabel = new JLabel(carStats);
-		carStatsLabel.setBounds(540, 300, 300, 150); // Increase width and height
+		carStatsLabel.setBounds(675, 375, 375, 188); // Increase width and height
 		carStatsLabel.setFont(new Font("Arial", Font.BOLD, 16));
 		carStatsLabel.setForeground(Color.BLUE);
 		carStatsLabel.setVerticalAlignment(JLabel.TOP); // Align text to the top
@@ -703,26 +710,24 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 	@Override
 	public void paintComponent(Graphics g)
 	{
-		int carWidth = 97;
-		int carHeight = 190;
+		int carWidth = 121;
+		int carHeight = 238;
 
 		super.paintComponent(g);
-		g.drawImage(carOptions, 0, 0, 500 , 775, this);
+		g.drawImage(carOptions, 0, 0, 625 , 980, this);
 		Graphics2D g2d = (Graphics2D) g;
-
-		g.drawImage(imageForOpponent, 755, 105, carWidth, carHeight, this);
 
 		if (!opponentCarSelected)
 		{
-			g.drawImage(EmptyCar, 755, 105, carWidth, carHeight, this);
+			g.drawImage(EmptyCar, 944, 131, carWidth, carHeight, this);
 			java.awt.Stroke oldStroke = g2d.getStroke();
 			g2d.setStroke(new BasicStroke(2));
-			g.drawRect(755, 105, carWidth, carHeight);
+			g.drawRect(944, 131, carWidth, carHeight);
 			g2d.setStroke(oldStroke);
 		}
 		else
 		{
-			g.drawImage(imageForOpponent, 755, 105, carWidth, carHeight, this);
+			g.drawImage(imageForOpponent, 944, 131, carWidth, carHeight, this);
 		}
 
 		// Draw gray box if clicked
@@ -730,20 +735,20 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		{
 			carSelected = true; // Set carSelected to true if a car is clicked
 			g.setColor(new Color (0, 0, 0, 80));
-			g.fillRect(xClick, yClick, 97, 190);
+			g.fillRect(xClick, yClick, carWidth, carHeight);
 			// Draw cropped section from carOptions into "Your Car" area
-			g.drawImage(carOptionsNoBackgroundOriginal, 530, 105, 530 + carWidth, 105 + carHeight, xClick, yClick, xClick + carWidth, yClick + carHeight, this);
+			g.drawImage(carOptionsNoBackgroundOriginal, 662, 131, 662 + carWidth, 131 + carHeight, xClick, yClick, xClick + carWidth, yClick + carHeight, this);
 		}
 		else
 		{
 			carStats = "No car selected"; // Reset the car stats
 			carStatsLabel.setText(carStats); // Update the label text
 			carSelected = false; // Reset carSelected if no car is clicked
-			g.drawImage(EmptyCar, 540, 105, carWidth, carHeight, this);
+			g.drawImage(EmptyCar, 675, 131, carWidth, carHeight, this);
 			//add border to the empty car
 			java.awt.Stroke oldStroke = g2d.getStroke();
 			g2d.setStroke(new BasicStroke(2));
-			g.drawRect(540, 105, carWidth, carHeight);
+			g.drawRect(675, 131, carWidth, carHeight);
 			g2d.setStroke(oldStroke);
 		}
 
@@ -753,37 +758,37 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			g.setColor(Color.BLUE);
 			java.awt.Stroke oldStroke = g2d.getStroke();
 			g2d.setStroke(new BasicStroke(5));
-			g.drawRect(xHover, yHover, 97, 190);
+			g.drawRect(xHover, yHover, carWidth, carHeight);
 			g2d.setStroke(oldStroke);
 		}
 
 		g.setColor(new Color (31, 81, 255));
-		g.setFont(new Font ("Amazone BT", Font.BOLD, 25));
+		g.setFont(new Font ("Amazone BT", Font.BOLD, 31));
 
 		if (nameEntered && carSelected)
 		{
-			g.drawString(name + "Get Ready to Play!", 500, 25);
+			g.drawString(name + "Get Ready to Play!", 625, 31);
 		}
 		else if (nameEntered && !carSelected)
 		{
-			g.drawString(name + "Select a Car", 500, 25);
+			g.drawString(name + "Select a Car", 625, 31);
 		}
 		else if (!nameEntered && carSelected)
 		{
-			g.drawString("Enter Your Name", 500, 25);
+			g.drawString("Enter Your Name", 625, 31);
 		}
 		else if (!nameEntered && !carSelected)
 		{
-			g.drawString("Enter Your Name and Select a Car", 500, 25);
+			g.drawString("Enter Your Name and Select a Car", 625, 31);
 		}
 
-		g.drawLine(500, 35, 933, 35);
-		g.setFont(new Font ("Amazone BT", Font.PLAIN, 15));
-		g.drawLine(550, 93, 600, 93);
-		g.drawString("Your Car", 550, 90);
+		g.drawLine(625, 44, 1166, 44);
+		g.setFont(new Font ("Amazone BT", Font.PLAIN, 19));
+		g.drawLine(688, 117, 1056, 117);
+		g.drawString("Your Car", 688, 113);
 		g.setColor(Color.BLUE);
-		g.drawLine(760, 93, 845, 93);
-		g.drawString("Opponents Car", 750, 90);
+		g.drawLine(950, 117, 1056, 116);
+		g.drawString("Opponents Car", 937, 113);
 	}
 
 
@@ -795,31 +800,12 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 	public void mousePressed(MouseEvent e)
 	{
 
-		//Number of cars: 20
-		x = e.getX();
-		y = e.getY();
+		System.out.println("X: " + x + " Y: " + y);
 		boolean clicked = true; // Flag to check if clicked box is toggled
 
-		if (x > 4 && x < 102 && y > 0 && y < 195)
+		if (x > 5 && x < 130 && y > 0 && y < 245)
 		{
-			if (xClick == 4 && yClick == 6)
-			{
-				xClick = 0;
-				yClick = 0; // Reset if already clicked
-				carSelected = false;
-			}
-			else
-			{
-				xClick = 4;
-				yClick = 6;
-				carSelected = true;
-				carSelectSound.play(); // Play car select sound
-			}
-			clicked = true;
-		}
-		else if (x > 102 && x < 203 && y > 0 && y < 195)
-		{
-			if (xClick == 102 && yClick == 6)
+			if (xClick == 5 && yClick == 7)
 			{
 				xClick = 0;
 				yClick = 0;
@@ -827,334 +813,333 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			}
 			else
 			{
-				xClick = 102;
-				yClick = 6;
+				xClick = 5;
+				yClick = 7;
 				carSelected = true;
-				carSelectSound.play(); // Play car select sound
+				carSelectSound.play();
 			}
 			clicked = true;
 		}
-		else if (x > 203 && x < 302 && y > 0 && y < 195)
+		else if (x > 130 && x < 254 && y > 0 && y < 245)
 		{
-			if (xClick == 203 && yClick == 6)
+			if (xClick == 130 && yClick == 7)
 			{
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-
 			}
 			else
 			{
-				xClick = 203;
-				yClick = 6;
+				xClick = 130;
+				yClick = 7;
 				carSelected = true;
-				carSelectSound.play(); // Play car select sound
+				carSelectSound.play();
 			}
 			clicked = true;
 		}
-		else if (x > 302 && x < 400 && y > 0 && y < 195)
+		else if (x > 254 && x < 376 && y > 0 && y < 245)
 		{
-			if (xClick == 302 && yClick == 6)
+			if (xClick == 254 && yClick == 7)
 			{
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-
 			}
 			else
 			{
-				xClick = 302;
-				yClick = 6;
+				xClick = 254;
+				yClick = 7;
 				carSelected = true;
-				carSelectSound.play(); // Play car select sound
+				carSelectSound.play();
 			}
 			clicked = true;
 		}
-		else if (x > 400 && x < 500 && y > 0 && y < 195)
+		else if (x > 376 && x < 500 && y > 0 && y < 245)
 		{
-			if (xClick == 400 && yClick == 6)
+			if (xClick == 376 && yClick == 7)
 			{
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-
 			}
 			else
 			{
-				xClick = 400;
-				yClick = 6;
+				xClick = 376;
+				yClick = 7;
 				carSelected = true;
-				carSelectSound.play(); // Play car select sound
+				carSelectSound.play();
 			}
 			clicked = true;
 		}
-		else if (x > 4 && x < 102 && y > 195 && y < 387)
+		else if (x > 500 && x < 625 && y > 0 && y < 245)
 		{
-			if (xClick == 4 && yClick == 195)
+			if (xClick == 500 && yClick == 7)
 			{
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-
 			}
 			else
 			{
-				xClick = 4;
-				yClick = 195;
+				xClick = 500;
+				yClick = 7;
 				carSelected = true;
-				carSelectSound.play(); // Play car select sound
+				carSelectSound.play();
 			}
 			clicked = true;
 		}
-		else if (x > 102 && x < 203 && y > 195 && y < 387)
+		else if (x > 5 && x < 130 && y > 245 && y < 484)
 		{
-			if (xClick == 102 && yClick == 195)
+			if (xClick == 5 && yClick == 245)
 			{
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-
 			}
 			else
 			{
-				xClick = 102;
-				yClick = 195;
+				xClick = 5;
+				yClick = 245;
 				carSelected = true;
-				carSelectSound.play(); // Play car select sound
+				carSelectSound.play();
 			}
 			clicked = true;
 		}
-		else if (x > 203 && x < 302 && y > 195 && y < 387)
+		else if (x > 130 && x < 253 && y > 245 && y < 484)
 		{
-			if (xClick == 203 && yClick == 195)
+			if (xClick == 130 && yClick == 245)
 			{
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-
 			}
 			else
 			{
-				xClick = 203;
-				yClick = 195;
+				xClick = 130;
+				yClick = 245;
 				carSelected = true;
-				carSelectSound.play(); // Play car select sound
+				carSelectSound.play();
 			}
 			clicked = true;
 		}
-		else if (x > 302 && x < 400 && y > 195 && y < 387)
+		else if (x > 254 && x < 376 && y > 245 && y < 484)
 		{
-			if (xClick == 302 && yClick == 195)
+			if (xClick == 254 && yClick == 245)
 			{
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-
 			}
 			else
 			{
-				xClick = 302;
-				yClick = 195;
+				xClick = 254;
+				yClick = 245;
 				carSelected = true;
-				carSelectSound.play(); // Play car select sound
+				carSelectSound.play();
 			}
 			clicked = true;
 		}
-		else if (x > 400 && x < 500 && y > 195 && y < 387)
+		else if (x > 376 && x < 500 && y > 245 && y < 484)
 		{
-			if (xClick == 400 && yClick == 195)
+			if (xClick == 376 && yClick == 245)
 			{
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-
 			}
 			else
 			{
-				xClick = 400;
-				yClick = 195;
+				xClick = 376;
+				yClick = 245;
 				carSelected = true;
-				carSelectSound.play(); // Play car select sound
+				carSelectSound.play();
 			}
 			clicked = true;
 		}
-		else if (x > 4 && x < 102 && y > 386 && y < 580)
+		else if (x > 500 && x < 625 && y > 245 && y < 484)
 		{
-			if (xClick == 4 && yClick == 386)
+			if (xClick == 500 && yClick == 245)
 			{
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-
 			}
 			else
 			{
-				xClick = 4;
-				yClick = 386;
+				xClick = 500;
+				yClick = 245;
 				carSelected = true;
-				carSelectSound.play(); // Play car select sound
+				carSelectSound.play();
 			}
 			clicked = true;
 		}
-		else if (x > 102 && x < 203 && y > 386 && y < 580)
+		else if (x > 5 && x < 128 && y > 500 && y < 725)
 		{
-			if (xClick == 102 && yClick == 386)
+			if (xClick == 5 && yClick == 490)
 			{
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-
 			}
 			else
 			{
-				xClick = 102 ;
-				yClick = 386;
+				xClick = 5;
+				yClick = 490;
 				carSelected = true;
-				carSelectSound.play(); // Play car select sound
+				carSelectSound.play();
 			}
 			clicked = true;
 		}
-		else if (x > 203 && x < 302 && y > 386 && y < 580)
+		else if (x > 128 && x < 253 && y > 500 && y < 725)
 		{
-			if (xClick == 203 && yClick == 386)
+			if (xClick == 128 && yClick == 490)
 			{
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-
 			}
 			else
 			{
-				xClick = 203;
-				yClick = 386;
+				xClick = 128;
+				yClick = 490;
 				carSelected = true;
-				carSelectSound.play(); // Play car select sound
+				carSelectSound.play();
 			}
 			clicked = true;
 		}
-		else if (x > 302 && x < 400 && y > 386 && y < 580)
+		else if (x > 253 && x < 376 && y > 500 && y < 725)
 		{
-			if (xClick == 302 && yClick == 386)
+			if (xClick == 253 && yClick == 490)
 			{
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-
 			}
 			else
 			{
-				xClick = 302;
-				yClick = 386;
+				xClick = 253;
+				yClick = 490;
 				carSelected = true;
-				carSelectSound.play(); // Play car select sound
+				carSelectSound.play();
 			}
 			clicked = true;
 		}
-		else if (x > 400 && x < 500 && y > 386 && y < 580)
+		else if (x > 376 && x < 500 && y > 500 && y < 725)
 		{
-			if (xClick == 400 && yClick == 386)
+			if (xClick == 376 && yClick == 490)
 			{
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-
 			}
 			else
 			{
-				xClick = 400;
-				yClick = 386;
+				xClick = 376;
+				yClick = 490;
 				carSelected = true;
-				carSelectSound.play(); // Play car select sound
+				carSelectSound.play();
 			}
 			clicked = true;
 		}
-		else if (x > 4 && x < 102 && y > 580 && y < 772)
+		else if (x > 500 && x < 625 && y > 500 && y < 725)
 		{
-			if (xClick == 4 && yClick == 580)
+			if (xClick == 500 && yClick == 490)
 			{
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-
 			}
 			else
 			{
-				xClick = 4;
-				yClick = 580;
+				xClick = 500;
+				yClick = 490;
 				carSelected = true;
-				carSelectSound.play(); // Play car select sound
+				carSelectSound.play();
 			}
 			clicked = true;
 		}
-		else if (x > 102 && x < 203 && y > 580 && y < 772)
+		else if (x > 5 && x < 128 && y > 725 && y < 965)
 		{
-			if (xClick == 102 && yClick == 580)
+			if (xClick == 5 && yClick == 735)
 			{
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-
 			}
 			else
 			{
-				xClick = 102 ;
-				yClick = 580;
+				xClick = 5;
+				yClick = 735;
 				carSelected = true;
-				carSelectSound.play(); // Play car select sound
+				carSelectSound.play();
 			}
 			clicked = true;
 		}
-		else if (x > 203 && x < 302 && y > 580 && y < 772)
+		else if (x > 128 && x < 253 && y > 725 && y < 965)
 		{
-			if (xClick == 203 && yClick == 580)
+			if (xClick == 128 && yClick == 735)
 			{
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-
 			}
 			else
 			{
-				xClick = 203;
-				yClick = 580;
+				xClick = 128;
+				yClick = 735;
 				carSelected = true;
-				carSelectSound.play(); // Play car select sound
+				carSelectSound.play();
 			}
 			clicked = true;
 		}
-		else if (x > 302 && x < 400 && y > 580 && y < 772)
+		else if (x > 253 && x < 376 && y > 725 && y < 965)
 		{
-			if (xClick == 302 && yClick == 580)
+			if (xClick == 253 && yClick == 735)
 			{
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-
 			}
 			else
 			{
-				xClick = 302;
-				yClick = 580;
+				xClick = 253;
+				yClick = 735;
 				carSelected = true;
-				carSelectSound.play(); // Play car select sound
+				carSelectSound.play();
 			}
 			clicked = true;
 		}
-		else if (x > 400 && x < 500 && y > 580 && y < 772)
+		else if (x > 376 && x < 500 && y > 725 && y < 965)
 		{
-			if (xClick == 400 && yClick == 580)
+			if (xClick == 376 && yClick == 735)
 			{
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-
 			}
 			else
 			{
-				xClick = 400;
-				yClick = 580;
+				xClick = 376;
+				yClick = 735;
 				carSelected = true;
-				carSelectSound.play(); // Play car select sound
+				carSelectSound.play();
+			}
+			clicked = true;
+		}
+		else if (x > 500 && x < 625 && y > 725 && y < 965)
+		{
+			if (xClick == 500 && yClick == 735)
+			{
+				xClick = 0;
+				yClick = 0;
+				carSelected = false;
+			}
+			else
+			{
+				xClick = 500;
+				yClick = 735;
+				carSelected = true;
+				carSelectSound.play();
 			}
 			clicked = true;
 		}
@@ -1165,84 +1150,83 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			yClick = 0;
 			carSelected = false;
 		}
-
-		//THIS IS A TENTATIVE SOLUTION FOR CAR COLORS, TYPES, CONDITIONS AND ENGINE TYPES, WILL BE MODIFIED LATER
+		repaint();
 		if (carSelected)
 		{
 			Map<String, String> carColors = new HashMap<>();
-			carColors.put("6,4", "Blue");
-			carColors.put("6,102", "Dark Blue");
-			carColors.put("6,203", "Blue");
-			carColors.put("6,302", "Blue");
-			carColors.put("6,400", "Blue");
+			carColors.put("7,5", "Blue");
+			carColors.put("7,130", "Dark Blue");
+			carColors.put("7,254", "Blue");
+			carColors.put("7,376", "Blue");
+			carColors.put("7,500", "Blue");
 
-			carColors.put("195,4", "Green");
-			carColors.put("195,102", "Dark Green");
-			carColors.put("195,203", "Olive Green");
-			carColors.put("195,302", "Dark Green");
-			carColors.put("195,400", "Green");
+			carColors.put("245,5", "Green");
+			carColors.put("245,130", "Dark Green");
+			carColors.put("245,254", "Olive Green");
+			carColors.put("245,376", "Dark Green");
+			carColors.put("245,500", "Green");
 
-			carColors.put("386,4", "Dark Red");
-			carColors.put("386,102", "Red");
-			carColors.put("386,203", "Maroon Red");
-			carColors.put("386,302", "Red");
-			carColors.put("386,400", "Dark Red");
+			carColors.put("490,5", "Dark Red");
+			carColors.put("490,130", "Red");
+			carColors.put("490,254", "Maroon Red");
+			carColors.put("490,376", "Red");
+			carColors.put("490,500", "Dark Red");
 
-			carColors.put("580,4", "Yellow");
-			carColors.put("580,102", "Gold Yellow");
-			carColors.put("580,203", "Gold Yellow");
-			carColors.put("580,302", "Yellow");
-			carColors.put("580,400", "Yellow");
+			carColors.put("735,5", "Yellow");
+			carColors.put("735,130", "Gold Yellow");
+			carColors.put("735,254", "Gold Yellow");
+			carColors.put("735,376", "Yellow");
+			carColors.put("735,500", "Yellow");
 
 			Map<String, String> carTypes = new HashMap<>();
-			carTypes.put("6,4", "Sport");
-			carTypes.put("6,102", "SuperSport");
-			carTypes.put("6,203", "Coupe");
-			carTypes.put("6,302", "Mid-Size SUV");
-			carTypes.put("6,400", "Full-Size SUV");
+			carTypes.put("7,5", "Sport");
+			carTypes.put("7,130", "SuperSport");
+			carTypes.put("7,254", "Coupe");
+			carTypes.put("7,376", "Mid-Size SUV");
+			carTypes.put("7,500", "Full-Size SUV");
 
-			carTypes.put("195,4", "Sport");
-			carTypes.put("195,102", "Hyper");
-			carTypes.put("195,203", "Coupe");
-			carTypes.put("195,302", "Luxury");
-			carTypes.put("195,400", "Hatchback");
+			carTypes.put("245,5", "Sport");
+			carTypes.put("245,130", "Hyper");
+			carTypes.put("245,254", "Coupe");
+			carTypes.put("245,376", "Luxury");
+			carTypes.put("245,500", "Hatchback");
 
-			carTypes.put("386,4", "SuperSport");
-			carTypes.put("386,102", "Sport");
-			carTypes.put("386,203", "Coupe");
-			carTypes.put("386,302", "Crossover");
-			carTypes.put("386,400", "Luxury");
+			carTypes.put("490,5", "SuperSport");
+			carTypes.put("490,130", "Sport");
+			carTypes.put("490,254", "Coupe");
+			carTypes.put("490,376", "Crossover");
+			carTypes.put("490,500", "Luxury");
 
-			carTypes.put("580,4", "Hybrid");
-			carTypes.put("580,102", "Hyper");
-			carTypes.put("580,203", "Coupe");
-			carTypes.put("580,302", "Compact");
-			carTypes.put("580,400", "Mini-Van");
+			carTypes.put("735,5", "Hybrid");
+			carTypes.put("735,130", "Hyper");
+			carTypes.put("735,254", "Coupe");
+			carTypes.put("735,376", "Compact");
+			carTypes.put("735,500", "Mini-Van");
 
 			Map<String, String> carConditions = new HashMap<>();
-			carConditions.put("6,4", "New");
-			carConditions.put("6,102", "New");
-			carConditions.put("6,203", "1 Year Used");
-			carConditions.put("6,302", "New");
-			carConditions.put("6,400", "5 Years Used");
+			carConditions.put("7,5", "New");
+			carConditions.put("7,130", "New");
+			carConditions.put("7,254", "1 Year Used");
+			carConditions.put("7,376", "New");
+			carConditions.put("7,500", "5 Years Used");
 
-			carConditions.put("195,4", "New");
-			carConditions.put("195,102", "New");
-			carConditions.put("195,203", "2 Years Used");
-			carConditions.put("195,302", "Certified");
-			carConditions.put("195,400", "1/2 Years Used");
+			carConditions.put("245,5", "New");
+			carConditions.put("245,130", "New");
+			carConditions.put("245,254", "2 Years Used");
+			carConditions.put("245,376", "Certified");
+			carConditions.put("245,500", "1/2 Years Used");
 
-			carConditions.put("386,4", "New");
-			carConditions.put("386,102", "Certified");
-			carConditions.put("386,203", "New");
-			carConditions.put("386,302", "6 Years Used");
-			carConditions.put("386,400", "Refurbished");
+			carConditions.put("490,5", "New");
+			carConditions.put("490,130", "Certified");
+			carConditions.put("490,254", "New");
+			carConditions.put("490,376", "6 Years Used");
+			carConditions.put("490,500", "Refurbished");
 
-			carConditions.put("580,4", "New");
-			carConditions.put("580,102", "1 Year Used");
-			carConditions.put("580,203", "Certified");
-			carConditions.put("580,302", "Refurbished");
-			carConditions.put("580,400", "New");
+			carConditions.put("735,5", "New");
+			carConditions.put("735,130", "1 Year Used");
+			carConditions.put("735,254", "Certified");
+			carConditions.put("735,376", "Refurbished");
+			carConditions.put("735,500", "New");
 
 			String key = yClick + "," + xClick;
 			if (carColors.containsKey(key) && carSelected)
@@ -1250,15 +1234,12 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				carStats = "<html>Car Stats:<br>"
 						+ "- Color: " + carColors.get(key) + "<br>"
 						+ "- Type: " + carTypes.get(key) + "<br>"
-						+ "- Condition: " + carConditions.get(key) + "<br>"
-						+ "- Engine Type: " + "</html>";
-				carStatsLabel.setText(carStats); // Update the label text
-				carStatsLabel.revalidate(); // Ensure the label is revalidated
-				carStatsLabel.repaint(); // Repaint the label to reflect changes
+						+ "- Condition: " + carConditions.get(key) + "</html>";
+				carStatsLabel.setText(carStats);
+				carStatsLabel.revalidate();
+				carStatsLabel.repaint();
 			}
-
 		}
-
 		repaint();
 	}
 	@Override
@@ -1277,115 +1258,112 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		x = e.getX();
 		y = e.getY();
 
-		// Update hover position for each region
-		if (x > 4 && x < 102 && y > 0 && y < 195)
-		{
-			xHover = 4;
-			yHover = 6;
-		}
-		else if (x > 102 && x < 203 && y > 0 && y < 195)
-		{
-			xHover = 102;
-			yHover = 6;
-		}
-		else if (x > 203 && x < 302 && y > 0 && y < 195)
-		{
-			xHover = 203;
-			yHover = 6;
-		}
-		else if (x > 302 && x < 400 && y > 0 && y < 195)
-		{
-			xHover = 302;
-			yHover = 6;
-		}
-		else if (x > 400 && x < 500 && y > 0 && y < 195)
-		{
-			xHover = 400;
-			yHover = 6;
-		}
 
-		else if (x > 4 && x < 102 && y > 195 && y < 387)
+		// Update hover position for each car region
+		if (x > 5 && x < 130 && y > 0 && y < 245) {
+			xHover = 5;
+			yHover = 7;
+		} 
+		else if (x > 130 && x < 254 && y > 0 && y < 245)
 		{
-			xHover = 4;
-			yHover = 195;
-		}
-		else if (x > 102 && x < 203 && y > 195 && y < 387)
+			xHover = 130;
+			yHover = 7;
+		} 
+		else if (x > 254 && x < 376 && y > 0 && y < 245) 
 		{
-			xHover = 102;
-			yHover = 195;
-		}
-		else if (x > 203 && x < 302 && y > 195 && y < 387)
+			xHover = 254;
+			yHover = 7;
+		} 
+		else if (x > 376 && x < 500 && y > 0 && y < 245) 
 		{
-			xHover = 203;
-			yHover = 195;
+			xHover = 376;
+			yHover = 7;
 		}
-		else if (x > 302 && x < 400 && y > 195 && y < 387)
+		else if (x > 500 && x < 625 && y > 0 && y < 245) 
 		{
-			xHover = 302;
-			yHover = 195;
-		}
-		else if (x > 400 && x < 500 && y > 195 && y < 387)
+			xHover = 500;
+			yHover = 7;
+		} 
+		else if (x > 5 && x < 130 && y > 245 && y < 484)
 		{
-			xHover = 400;
-			yHover = 195;
+			xHover = 5;
+			yHover = 245;
 		}
-
-		else if (x > 4 && x < 102 && y > 386 && y < 580)
+		else if (x > 130 && x < 254 && y > 245 && y < 484)
 		{
-			xHover = 4;
-			yHover = 386;
-		}
-		else if (x > 102 && x < 203 && y > 386 && y < 580)
+			xHover = 130;
+			yHover = 245;
+		} 
+		else if (x > 254 && x < 376 && y > 245 && y < 484) 
 		{
-			xHover = 102 ;
-			yHover = 386;
-		}
-		else if (x > 203 && x < 302 && y > 386 && y < 580)
+			xHover = 254;
+			yHover = 245;
+		} 
+		else if (x > 376 && x < 500 && y > 245 && y < 484)
 		{
-			xHover = 203;
-			yHover = 386;
-		}
-		else if (x > 302 && x < 400 && y > 386 && y < 580)
+			xHover = 376;
+			yHover = 245;
+		} 
+		else if (x > 500 && x < 625 && y > 245 && y < 484) 
 		{
-			xHover = 302;
-			yHover = 386;
-		}
-		else if (x > 400 && x < 500 && y > 386 && y < 580)
+			xHover = 500;
+			yHover = 245;
+		} 
+		else if (x > 5 && x < 130 && y > 484 && y < 724)
 		{
-			xHover = 400;
-			yHover = 386;
-		}
-		else if (x > 4 && x < 102 && y > 580 && y < 772)
+			xHover = 5;
+			yHover = 490;
+		} 
+		else if (x > 130 && x < 254 && y > 484 && y < 724) 
 		{
-			xHover = 4;
-			yHover = 580;
-		}
-		else if (x > 102 && x < 203 && y > 580 && y < 772)
+			xHover = 130;
+			yHover = 490;
+		} 
+		else if (x > 254 && x < 376 && y > 484 && y < 724)
 		{
-			xHover = 102 ;
-			yHover = 580;
-		}
-		else if (x > 203 && x < 302 && y > 580 && y < 772)
+			xHover = 254;
+			yHover = 490;
+		} 
+		else if (x > 376 && x < 500 && y > 484 && y < 724) 
 		{
-			xHover = 203;
-			yHover = 580;
-		}
-		else if (x > 302 && x < 400 && y > 580 && y < 772)
+			xHover = 376;
+			yHover = 490;
+		} 
+		else if (x > 500 && x < 625 && y > 484 && y < 724)
 		{
-			xHover = 302;
-			yHover = 580;
-		}
-		else if (x > 400 && x < 500 && y > 580 && y < 772)
+			xHover = 500;
+			yHover = 490;
+		} 
+		else if (x > 5 && x < 130 && y > 724 && y < 964)
 		{
-			xHover = 400;
-			yHover = 580;
-		}
-		else
+			xHover = 5;
+			yHover = 735;
+		} 
+		else if (x > 130 && x < 254 && y > 724 && y < 964)
 		{
-			xHover = 0;
-			yHover = 0;
+			xHover = 130;
+			yHover = 735;
 		}
-
+		else if (x > 254 && x < 376 && y > 724 && y < 964) 
+		{
+			xHover = 254;
+			yHover = 735;
+		} 
+		else if (x > 376 && x < 500 && y > 724 && y < 964) 
+		{
+			xHover = 376;
+			yHover = 735;
+		} 
+		else if (x > 500 && x < 625 && y > 724 && y < 964)
+		{
+			xHover = 500;
+			yHover = 735;
+		} 
+		else 
+		{
+			xHover = 0; // Reset hover position
+			yHover = 0; // Reset hover position
+		}
 		repaint();
 	}
 }
@@ -1395,6 +1373,7 @@ class GamePanel extends JPanel
 {
 	private JPanel parent;
 	private CardLayout layout;
+	private Image trackImage;
 
 	public GamePanel(JPanel gameHolder, CardLayout layout)
 	{
@@ -1403,10 +1382,23 @@ class GamePanel extends JPanel
 		setLayout(new BorderLayout());
 		setBackground(Color.DARK_GRAY);
 
-		JLabel label = new JLabel("Game Under Construction", JLabel.CENTER);
-		label.setForeground(Color.WHITE);
-		label.setFont(new Font("Arial", Font.BOLD, 30));
-		add(label, BorderLayout.CENTER);
+		try
+		{
+			trackImage = ImageIO.read(new File("Track.jpg"));
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+
+
+		JPanel questionPanel = new JPanel();
+		questionPanel.setLayout(new BorderLayout());
+
+		JLabel label = new JLabel("Question", SwingConstants.CENTER);
+		label.setForeground(Color.BLACK);
+		label.setFont(new Font("Arial", Font.BOLD, 32));
+		questionPanel.add(label);
 
 		JButton back = new JButton("Back to Car Select");
 		back.addActionListener(new ActionListener()
@@ -1417,7 +1409,7 @@ class GamePanel extends JPanel
 				layout.show(parent, "ChooseCar");
 			}
 		});
-		add(back, BorderLayout.SOUTH);
+		add(questionPanel, BorderLayout.NORTH);
 	}
 }
 
@@ -1482,7 +1474,6 @@ class SoundPlayer
 		isMuted = muted;
 	}
 }
-
 
 class HighScorePanel extends JPanel
 {
