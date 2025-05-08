@@ -40,7 +40,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -61,7 +60,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
@@ -266,6 +264,7 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 						alpha = 0.0f;
 						timer.stop();
 						gifOrNo = false;
+						carAccelerationSound.stop();
 						startFadeIn(100);
 					}
 					repaint();
@@ -296,7 +295,6 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 					timer.stop();
 					muteButton.setVisible(true);
 					fadeCompleted = true;
-					carAccelerationSound.stop();
 				}
 				repaint();
 			}
