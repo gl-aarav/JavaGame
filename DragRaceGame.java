@@ -28,6 +28,7 @@ import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -39,6 +40,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -117,81 +119,112 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 	private float alpha = 1.0f;
 	private Timer timer;
 	private Image gifImage;
-	private boolean gifOrNo;
+	private boolean gifOrNo = true;
 	private Image carBackground;
 
 	private boolean leftButtonPressed;
 	private boolean rightButtonPressed;
 	private boolean leftButtonHovered;
 	private boolean rightButtonHovered;
+
 	private SoundPlayer buttonClickSound;
 	private SoundPlayer carAccelerationSound;
+
 	private JButton muteButton;
 	private boolean isMuted = false;
+	private JButton skipButton;
+	private boolean fadeCompleted = false;
 
 	public WelcomePagePanel(JPanel gameHolder, CardLayout layout)
 	{
+		setDoubleBuffered(true); // prevent flicker
+
 		leftButtonPressed = false;
 		rightButtonPressed = false;
 		leftButtonHovered = false;
 		rightButtonHovered = false;
 		repaint();
+
 		this.parent = gameHolder;
 		this.layout = layout;
+
 		addMouseListener(this);
 		addMouseMotionListener(this);
-		startGIF();
-		gifOrNo = true;
+
 		buttonClickSound = new SoundPlayer("buttonClick.wav");
 		carAccelerationSound = new SoundPlayer("accelerate.wav");
-		// Inside the WelcomePagePanel constructor
+
+		startGIF();
+
 		Timer soundDelay = new Timer(1000, new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				carAccelerationSound.play(); // Play the sound after 1 second
+				carAccelerationSound.play();
 			}
 		});
-		soundDelay.setRepeats(false); // Ensure the timer only runs once
-		soundDelay.start(); // Start the timer
+		soundDelay.setRepeats(false);
+		soundDelay.start();
 
-		// Add mute button
 		muteButton = new JButton(new ImageIcon("unmute.jpg"));
 		muteButton.setVisible(false);
-		muteButton.setBounds(10, 10, 50, 50); // Position in the top-left corner
+		muteButton.setBounds(10, 10, 50, 50);
 		muteButton.setBorderPainted(false);
 		muteButton.setContentAreaFilled(false);
 		muteButton.setFocusPainted(false);
-		muteButton.addActionListener(new ActionListener()
+		muteButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				isMuted = !isMuted; // Toggle the isMuted variable
+				SoundPlayer.setMuted(isMuted); // Update the global mute state
+				if (isMuted)
+				{
+					muteButton.setIcon(new ImageIcon("mute.jpg"));
+				} 
+				else 
+				{
+					muteButton.setIcon(new ImageIcon("unmute.jpg"));
+				}
+			}
+		});
+
+		setLayout(null);
+		add(muteButton);
+
+		skipButton = new JButton("Skip");
+		skipButton.setBounds(1000, 10, 100, 50);
+		skipButton.setBorderPainted(true);
+		skipButton.setContentAreaFilled(false);
+		skipButton.setFocusPainted(false);
+		skipButton.setForeground(Color.BLACK);
+		skipButton.setBackground(Color.WHITE);
+		skipButton.addActionListener(new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				isMuted = !isMuted;
-				if (isMuted)
+				carAccelerationSound.stop();
+				if (timer != null && timer.isRunning())
 				{
-					SoundPlayer.setMuted(isMuted);
-					muteButton.setIcon(new ImageIcon("mute.jpg"));
+					carAccelerationSound.stop();
+					timer.stop();
 				}
-				else
-				{
-					SoundPlayer.setMuted(isMuted);
-					muteButton.setIcon(new ImageIcon("unmute.jpg"));
-
-				}
+				alpha = 0.0f;
+				gifOrNo = false;
+				startFadeIn(40);
+				repaint();
 			}
 		});
-		add(muteButton);
+		add(skipButton);
 	}
-
 
 	public void startGIF()
 	{
-		setLayout(null);
 		setBackground(Color.BLACK);
 
 		gifImage = new ImageIcon("Start.gif").getImage();
+
 		try
 		{
 			carBackground = ImageIO.read(new File("CarBackground.jpeg"));
@@ -206,7 +239,7 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				startFadeOut();
+				startFadeOut(100);
 			}
 		});
 
@@ -214,22 +247,56 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 		delay.start();
 	}
 
-	public void startFadeOut()
+	public void startFadeOut(int time)
 	{
-		//play the car acceleration sound
-		timer = new Timer(100, new ActionListener()
+		if (timer != null && timer.isRunning())
+		{
+			timer.stop();
+		}
+		if (!fadeCompleted)
+		{
+			timer = new Timer(time, new ActionListener()
+			{
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+					alpha = Math.max(0.0f, alpha - 0.05f);
+					if (alpha <= 0.0f)
+					{
+						alpha = 0.0f;
+						timer.stop();
+						gifOrNo = false;
+						startFadeIn(100);
+					}
+					repaint();
+				}
+			});
+			timer.start();
+		}
+	}
+
+	public void startFadeIn(int time)
+	{
+		skipButton.setVisible(false);
+		if (timer != null && timer.isRunning())
+		{
+			timer.stop();
+		}
+
+		alpha = 0.0f;
+		timer = new Timer(time, new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				alpha -= 0.05f;
-				if (alpha <= 0)
+				alpha = Math.min(1.0f, alpha + 0.05f);
+				if (alpha >= 1.0f)
 				{
-					alpha = 0;
+					alpha = 1.0f;
 					timer.stop();
-					gifOrNo = false;
-					muteButton.setVisible(true); // Show the mute button
-					carAccelerationSound.stop(); // Stop the car acceleration sound
+					muteButton.setVisible(true);
+					fadeCompleted = true;
+					carAccelerationSound.stop();
 				}
 				repaint();
 			}
@@ -242,50 +309,58 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 	{
 		super.paintComponent(g);
 
-		if (alpha > 0 && gifImage != null)
+		Graphics2D g2d = (Graphics2D) g.create();
+
+		if (gifOrNo && gifImage != null)
 		{
 			int finalWidth = 1166;
 			int finalHeight = 975;
 			int x = (getWidth() - finalWidth) / 2;
 			int y = (getHeight() - finalHeight) / 2;
-			Graphics2D g2d = (Graphics2D) g.create();
 			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
 			g2d.drawImage(gifImage, x, y, finalWidth, finalHeight, this);
-			g2d.dispose();
 		}
-		else
+		else if (carBackground != null)
 		{
-			g.drawImage(carBackground, 0, 0, 1166, 972, this);
-			Graphics2D g2d = (Graphics2D) g.create();
+			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+			g2d.drawImage(carBackground, 0, 0, 1166, 972, this);
+
+			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
 
 			if (leftButtonPressed)
 			{
 				g2d.setColor(new Color(0, 0, 0, 180));
 				g2d.fillRect(225, 855, 189, 53);
 			}
-
 			else if (rightButtonPressed)
 			{
 				g2d.setColor(new Color(0, 0, 0, 180));
 				g2d.fillRect(586, 853, 376, 53);
 			}
-			else if(leftButtonHovered)
+			else if (leftButtonHovered)
 			{
 				g2d.setColor(new Color(0, 0, 0, 80));
 				g2d.fillRect(224, 855, 188, 53);
 			}
-			else if(rightButtonHovered)
+			else if (rightButtonHovered)
 			{
 				g2d.setColor(new Color(0, 0, 0, 80));
 				g2d.fillRect(586, 853, 376, 53);
 			}
-
 		}
+
+		g2d.dispose();
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e)
 	{
+		//secret command to skip to car selection
+		if (e.getButton() == MouseEvent.BUTTON3)
+		{
+			layout.show(parent, "ChooseCar");
+		}
+
 		int x = e.getX();
 		int y = e.getY();
 
@@ -295,13 +370,13 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 			{
 				leftButtonPressed = true;
 				repaint();
-				buttonClickSound.play(); // Play button click sound
+				buttonClickSound.play();
 			}
 			else if (y > 855 && y < 896 && x > 587 && x < 964)
 			{
 				rightButtonPressed = true;
 				repaint();
-				buttonClickSound.play(); // Play button click sound
+				buttonClickSound.play();
 			}
 		}
 	}
@@ -330,10 +405,11 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 	}
 
 	@Override
-	public void mouseClicked(MouseEvent e) {}
-	@Override
+	public void mouseClicked(MouseEvent e){}
+
+	@Override 
 	public void mouseEntered(MouseEvent e) {}
-	@Override
+	@Override 
 	public void mouseExited(MouseEvent e)
 	{
 		leftButtonHovered = false;
@@ -341,9 +417,11 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 		leftButtonPressed = false;
 		rightButtonPressed = false;
 	}
-	@Override
+
+	@Override 
 	public void mouseDragged(MouseEvent e) {}
-	@Override
+
+	@Override 
 	public void mouseMoved(MouseEvent e)
 	{
 		int x = e.getX();
@@ -354,10 +432,12 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 			if (y > 855 && y < 896 && x > 232 && x < 412)
 			{
 				leftButtonHovered = true;
+				rightButtonHovered = false;
 			}
 			else if (y > 856 && y < 895 && x > 587 && x < 964)
 			{
 				rightButtonHovered = true;
+				leftButtonHovered = false;
 			}
 			else
 			{
@@ -369,12 +449,13 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 	}
 }
 
-class InstructionPanel extends JPanel
+class InstructionPanel extends JPanel implements MouseListener
 {
 	private SoundPlayer buttonClickSound, NotificationSound;
 	private JPanel parent;
 	private CardLayout layout;
 	private boolean agreementChecked;
+	private Image gifImage;
 	JCheckBox agreementCheckBox = new JCheckBox("I agree to the terms and conditions");
 
 	public InstructionPanel(GameHolder gameHolder, CardLayout layout)
@@ -384,42 +465,14 @@ class InstructionPanel extends JPanel
 		setLayout(new BorderLayout());
 		setBackground(Color.BLACK);
 		showObjects();
+		addMouseListener(this);
 		buttonClickSound = new SoundPlayer("buttonClick.wav");
 		NotificationSound = new SoundPlayer("Notification.wav");
 	}
 
 	public void showObjects()
 	{
-		JTextPane instructions = new JTextPane();
-		instructions.setContentType("text/html");
-		instructions.setText(
-				"<html><div style='text-align: center; font-family: Arial; font-size: 10px; color: white;'>"
-						+ "<h2> Game Setup</h2>"
-						+ "<p>You control a race car that competes against a bot car.<br>"
-						+ "Answer correctly for speed boosts; wrong answers slow you down.</p>"
-						+ "<h2> How to Play</h2>"
-						+ "<p>Enter your name, pick your car color, choose difficulty,<br>"
-						+ "and press <b>Start Game</b> to begin.<br>"
-						+ "Answer questions using the buttons that appear.<br>"
-						+ "If the bot wins, you lose!</p>"
-						+ "<h2> Learning Features</h2>"
-						+ "<p>At the end, review your mistakes,<br>"
-						+ "see correct answers, and get helpful explanations.</p>"
-						+ "<h2> Winning the Game</h2>"
-						+ "<p>Beat the bot to the finish line!<br>"
-						+ "Track your progress with the progress bar,<br>"
-						+ "and aim for a high score!</p>"
-						+ "</div></html>"
-				); // Set the text with HTML formatting
-		instructions.setEditable(false);
-		instructions.setBackground(new Color(0, 0, 0, 150)); // Semi-transparent background
-		instructions.setOpaque(true);
-
-		instructions.setForeground(Color.WHITE);
-		instructions.setBackground(Color.BLACK);
-		instructions.setEditable(false);
-		instructions.setBackground(Color.BLACK);
-		add(instructions, BorderLayout.CENTER);
+		gifImage = new ImageIcon("Background.gif").getImage();
 
 		JButton back = new JButton("   Back   ");
 		back.addActionListener(new ActionListener()
@@ -498,6 +551,76 @@ class InstructionPanel extends JPanel
 			agreementCheckBox.setSelected(false); // Reset the checkbox
 			agreementChecked = false; // Reset the agreement flag
 		}
+	}
+	public void paintComponent(Graphics g)
+	{
+		super.paintComponent(g);
+
+		g.drawImage(gifImage, 101, 312, 962, 626, this);
+		g.setColor(Color.WHITE);
+		Graphics2D g2d = (Graphics2D) g;
+		g2d.setFont(new Font("Arial", Font.BOLD, 18));
+		g2d.setColor(Color.WHITE);
+
+		String[] lines = {
+		    "Game Setup",
+		    "You control a race car that competes against a bot car.",
+		    "Answer correctly for speed boosts; wrong answers slow you down.",
+		    "",
+		    "How to Play",
+		    "Enter your name, pick your car color, choose difficulty,",
+		    "and press Start Game to begin.",
+		    "Answer questions using the buttons that appear.",
+		    "If the bot wins, you lose!",
+		    "",
+		    "Learning Features",
+		    "At the end, review your mistakes,",
+		    "see correct answers, and get helpful explanations.",
+		    "",
+		    "Winning the Game",
+		    "Beat the bot to the finish line!",
+		    "Track your progress with the progress bar, and aim for a high score!"
+		};
+
+		int x = 300;
+		int y = 461;
+		int lineHeight = g.getFontMetrics().getHeight();
+
+		for (int i = 0; i < lines.length; i++)
+		{
+		    g2d.drawString(lines[i], x, y + i * lineHeight);
+		}
+
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		System.out.println("Y:" + e.getY() + " X:" + e.getX());
+
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
@@ -723,7 +846,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			java.awt.Stroke oldStroke = g2d.getStroke();
 			g2d.setStroke(new BasicStroke(2));
 			g.drawRect(944, 131, carWidth, carHeight);
-			g2d.setStroke(oldStroke);
+			g2d.setStroke(oldStroke);           
 		}
 		else
 		{
@@ -784,10 +907,10 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 
 		g.drawLine(625, 44, 1166, 44);
 		g.setFont(new Font ("Amazone BT", Font.PLAIN, 19));
-		g.drawLine(688, 117, 1056, 117);
+		g.drawLine(688, 117, 768, 117);
 		g.drawString("Your Car", 688, 113);
 		g.setColor(Color.BLUE);
-		g.drawLine(950, 117, 1056, 116);
+		g.drawLine(939, 117, 1076, 117);
 		g.drawString("Opponents Car", 937, 113);
 	}
 
@@ -799,8 +922,6 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 	@Override
 	public void mousePressed(MouseEvent e)
 	{
-
-		System.out.println("X: " + x + " Y: " + y);
 		boolean clicked = true; // Flag to check if clicked box is toggled
 
 		if (x > 5 && x < 130 && y > 0 && y < 245)
