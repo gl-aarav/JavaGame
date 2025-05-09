@@ -29,6 +29,7 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -40,6 +41,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -154,17 +156,6 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 
 		startGIF();
 
-		Timer soundDelay = new Timer(1000, new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				carAccelerationSound.play();
-			}
-		});
-		soundDelay.setRepeats(false);
-		soundDelay.start();
-
 		muteButton = new JButton(new ImageIcon("unmute.jpg"));
 		muteButton.setVisible(false);
 		muteButton.setBounds(10, 10, 50, 50);
@@ -202,6 +193,7 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
+				fadeCompleted = true;
 				carAccelerationSound.stop();
 				if (timer != null && timer.isRunning())
 				{
@@ -215,6 +207,24 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 			}
 		});
 		add(skipButton);
+
+		Timer soundDelay = new Timer(1000, new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				if (!fadeCompleted)
+				{
+					carAccelerationSound.play();
+				}
+				else
+				{
+					fadeCompleted = false;
+				}
+			}
+		});
+		soundDelay.setRepeats(false);
+		soundDelay.start();
 	}
 
 	public void startGIF()
@@ -431,23 +441,26 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 			{
 				leftButtonHovered = true;
 				rightButtonHovered = false;
+				setCursor(new Cursor(Cursor.HAND_CURSOR));
 			}
 			else if (y > 856 && y < 895 && x > 587 && x < 964)
 			{
 				rightButtonHovered = true;
 				leftButtonHovered = false;
+				setCursor(new Cursor(Cursor.HAND_CURSOR));
 			}
 			else
 			{
 				leftButtonHovered = false;
 				rightButtonHovered = false;
+				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			}
 			repaint();
 		}
 	}
 }
 
-class InstructionPanel extends JPanel implements MouseListener
+class InstructionPanel extends JPanel 
 {
 	private SoundPlayer buttonClickSound, NotificationSound;
 	private JPanel parent;
@@ -463,7 +476,6 @@ class InstructionPanel extends JPanel implements MouseListener
 		setLayout(new BorderLayout());
 		setBackground(Color.BLACK);
 		showObjects();
-		addMouseListener(this);
 		buttonClickSound = new SoundPlayer("buttonClick.wav");
 		NotificationSound = new SoundPlayer("Notification.wav");
 	}
@@ -561,23 +573,23 @@ class InstructionPanel extends JPanel implements MouseListener
 		g2d.setColor(Color.WHITE);
 
 		String[] lines = {
-		    "Game Setup",
-		    "You control a race car that competes against a bot car.",
-		    "Answer correctly for speed boosts; wrong answers slow you down.",
-		    "",
-		    "How to Play",
-		    "Enter your name, pick your car color, choose difficulty,",
-		    "and press Start Game to begin.",
-		    "Answer questions using the buttons that appear.",
-		    "If the bot wins, you lose!",
-		    "",
-		    "Learning Features",
-		    "At the end, review your mistakes,",
-		    "see correct answers, and get helpful explanations.",
-		    "",
-		    "Winning the Game",
-		    "Beat the bot to the finish line!",
-		    "Track your progress with the progress bar, and aim for a high score!"
+				"Game Setup",
+				"You control a race car that competes against a bot car.",
+				"Answer correctly for speed boosts; wrong answers slow you down.",
+				"",
+				"How to Play",
+				"Enter your name, pick your car color, choose difficulty,",
+				"and press Start Game to begin.",
+				"Answer questions using the buttons that appear.",
+				"If the bot wins, you lose!",
+				"",
+				"Learning Features",
+				"At the end, review your mistakes,",
+				"see correct answers, and get helpful explanations.",
+				"",
+				"Winning the Game",
+				"Beat the bot to the finish line!",
+				"Track your progress with the progress bar, and aim for a high score!"
 		};
 
 		int x = 300;
@@ -586,41 +598,10 @@ class InstructionPanel extends JPanel implements MouseListener
 
 		for (int i = 0; i < lines.length; i++)
 		{
-		    g2d.drawString(lines[i], x, y + i * lineHeight);
+			g2d.drawString(lines[i], x, y + i * lineHeight);
 		}
 
 	}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		System.out.println("Y:" + e.getY() + " X:" + e.getX());
-
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
 }
 
 class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListener
@@ -921,6 +902,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 	public void mousePressed(MouseEvent e)
 	{
 		boolean clicked = true; // Flag to check if clicked box is toggled
+		ImageStorer imageStorer = new ImageStorer();
 
 		if (x > 5 && x < 130 && y > 0 && y < 245)
 		{
@@ -929,6 +911,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+				 
 			}
 			else
 			{
@@ -936,6 +919,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 7;
 				carSelected = true;
 				carSelectSound.play();
+				imageStorer.setCarImage("Car1"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -946,6 +930,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+				 
 			}
 			else
 			{
@@ -953,6 +938,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 7;
 				carSelected = true;
 				carSelectSound.play();
+				imageStorer.setCarImage("Car2"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -963,6 +949,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+				 
 			}
 			else
 			{
@@ -970,6 +957,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 7;
 				carSelected = true;
 				carSelectSound.play();
+				imageStorer.setCarImage("Car3"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -980,6 +968,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+				 
 			}
 			else
 			{
@@ -987,6 +976,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 7;
 				carSelected = true;
 				carSelectSound.play();
+				imageStorer.setCarImage("Car4"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -997,6 +987,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+				 
 			}
 			else
 			{
@@ -1004,6 +995,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 7;
 				carSelected = true;
 				carSelectSound.play();
+				imageStorer.setCarImage("Car5"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1014,6 +1006,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+				 
 			}
 			else
 			{
@@ -1021,6 +1014,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 245;
 				carSelected = true;
 				carSelectSound.play();
+				imageStorer.setCarImage("Car6"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1031,6 +1025,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+				 
 			}
 			else
 			{
@@ -1038,6 +1033,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 245;
 				carSelected = true;
 				carSelectSound.play();
+				imageStorer.setCarImage("Car7"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1048,6 +1044,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+				 
 			}
 			else
 			{
@@ -1055,6 +1052,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 245;
 				carSelected = true;
 				carSelectSound.play();
+				imageStorer.setCarImage("Car8"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1065,6 +1063,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+				 
 			}
 			else
 			{
@@ -1072,6 +1071,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 245;
 				carSelected = true;
 				carSelectSound.play();
+				imageStorer.setCarImage("Car9"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1082,6 +1082,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+				 
 			}
 			else
 			{
@@ -1089,6 +1090,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 245;
 				carSelected = true;
 				carSelectSound.play();
+				imageStorer.setCarImage("Car10"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1099,6 +1101,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+				 
 			}
 			else
 			{
@@ -1106,6 +1109,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 490;
 				carSelected = true;
 				carSelectSound.play();
+				imageStorer.setCarImage("Car11"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1116,6 +1120,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+				 
 			}
 			else
 			{
@@ -1123,6 +1128,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 490;
 				carSelected = true;
 				carSelectSound.play();
+				imageStorer.setCarImage("Car12"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1133,6 +1139,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+				 
 			}
 			else
 			{
@@ -1140,6 +1147,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 490;
 				carSelected = true;
 				carSelectSound.play();
+				imageStorer.setCarImage("Car13"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1150,6 +1158,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+				 
 			}
 			else
 			{
@@ -1157,6 +1166,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 490;
 				carSelected = true;
 				carSelectSound.play();
+				imageStorer.setCarImage("Car14"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1167,6 +1177,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+				 
 			}
 			else
 			{
@@ -1174,6 +1185,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 490;
 				carSelected = true;
 				carSelectSound.play();
+				imageStorer.setCarImage("Car15"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1184,6 +1196,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+				 
 			}
 			else
 			{
@@ -1191,6 +1204,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 735;
 				carSelected = true;
 				carSelectSound.play();
+				imageStorer.setCarImage("Car16"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1201,6 +1215,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+				 
 			}
 			else
 			{
@@ -1208,6 +1223,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 735;
 				carSelected = true;
 				carSelectSound.play();
+				imageStorer.setCarImage("Car17"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1218,6 +1234,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+				 
 			}
 			else
 			{
@@ -1225,6 +1242,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 735;
 				carSelected = true;
 				carSelectSound.play();
+				imageStorer.setCarImage("Car18"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1235,6 +1253,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+				 
 			}
 			else
 			{
@@ -1242,6 +1261,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 735;
 				carSelected = true;
 				carSelectSound.play();
+				imageStorer.setCarImage("Car19"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1252,6 +1272,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
+				 
 			}
 			else
 			{
@@ -1259,6 +1280,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 735;
 				carSelected = true;
 				carSelectSound.play();
+				imageStorer.setCarImage("Car20"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1377,129 +1399,161 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		x = e.getX();
 		y = e.getY();
 
-
 		// Update hover position for each car region
-		if (x > 5 && x < 130 && y > 0 && y < 245) {
+		if (x > 5 && x < 130 && y > 0 && y < 245) 
+		{
 			xHover = 5;
 			yHover = 7;
+			setCursor(new Cursor(Cursor.HAND_CURSOR));
 		} 
 		else if (x > 130 && x < 254 && y > 0 && y < 245)
 		{
 			xHover = 130;
 			yHover = 7;
+			setCursor(new Cursor(Cursor.HAND_CURSOR));
 		} 
 		else if (x > 254 && x < 376 && y > 0 && y < 245) 
 		{
 			xHover = 254;
 			yHover = 7;
+			setCursor(new Cursor(Cursor.HAND_CURSOR));
 		} 
 		else if (x > 376 && x < 500 && y > 0 && y < 245) 
 		{
 			xHover = 376;
 			yHover = 7;
+			setCursor(new Cursor(Cursor.HAND_CURSOR));
 		}
 		else if (x > 500 && x < 625 && y > 0 && y < 245) 
 		{
 			xHover = 500;
 			yHover = 7;
+			setCursor(new Cursor(Cursor.HAND_CURSOR));
 		} 
 		else if (x > 5 && x < 130 && y > 245 && y < 484)
 		{
 			xHover = 5;
 			yHover = 245;
+			setCursor(new Cursor(Cursor.HAND_CURSOR));
 		}
 		else if (x > 130 && x < 254 && y > 245 && y < 484)
 		{
 			xHover = 130;
 			yHover = 245;
+			setCursor(new Cursor(Cursor.HAND_CURSOR));
 		} 
 		else if (x > 254 && x < 376 && y > 245 && y < 484) 
 		{
 			xHover = 254;
 			yHover = 245;
+			setCursor(new Cursor(Cursor.HAND_CURSOR));
 		} 
 		else if (x > 376 && x < 500 && y > 245 && y < 484)
 		{
 			xHover = 376;
 			yHover = 245;
+			setCursor(new Cursor(Cursor.HAND_CURSOR));
 		} 
 		else if (x > 500 && x < 625 && y > 245 && y < 484) 
 		{
 			xHover = 500;
 			yHover = 245;
+			setCursor(new Cursor(Cursor.HAND_CURSOR));
 		} 
 		else if (x > 5 && x < 130 && y > 484 && y < 724)
 		{
 			xHover = 5;
 			yHover = 490;
+			setCursor(new Cursor(Cursor.HAND_CURSOR));
 		} 
 		else if (x > 130 && x < 254 && y > 484 && y < 724) 
 		{
 			xHover = 130;
 			yHover = 490;
+			setCursor(new Cursor(Cursor.HAND_CURSOR));
 		} 
 		else if (x > 254 && x < 376 && y > 484 && y < 724)
 		{
 			xHover = 254;
 			yHover = 490;
+			setCursor(new Cursor(Cursor.HAND_CURSOR));
 		} 
 		else if (x > 376 && x < 500 && y > 484 && y < 724) 
 		{
 			xHover = 376;
 			yHover = 490;
+			setCursor(new Cursor(Cursor.HAND_CURSOR));
 		} 
 		else if (x > 500 && x < 625 && y > 484 && y < 724)
 		{
 			xHover = 500;
 			yHover = 490;
+			setCursor(new Cursor(Cursor.HAND_CURSOR));
 		} 
 		else if (x > 5 && x < 130 && y > 724 && y < 964)
 		{
 			xHover = 5;
 			yHover = 735;
+			setCursor(new Cursor(Cursor.HAND_CURSOR));
 		} 
 		else if (x > 130 && x < 254 && y > 724 && y < 964)
 		{
 			xHover = 130;
 			yHover = 735;
+			setCursor(new Cursor(Cursor.HAND_CURSOR));
 		}
 		else if (x > 254 && x < 376 && y > 724 && y < 964) 
 		{
 			xHover = 254;
 			yHover = 735;
+			setCursor(new Cursor(Cursor.HAND_CURSOR));
 		} 
 		else if (x > 376 && x < 500 && y > 724 && y < 964) 
 		{
 			xHover = 376;
 			yHover = 735;
+			setCursor(new Cursor(Cursor.HAND_CURSOR));
 		} 
 		else if (x > 500 && x < 625 && y > 724 && y < 964)
 		{
 			xHover = 500;
 			yHover = 735;
+			setCursor(new Cursor(Cursor.HAND_CURSOR));
 		} 
 		else 
 		{
 			xHover = 0; // Reset hover position
 			yHover = 0; // Reset hover position
+			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		}
 		repaint();
 	}
 }
 
+class ImageStorer {
+	private static String carNumber; // Make this static to share across instances
+
+	public static void setCarImage(String number) {
+		carNumber = number; // Set the static field
+	}
+
+	public static String getCarImage() {
+		return carNumber; // Return the static field
+	}
+}
 
 class GamePanel extends JPanel
 {
 	private JPanel parent;
 	private CardLayout layout;
-	private Image trackImage;
+	private Image trackImage, carsImage;
+	String carNumber;
 
 	public GamePanel(JPanel gameHolder, CardLayout layout)
 	{
 		this.parent = gameHolder;
 		this.layout = layout;
 		setLayout(new BorderLayout());
-		setBackground(Color.DARK_GRAY);
 
 		try
 		{
@@ -1518,17 +1572,38 @@ class GamePanel extends JPanel
 		label.setForeground(Color.BLACK);
 		label.setFont(new Font("Arial", Font.BOLD, 32));
 		questionPanel.add(label);
-
-		JButton back = new JButton("Back to Car Select");
-		back.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				layout.show(parent, "ChooseCar");
-			}
-		});
 		add(questionPanel, BorderLayout.NORTH);
+		repaint();
+	}
+
+	public void getCarCoordinates()
+	{
+		ImageStorer imageStorer = new ImageStorer();
+		carNumber = imageStorer.getCarImage();
+		try
+		{
+			try
+			{
+				carsImage = ImageIO.read(new File(carNumber + ".png"));
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+			carsImage = ImageIO.read(new File("CarOptions.png"));
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void paintComponent(Graphics g)
+	{
+		super.paintComponent(g);
+		getCarCoordinates();
+		g.drawImage(carsImage, 662, 131, 662 + 200, 131 + 200, carCoordinates[0], carCoordinates[1], carCoordinates[0] + carCoordinates[2], carCoordinates[1] + carCoordinates[3], this);
 	}
 }
 

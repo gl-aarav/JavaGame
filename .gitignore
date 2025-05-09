@@ -46,3 +46,15 @@
 /GamePanel$2.class
 /WelcomePagePanel$5.class
 /WelcomePagePanel$6.class
+/InstructionPanel$4.class
+/DragRaceGame$CarChoosePanel.class
+/DragRaceGame$DragRaceGame.class
+/DragRaceGame$GameHolder.class
+/DragRaceGame$GamePanel.class
+/DragRaceGame$HighScorePanel.class
+/DragRaceGame$InstructionPanel.class
+/DragRaceGame$SoundPlayer.class
+/DragRaceGame$WelcomePagePanel.class
+/ImageStorer.class
+/GamePanel$HighScorePanel.class
+/GamePanel$SoundPlayer.class
