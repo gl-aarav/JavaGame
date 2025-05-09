@@ -911,7 +911,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-				 
+
 			}
 			else
 			{
@@ -930,7 +930,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-				 
+
 			}
 			else
 			{
@@ -949,7 +949,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-				 
+
 			}
 			else
 			{
@@ -968,7 +968,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-				 
+
 			}
 			else
 			{
@@ -987,7 +987,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-				 
+
 			}
 			else
 			{
@@ -1006,7 +1006,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-				 
+
 			}
 			else
 			{
@@ -1025,7 +1025,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-				 
+
 			}
 			else
 			{
@@ -1044,7 +1044,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-				 
+
 			}
 			else
 			{
@@ -1063,7 +1063,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-				 
+
 			}
 			else
 			{
@@ -1082,7 +1082,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-				 
+
 			}
 			else
 			{
@@ -1101,7 +1101,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-				 
+
 			}
 			else
 			{
@@ -1120,7 +1120,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-				 
+
 			}
 			else
 			{
@@ -1139,7 +1139,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-				 
+
 			}
 			else
 			{
@@ -1158,7 +1158,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-				 
+
 			}
 			else
 			{
@@ -1177,7 +1177,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-				 
+
 			}
 			else
 			{
@@ -1196,7 +1196,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-				 
+
 			}
 			else
 			{
@@ -1215,7 +1215,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-				 
+
 			}
 			else
 			{
@@ -1234,7 +1234,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-				 
+
 			}
 			else
 			{
@@ -1253,7 +1253,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-				 
+
 			}
 			else
 			{
@@ -1272,7 +1272,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				xClick = 0;
 				yClick = 0;
 				carSelected = false;
-				 
+
 			}
 			else
 			{
@@ -1530,14 +1530,17 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 	}
 }
 
-class ImageStorer {
+class ImageStorer 
+{
 	private static String carNumber; // Make this static to share across instances
 
-	public static void setCarImage(String number) {
+	public static void setCarImage(String number)
+	{
 		carNumber = number; // Set the static field
 	}
 
-	public static String getCarImage() {
+	public static String getCarImage() 
+	{
 		return carNumber; // Return the static field
 	}
 }
@@ -1557,13 +1560,12 @@ class GamePanel extends JPanel
 
 		try
 		{
-			trackImage = ImageIO.read(new File("Track.jpg"));
+			trackImage = ImageIO.read(new File ("Track.jpg"));
 		}
 		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
-
 
 		JPanel questionPanel = new JPanel();
 		questionPanel.setLayout(new BorderLayout());
@@ -1582,15 +1584,7 @@ class GamePanel extends JPanel
 		carNumber = imageStorer.getCarImage();
 		try
 		{
-			try
-			{
-				carsImage = ImageIO.read(new File(carNumber + ".png"));
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-			carsImage = ImageIO.read(new File("CarOptions.png"));
+			carsImage = ImageIO.read(new File(carNumber + ".png"));
 		}
 		catch (IOException e)
 		{
@@ -1598,12 +1592,14 @@ class GamePanel extends JPanel
 		}
 	}
 
+
 	@Override
 	public void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
 		getCarCoordinates();
-		//g.drawImage(carsImage, 662, 131, 662 + 200, 131 + 200, carCoordinates[0], carCoordinates[1], carCoordinates[0] + carCoordinates[2], carCoordinates[1] + carCoordinates[3], this);
+		g.drawImage(carsImage, 0, 0, 200, 131, this);
+		g.drawImage(trackImage, 0, 100, 1166, 800, this);
 	}
 }
 
