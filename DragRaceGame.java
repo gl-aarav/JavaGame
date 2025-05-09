@@ -1603,7 +1603,7 @@ class GamePanel extends JPanel
 	{
 		super.paintComponent(g);
 		getCarCoordinates();
-		g.drawImage(carsImage, 662, 131, 662 + 200, 131 + 200, carCoordinates[0], carCoordinates[1], carCoordinates[0] + carCoordinates[2], carCoordinates[1] + carCoordinates[3], this);
+		//g.drawImage(carsImage, 662, 131, 662 + 200, 131 + 200, carCoordinates[0], carCoordinates[1], carCoordinates[0] + carCoordinates[2], carCoordinates[1] + carCoordinates[3], this);
 	}
 }
 
