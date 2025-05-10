@@ -41,6 +41,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -619,6 +620,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 	private boolean nameEntered = false;
 	private SoundPlayer carSelectSound;
 	private SoundPlayer buttonClickSound;
+	private SoundPlayer notificationSound;
 	private JLabel carStatsLabel;
 	private String carStats = "No car selected"; // Placeholder for car stats
 	private boolean opponentCarSelected = false;
@@ -634,6 +636,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 
 		carSelectSound = new SoundPlayer("carSelect.wav");
 		buttonClickSound = new SoundPlayer("buttonClick.wav");
+		notificationSound = new SoundPlayer("Notification.wav");
 		imageForOpponent = null;
 	}
 
@@ -670,7 +673,18 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			public void actionPerformed(ActionEvent e)
 			{
 				buttonClickSound.play(); // Play button click sound
-				layout.show(parent, "Game");
+				if (carSelected && opponentCarSelected && nameEntered)
+				{
+					carSelectSound.play(); // Play car selection sound
+					layout.show(parent, "Game");
+				}
+
+				else
+				{
+					notificationSound.play(); // Play notification sound
+					javax.swing.JOptionPane.showMessageDialog(parent, "Please select enter the nessesary information to proceed.", "Information Required", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+					buttonClickSound.play(); // Play button click sound
+				}
 			}
 		});
 		next.setBounds(1037, 900, 100, 38);
@@ -761,28 +775,34 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		difficultySlider.addChangeListener(e ->
 		{
 			int value = difficultySlider.getValue();
+			ImageStorer imageStorer = new ImageStorer();
 			try
 			{
 				opponentCarSelected = true; // Set to true when the slider is moved
 				if (value < 20)
 				{
 					imageForOpponent = ImageIO.read(new File("Bicycle.png")); // Easy mode
+					imageStorer.setOpponentCarImage("Bicycle.png");
 				}
 				else if (value < 40)
 				{
 					imageForOpponent = ImageIO.read(new File("Motorcycle.png"));
+					imageStorer.setOpponentCarImage("Motorcycle.png");
 				}
 				else if (value < 60)
 				{
 					imageForOpponent = ImageIO.read(new File("CarNormal.png"));
+					imageStorer.setOpponentCarImage("CarNormal.png");
 				}
 				else if (value < 80)
 				{
 					imageForOpponent = ImageIO.read(new File("CarSport.png"));
+					imageStorer.setOpponentCarImage("CarSport.png");
 				}
 				else
 				{
 					imageForOpponent = ImageIO.read(new File("Rocket.png"));
+					imageStorer.setOpponentCarImage("Rocket.png");
 				}
 			}
 			catch (IOException ex)
@@ -1530,42 +1550,45 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 	}
 }
 
-class ImageStorer 
-{
-	private static String carNumber; // Make this static to share across instances
+class ImageStorer {
+	private static String carNumber; // Make this static
+	private static String carOpponentString;
 
-	public static void setCarImage(String number)
-	{
+	public void setCarImage(String number) {
 		carNumber = number; // Set the static field
 	}
 
-	public static String getCarImage() 
-	{
+	public String getCarImage() {
 		return carNumber; // Return the static field
+	}
+
+	public void setOpponentCarImage(String carType) {
+		carOpponentString = carType; // Set the static field
+	}
+
+	public String getOpponentCarImage() {
+		return carOpponentString; // Return the static field
 	}
 }
 
-class GamePanel extends JPanel
+class GamePanel extends JPanel implements MouseListener
 {
 	private JPanel parent;
 	private CardLayout layout;
-	private Image trackImage, carsImage;
-	String carNumber;
+	private Image trackImage, carsImage, opponentCarImage;
+	private String carNumber, carOpponentString;
+	private double trackPos = 0;
+	private double car1Pos = -186;
+	private double car2Pos = -186;
+	private boolean timerStarted = false;
+	private boolean moveTrack = false;
 
 	public GamePanel(JPanel gameHolder, CardLayout layout)
 	{
 		this.parent = gameHolder;
 		this.layout = layout;
+		addMouseListener(this);
 		setLayout(new BorderLayout());
-
-		try
-		{
-			trackImage = ImageIO.read(new File ("Track.jpg"));
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
 
 		JPanel questionPanel = new JPanel();
 		questionPanel.setLayout(new BorderLayout());
@@ -1576,30 +1599,140 @@ class GamePanel extends JPanel
 		questionPanel.add(label);
 		add(questionPanel, BorderLayout.NORTH);
 		repaint();
+		JButton startButton = new JButton("Start");
+		startButton.addActionListener(new ActionListener()
+		{
+		    @Override
+		    public void actionPerformed(ActionEvent e)
+		    {
+		        if (!timerStarted)
+		        {
+		            startTimer();
+		            timerStarted = true;
+		            startButton.setText("Restart");
+		        }
+		        else // Restart pressed
+		        {
+		            // Reset positions
+		            car1Pos = -186;
+		            car2Pos = -186;
+		            trackPos = 0;
+		            
+		            // Reset flags
+		            moveTrack = false;
+		            timerStarted = false;
+
+		            repaint();
+		        }
+		    }
+		});
+
+		add(startButton, BorderLayout.SOUTH);
+
 	}
 
-	public void getCarCoordinates()
+	public void getCar() 
 	{
 		ImageStorer imageStorer = new ImageStorer();
 		carNumber = imageStorer.getCarImage();
-		try
+		carOpponentString = imageStorer.getOpponentCarImage();
+		try 
 		{
+			BufferedImage originalOpponentImage = ImageIO.read(new File(carOpponentString));
+
+			// Rotate opponentCarImage 90 degrees to the right
+			int width = originalOpponentImage.getHeight(); // New width is the original height
+			int height = originalOpponentImage.getWidth(); // New height is the original width
+			BufferedImage rotatedImage = new BufferedImage(width, height, originalOpponentImage.getType());
+			Graphics2D g2d = rotatedImage.createGraphics();
+			AffineTransform transform = new AffineTransform();
+			transform.translate(width / 2.0, height / 2.0);
+			transform.rotate(Math.toRadians(90));
+			transform.translate(-originalOpponentImage.getWidth() / 2.0, -originalOpponentImage.getHeight() / 2.0);
+			g2d.drawImage(originalOpponentImage, transform, null);
+			g2d.dispose();
+
+			opponentCarImage = rotatedImage; // Assign the rotated image
 			carsImage = ImageIO.read(new File(carNumber + ".png"));
-		}
-		catch (IOException e)
+			trackImage = ImageIO.read(new File("Track.png"));
+		} 
+		catch (IOException e) 
 		{
 			e.printStackTrace();
 		}
 	}
+	
+	public void startTimer() {
+	    Timer timer = new Timer(16, new ActionListener() {
+	        public void actionPerformed(ActionEvent e) {
+	            if (!moveTrack) {
+	                double userSpeed = 10 + Math.random() * 5;  // User: 10–15 pixels/frame
+	                double opponentSpeed = 8 + Math.random() * 6; // Opponent: 8–14 pixels/frame
+
+	                car1Pos += userSpeed;
+	                car2Pos += opponentSpeed;
+
+	                if (car1Pos > 510) {
+	                    moveTrack = true;
+	                }
+	            } else {
+	                double userSpeed = 10 + Math.random() * 5;
+	                double opponentSpeed = 8 + Math.random() * 6;
+
+	                // "Move" the world relative to the fixed user car
+	                trackPos -= userSpeed;
+	            }
+	            repaint();
+	        }
+	    });
+	    timer.start();
+	}
+
+
 
 
 	@Override
 	public void paintComponent(Graphics g)
 	{
-		super.paintComponent(g);
-		getCarCoordinates();
-		g.drawImage(carsImage, 0, 0, 200, 131, this);
-		g.drawImage(trackImage, 0, 100, 1166, 800, this);
+	    super.paintComponent(g);
+	    getCar();
+
+	    g.drawImage(trackImage, (int)trackPos, 100, 1166 * 3, 800, this);
+	    g.drawImage(carsImage, (int)car1Pos, 170, 238 * 2, 121 * 2, this);	
+	    g.drawImage(opponentCarImage, (int)car2Pos, 580, 238 * 2, 121 * 2, this);
+	}
+
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		int x = e.getX();
+		int y = e.getY();
+		System.out.println("Mouse clicked at: (" + x + ", " + y + ")");
+
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+
 	}
 }
 
