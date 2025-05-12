@@ -6,21 +6,64 @@
  * Week 1
  * 	- Add intro GIF and fade out animation
  * 	- Create welcome page
+ * 	- Add image to go to instructions and high scores
+ * 	- Add sound
+ * 	- Add coordinates to go to instructions and high scores
+ *  - Make the pointer change when hovering over the coordinates
+ *  - Create the instructions and high scores panels
  * Week 2
- * 	- Create the instructions panel
- *  - Create select car panel
+ * 	- Finish the instructions panel
+ *  - Create select car select panel
+ *  - Look for images for the cars
+ *  - Clear the background of the car images
+ *  - Create the car images
+ *  - Create a 5x4 grid for the car images
+ *  - Create the empty car image
+ *  
  * Week 3
  *  - Start on working to import all the files
+ *  - Add sound
+ *  - Add the car images
+ *  - Add the car selection
+ *  - Make the pointer change when hovering over the buttons
+ *  - Add the car statistics
+ *  - Add the buttons for back and next
+ *  - Add the text field for the name
+ *  - Add the difficulty slider
+ *  - Print the name and car on the top of the screen
+ *  - Show the car selected
+ *  - Show the empty car if no car is selected
  *  - Create basic functioning buttons
  * Week 4
  *  - Start the game panel
  *  - create the text file for the questions
+ *  - Import the questions
+ *  - Create the Answer buttons and the Question panel
+ *  - Create the progress bar
+ *  - Create the timer
+ *  - Add the person's name to the game panel
+ *  - Make the car move
+ *  - Add the opponent car
  * Week 5
  *  - Finish the game panel
+ *  - Finish the question panel
+ *  - Add Sound
+ *  - create the answer text file
+ *  - Add next button in game panel after game is over
+ *  - Find sound for the game
+ *  - Test the game
+ *  - Integrate the learning panel with the answer text file
  *  - Create the learning panel
  * Week 6
  *  - Finishing touches
- *  - Add high scores panel
+ *  - Add the high scores text file
+ *  - Finish the high scores panel
+ *  - Add the sounds
+ *  - Finish the learning panel
+ *  - Finish the game panel
+ *  - Finish the high scores panel
+ *  - Add more graphics (if time allows)
+ *  - Add another subject (if time allows)
  */
 
 import java.awt.AlphaComposite;
@@ -28,7 +71,6 @@ import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -39,8 +81,6 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
