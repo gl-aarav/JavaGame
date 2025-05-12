@@ -167,9 +167,11 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 		muteButton.setBorderPainted(false);
 		muteButton.setContentAreaFilled(false);
 		muteButton.setFocusPainted(false);
-		muteButton.addActionListener(new ActionListener() {
+		muteButton.addActionListener(new ActionListener() 
+		{
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e) 
+			{
 				isMuted = !isMuted; // Toggle the isMuted variable
 				SoundPlayer.setMuted(isMuted); // Update the global mute state
 				if (isMuted)
@@ -1554,28 +1556,34 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 	}
 }
 
-class ImageStorer {
+class ImageStorer 
+{
 	private static String carNumber; // Make this static
 	private static String carOpponentString;
 
-	public void setCarImage(String number) {
+	public void setCarImage(String number) 
+	{
 		carNumber = number; // Set the static field
 	}
 
-	public String getCarImage() {
+	public String getCarImage() 
+	{
 		return carNumber; // Return the static field
 	}
 
-	public void setOpponentCarImage(String carType) {
+	public void setOpponentCarImage(String carType) 
+	{
 		carOpponentString = carType; // Set the static field
 	}
 
-	public String getOpponentCarImage() {
+	public String getOpponentCarImage() 
+	{
 		return carOpponentString; // Return the static field
 	}
 }
-
-class GamePanel extends JPanel {
+//Just a unfinished class to partially show the car image
+class GamePanel extends JPanel 
+{
 	private JPanel parent;
 	private CardLayout layout;
 	private Image trackImage, carsImage, opponentCarImage;
@@ -1595,7 +1603,8 @@ class GamePanel extends JPanel {
 	private double userSpeedBoost = 0;
 	private Timer gameTimer;
 
-	public GamePanel(JPanel gameHolder, CardLayout layout) {
+	public GamePanel(JPanel gameHolder, CardLayout layout) 
+	{
 		this.parent = gameHolder;
 		this.layout = layout;
 		setLayout(new BorderLayout());
@@ -1614,12 +1623,16 @@ class GamePanel extends JPanel {
 		JButton boost = new JButton("Small Boost");
 		JButton slowdown = new JButton("Small Slowdown");
 
-		startButton.addActionListener(e -> {
-			if (!timerStarted) {
+		startButton.addActionListener(e -> 
+		{
+			if (!timerStarted)
+			{
 				startTimer();
 				timerStarted = true;
 				startButton.setText("Restart");
-			} else {
+			} 
+			else 
+			{
 				car1LogicalPos = 0;
 				car2LogicalPos = 0;
 				trackPos = 0;
@@ -1634,11 +1647,14 @@ class GamePanel extends JPanel {
 		faster.addActionListener(e -> userSpeedBoost += 5);
 		slower.addActionListener(e -> userSpeedBoost -= 5);
 		boost.addActionListener(e -> {
-			if (!gameEnded) {
+			if (!gameEnded) 
+			{
 				userSpeedBoost += 10; // Apply the boost
-				Timer boostTimer = new Timer(2000, new ActionListener() { // 2000ms = 2 seconds
+				Timer boostTimer = new Timer(2000, new ActionListener() 
+				{ // 2000ms = 2 seconds
 					@Override
-					public void actionPerformed(ActionEvent e) {
+					public void actionPerformed(ActionEvent e) 
+					{
 						userSpeedBoost -= 10; // Revert the boost
 						((Timer) e.getSource()).stop(); // Stop the timer
 					}
@@ -1648,11 +1664,14 @@ class GamePanel extends JPanel {
 			}
 		});
 		slowdown.addActionListener(e -> {
-			if (!gameEnded) {
+			if (!gameEnded)
+			{
 				userSpeedBoost -= 10; // Apply the slowdown
-				Timer slowdownTimer = new Timer(2000, new ActionListener() { // 2000ms = 2 seconds
+				Timer slowdownTimer = new Timer(2000, new ActionListener()
+				{ // 2000ms = 2 seconds
 					@Override
-					public void actionPerformed(ActionEvent e) {
+					public void actionPerformed(ActionEvent e) 
+					{
 						userSpeedBoost += 10; // Revert the slowdown
 						((Timer) e.getSource()).stop(); // Stop the timer
 					}
@@ -1671,13 +1690,15 @@ class GamePanel extends JPanel {
 		add(controlPanel, BorderLayout.SOUTH);
 	}
 
-	public void getCar() {
+	public void getCar() 
+	{
 		if (carsImage != null && opponentCarImage != null && trackImage != null) return;
 
 		ImageStorer imageStorer = new ImageStorer();
 		carNumber = imageStorer.getCarImage();
 		carOpponentString = imageStorer.getOpponentCarImage();
-		try {
+		try 
+		{
 			BufferedImage originalOpponentImage = ImageIO.read(new File(carOpponentString));
 			int width = originalOpponentImage.getHeight();
 			int height = originalOpponentImage.getWidth();
@@ -1692,12 +1713,15 @@ class GamePanel extends JPanel {
 			opponentCarImage = rotatedImage;
 			carsImage = ImageIO.read(new File(carNumber + ".png"));
 			trackImage = ImageIO.read(new File("Track.png"));
-		} catch (IOException e) {
+		} 
+		catch (IOException e)
+		{
 			e.printStackTrace();
 		}
 	}
 
-	public void startTimer() {
+	public void startTimer() 
+	{
 		gameTimer = new Timer(16, e -> {
 			if (gameEnded) return;
 
@@ -1707,15 +1731,18 @@ class GamePanel extends JPanel {
 			car1LogicalPos += userSpeed;
 			car2LogicalPos += opponentSpeed;
 
-			if (trackPos > TRACK_END) {
+			if (trackPos > TRACK_END) 
+			{
 				trackPos -= userSpeed;
 			}
 
-			if (car1LogicalPos >= FINISH_LINE) {
+			if (car1LogicalPos >= FINISH_LINE)
+			{
 				gameEnded = true;
 				gameTimer.stop();
 				JOptionPane.showMessageDialog(GamePanel.this, "You Win!", "Race Result", JOptionPane.INFORMATION_MESSAGE);
-			} else if (car2LogicalPos >= FINISH_LINE) {
+			} else if (car2LogicalPos >= FINISH_LINE) 
+			{
 				gameEnded = true;
 				gameTimer.stop();
 				JOptionPane.showMessageDialog(GamePanel.this, "You Lose! Opponent Passed You!", "Race Result", JOptionPane.ERROR_MESSAGE);
@@ -1728,7 +1755,8 @@ class GamePanel extends JPanel {
 	}
 
 	@Override
-	public void paintComponent(Graphics g) {
+	public void paintComponent(Graphics g) 
+	{
 		super.paintComponent(g);
 		getCar();
 
@@ -1737,21 +1765,26 @@ class GamePanel extends JPanel {
 		int trackY = 100 + shake;
 
 		// Draw track
-		if (trackImage != null) {
+		if (trackImage != null) 
+		{
 			g.drawImage(trackImage, (int) trackPos, trackY, (int) (1166 * 25), 800, this);
 		}
 
 		// Draw player car
-		if (carsImage != null) {
+		if (carsImage != null) 
+		{
 			g.drawImage(carsImage, USER_CAR_X, 170 + shake, 238 * 2, 121 * 2, this);
 		}
 
 		// Draw opponent car
 		int opponentScreenX = USER_CAR_X + (int)(car2LogicalPos - car1LogicalPos);
-		if (opponentCarImage != null) {
-			if (gameEnded && car2LogicalPos >= FINISH_LINE) {
+		if (opponentCarImage != null)
+		{
+			if (gameEnded && car2LogicalPos >= FINISH_LINE) 
+			{
 				g.drawImage(opponentCarImage, getWidth() + 100, 580, 238 * 2, 121 * 2, this);
-			} else if (opponentScreenX < getWidth() && opponentScreenX > -400) {
+			} else if (opponentScreenX < getWidth() && opponentScreenX > -400) 
+			{
 				g.drawImage(opponentCarImage, opponentScreenX, 580, 238 * 2, 121 * 2, this);
 			}
 		}
