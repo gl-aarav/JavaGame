@@ -670,6 +670,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 	private JLabel carStatsLabel;
 	private String carStats = "No car selected"; // Placeholder for car stats
 	private boolean opponentCarSelected = false;
+	storer storer = new storer();
 
 	public CarChoosePanel(GameHolder gameHolder, CardLayout layout)
 	{
@@ -821,34 +822,35 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		difficultySlider.addChangeListener(e ->
 		{
 			int value = difficultySlider.getValue();
-			ImageStorer imageStorer = new ImageStorer();
+			storer.setDifficultyLevel(value); // Set the difficulty based on the slider value
+			storer storer = new storer();
 			try
 			{
 				opponentCarSelected = true; // Set to true when the slider is moved
 				if (value < 20)
 				{
 					imageForOpponent = ImageIO.read(new File("Bicycle.png")); // Easy mode
-					imageStorer.setOpponentCarImage("Bicycle.png");
+					storer.setOpponentCarImage("Bicycle.png");
 				}
 				else if (value < 40)
 				{
 					imageForOpponent = ImageIO.read(new File("Motorcycle.png"));
-					imageStorer.setOpponentCarImage("Motorcycle.png");
+					storer.setOpponentCarImage("Motorcycle.png");
 				}
 				else if (value < 60)
 				{
 					imageForOpponent = ImageIO.read(new File("CarNormal.png"));
-					imageStorer.setOpponentCarImage("CarNormal.png");
+					storer.setOpponentCarImage("CarNormal.png");
 				}
 				else if (value < 80)
 				{
 					imageForOpponent = ImageIO.read(new File("CarSport.png"));
-					imageStorer.setOpponentCarImage("CarSport.png");
+					storer.setOpponentCarImage("CarSport.png");
 				}
 				else
 				{
 					imageForOpponent = ImageIO.read(new File("Rocket.png"));
-					imageStorer.setOpponentCarImage("Rocket.png");
+					storer.setOpponentCarImage("Rocket.png");
 				}
 			}
 			catch (IOException ex)
@@ -968,7 +970,6 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 	public void mousePressed(MouseEvent e)
 	{
 		boolean clicked = true; // Flag to check if clicked box is toggled
-		ImageStorer imageStorer = new ImageStorer();
 
 		if (x > 5 && x < 130 && y > 0 && y < 245)
 		{
@@ -985,7 +986,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 7;
 				carSelected = true;
 				carSelectSound.play();
-				imageStorer.setCarImage("Car1"); // Reset the image
+				storer.setCarImage("Car1"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1004,7 +1005,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 7;
 				carSelected = true;
 				carSelectSound.play();
-				imageStorer.setCarImage("Car2"); // Reset the image
+				storer.setCarImage("Car2"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1023,7 +1024,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 7;
 				carSelected = true;
 				carSelectSound.play();
-				imageStorer.setCarImage("Car3"); // Reset the image
+				storer.setCarImage("Car3"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1042,7 +1043,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 7;
 				carSelected = true;
 				carSelectSound.play();
-				imageStorer.setCarImage("Car4"); // Reset the image
+				storer.setCarImage("Car4"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1061,7 +1062,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 7;
 				carSelected = true;
 				carSelectSound.play();
-				imageStorer.setCarImage("Car5"); // Reset the image
+				storer.setCarImage("Car5"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1080,7 +1081,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 245;
 				carSelected = true;
 				carSelectSound.play();
-				imageStorer.setCarImage("Car6"); // Reset the image
+				storer.setCarImage("Car6"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1099,7 +1100,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 245;
 				carSelected = true;
 				carSelectSound.play();
-				imageStorer.setCarImage("Car7"); // Reset the image
+				storer.setCarImage("Car7"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1118,7 +1119,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 245;
 				carSelected = true;
 				carSelectSound.play();
-				imageStorer.setCarImage("Car8"); // Reset the image
+				storer.setCarImage("Car8"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1137,7 +1138,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 245;
 				carSelected = true;
 				carSelectSound.play();
-				imageStorer.setCarImage("Car9"); // Reset the image
+				storer.setCarImage("Car9"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1156,7 +1157,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 245;
 				carSelected = true;
 				carSelectSound.play();
-				imageStorer.setCarImage("Car10"); // Reset the image
+				storer.setCarImage("Car10"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1175,7 +1176,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 490;
 				carSelected = true;
 				carSelectSound.play();
-				imageStorer.setCarImage("Car11"); // Reset the image
+				storer.setCarImage("Car11"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1194,7 +1195,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 490;
 				carSelected = true;
 				carSelectSound.play();
-				imageStorer.setCarImage("Car12"); // Reset the image
+				storer.setCarImage("Car12"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1213,7 +1214,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 490;
 				carSelected = true;
 				carSelectSound.play();
-				imageStorer.setCarImage("Car13"); // Reset the image
+				storer.setCarImage("Car13"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1232,7 +1233,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 490;
 				carSelected = true;
 				carSelectSound.play();
-				imageStorer.setCarImage("Car14"); // Reset the image
+				storer.setCarImage("Car14"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1251,7 +1252,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 490;
 				carSelected = true;
 				carSelectSound.play();
-				imageStorer.setCarImage("Car15"); // Reset the image
+				storer.setCarImage("Car15"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1270,7 +1271,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 735;
 				carSelected = true;
 				carSelectSound.play();
-				imageStorer.setCarImage("Car16"); // Reset the image
+				storer.setCarImage("Car16"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1289,7 +1290,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 735;
 				carSelected = true;
 				carSelectSound.play();
-				imageStorer.setCarImage("Car17"); // Reset the image
+				storer.setCarImage("Car17"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1308,7 +1309,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 735;
 				carSelected = true;
 				carSelectSound.play();
-				imageStorer.setCarImage("Car18"); // Reset the image
+				storer.setCarImage("Car18"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1327,7 +1328,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 735;
 				carSelected = true;
 				carSelectSound.play();
-				imageStorer.setCarImage("Car19"); // Reset the image
+				storer.setCarImage("Car19"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1346,7 +1347,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 735;
 				carSelected = true;
 				carSelectSound.play();
-				imageStorer.setCarImage("Car20"); // Reset the image
+				storer.setCarImage("Car20"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1374,14 +1375,14 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			carColors.put("245,500", "Green");
 
 			carColors.put("490,5", "Dark Red");
-			carColors.put("490,130", "Red");
-			carColors.put("490,254", "Maroon Red");
+			carColors.put("490,128", "Red");
+			carColors.put("490,253", "Maroon Red");
 			carColors.put("490,376", "Red");
 			carColors.put("490,500", "Dark Red");
 
 			carColors.put("735,5", "Yellow");
-			carColors.put("735,130", "Gold Yellow");
-			carColors.put("735,254", "Gold Yellow");
+			carColors.put("735,128", "Gold Yellow");
+			carColors.put("735,253", "Gold Yellow");
 			carColors.put("735,376", "Yellow");
 			carColors.put("735,500", "Yellow");
 
@@ -1399,14 +1400,14 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			carTypes.put("245,500", "Hatchback");
 
 			carTypes.put("490,5", "SuperSport");
-			carTypes.put("490,130", "Sport");
-			carTypes.put("490,254", "Coupe");
+			carTypes.put("490,128", "Sport");
+			carTypes.put("490,253", "Coupe");
 			carTypes.put("490,376", "Crossover");
 			carTypes.put("490,500", "Luxury");
 
 			carTypes.put("735,5", "Hybrid");
-			carTypes.put("735,130", "Hyper");
-			carTypes.put("735,254", "Coupe");
+			carTypes.put("735,128", "Hyper");
+			carTypes.put("735,253", "Coupe");
 			carTypes.put("735,376", "Compact");
 			carTypes.put("735,500", "Mini-Van");
 
@@ -1424,14 +1425,14 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			carConditions.put("245,500", "1/2 Years Used");
 
 			carConditions.put("490,5", "New");
-			carConditions.put("490,130", "Certified");
-			carConditions.put("490,254", "New");
+			carConditions.put("490,128", "Certified");
+			carConditions.put("490,253", "New");
 			carConditions.put("490,376", "6 Years Used");
 			carConditions.put("490,500", "Refurbished");
 
 			carConditions.put("735,5", "New");
-			carConditions.put("735,130", "1 Year Used");
-			carConditions.put("735,254", "Certified");
+			carConditions.put("735,128", "1 Year Used");
+			carConditions.put("735,253", "Certified");
 			carConditions.put("735,376", "Refurbished");
 			carConditions.put("735,500", "New");
 
@@ -1596,10 +1597,11 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 	}
 }
 
-class ImageStorer 
+class storer 
 {
 	private static String carNumber; // Make this static
 	private static String carOpponentString;
+	private int difficultyLevel;
 
 	public void setCarImage(String number) 
 	{
@@ -1620,6 +1622,14 @@ class ImageStorer
 	{
 		return carOpponentString; // Return the static field
 	}
+	public void setDifficultyLevel(int difficultyLevel) 
+	{
+		this.difficultyLevel = difficultyLevel;
+	}
+	public int getDifficultyLevel() 
+	{
+		return difficultyLevel;
+	}
 }
 //Just a unfinished class to partially show the car image
 class GamePanel extends JPanel 
@@ -1630,8 +1640,8 @@ class GamePanel extends JPanel
 	private String carNumber, carOpponentString;
 
 	private final int USER_CAR_X = 300;
-	private final int FINISH_LINE = 26400;
-	private final int TRACK_END = - 27200;
+	private final int FINISH_LINE = 27000;
+	private final int TRACK_END = -28000;
 
 	private double car1LogicalPos = 0;
 	private double car2LogicalPos = 0;
@@ -1642,7 +1652,8 @@ class GamePanel extends JPanel
 
 	private double userSpeedBoost = 0;
 	private Timer gameTimer;
-
+	private double opponentSpeed;
+	storer storer = new storer();
 	public GamePanel(JPanel gameHolder, CardLayout layout) 
 	{
 		this.parent = gameHolder;
@@ -1663,61 +1674,97 @@ class GamePanel extends JPanel
 		JButton boost = new JButton("Small Boost");
 		JButton slowdown = new JButton("Small Slowdown");
 
-		startButton.addActionListener(e -> 
+		startButton.addActionListener(new ActionListener() 
 		{
-			if (!timerStarted)
+			public void actionPerformed(ActionEvent e)
 			{
-				startTimer();
-				timerStarted = true;
-				startButton.setText("Restart");
-			} 
-			else 
-			{
-				car1LogicalPos = 0;
-				car2LogicalPos = 0;
-				trackPos = 0;
-				userSpeedBoost = 0;
-				gameEnded = false;
-				timerStarted = false;
-				startButton.setText("Start");
-				repaint();
+				if (!timerStarted) 
+				{
+					startTimer();
+					timerStarted = true;
+					startButton.setText("Restart");
+				} 
+				else 
+				{
+					if (gameTimer != null) gameTimer.stop(); // <-- Add this
+					car1LogicalPos = 0;
+					car2LogicalPos = 0;
+					trackPos = 0;
+					userSpeedBoost = 0;
+					gameEnded = false;
+					timerStarted = false;
+					startButton.setText("Start");
+					repaint();
+				}
 			}
 		});
 
-		faster.addActionListener(e -> userSpeedBoost += 5);
-		slower.addActionListener(e -> userSpeedBoost -= 5);
-		boost.addActionListener(e -> {
-			if (!gameEnded) 
+
+		faster.addActionListener(new ActionListener() 
+		{
+			public void actionPerformed(ActionEvent e) 
 			{
-				userSpeedBoost += 10; // Apply the boost
-				Timer boostTimer = new Timer(2000, new ActionListener() 
-				{ // 2000ms = 2 seconds
-					@Override
-					public void actionPerformed(ActionEvent e) 
-					{
-						userSpeedBoost -= 10; // Revert the boost
-						((Timer) e.getSource()).stop(); // Stop the timer
-					}
-				});
-				boostTimer.setRepeats(false); // Ensure the timer only runs once
-				boostTimer.start(); // Start the timer
-			}
+				userSpeedBoost += 5;	
+			}	
 		});
-		slowdown.addActionListener(e -> {
-			if (!gameEnded)
+
+		slower.addActionListener(new ActionListener() 
+		{
+			public void actionPerformed(ActionEvent e) 
 			{
-				userSpeedBoost -= 10; // Apply the slowdown
-				Timer slowdownTimer = new Timer(2000, new ActionListener()
-				{ // 2000ms = 2 seconds
-					@Override
-					public void actionPerformed(ActionEvent e) 
+				userSpeedBoost -= 5;	
+				if (userSpeedBoost < 5) 
+				{
+					userSpeedBoost = 0; // Prevent negative speed
+				}
+			}	
+		});
+		boost.addActionListener(new ActionListener() 
+		{
+			public void actionPerformed(ActionEvent e) 
+			{
+				if (!gameEnded) 
+				{
+					userSpeedBoost += 10; // Apply the boost
+					Timer boostTimer = new Timer(2000, new ActionListener() 
+					{ // 2000ms = 2 seconds
+						@Override
+						public void actionPerformed(ActionEvent e) 
+						{
+							userSpeedBoost -= 10; // Revert the boost
+							((Timer) e.getSource()).stop(); // Stop the timer
+						}
+					});
+					boostTimer.setRepeats(false); // Ensure the timer only runs once
+					boostTimer.start(); // Start the timer
+				}
+			}	
+		});
+
+		slowdown.addActionListener(new ActionListener() 
+		{
+			public void actionPerformed(ActionEvent e) 
+			{
+				if (!gameEnded)
+				{	
+					userSpeedBoost -= 10; // Apply the slowdown
+					if (userSpeedBoost < 10) 
 					{
-						userSpeedBoost += 10; // Revert the slowdown
-						((Timer) e.getSource()).stop(); // Stop the timer
+						userSpeedBoost = 0; // Prevent negative speed
 					}
-				});
-				slowdownTimer.setRepeats(false); // Ensure the timer only runs once
-				slowdownTimer.start(); // Start the timer
+
+					Timer slowdownTimer = new Timer(2000, new ActionListener()
+					{ // 2000ms = 2 seconds
+						@Override
+						public void actionPerformed(ActionEvent e) 
+						{
+							userSpeedBoost += 10; // Revert the slowdown
+							((Timer) e.getSource()).stop(); // Stop the timer
+						}
+					});
+					slowdownTimer.setRepeats(false); // Ensure the timer only runs once
+					slowdownTimer.start(); // Start the timer
+				}
 			}
 		});
 
@@ -1732,11 +1779,30 @@ class GamePanel extends JPanel
 
 	public void getCar() 
 	{
-		if (carsImage != null && opponentCarImage != null && trackImage != null) return;
-
-		ImageStorer imageStorer = new ImageStorer();
-		carNumber = imageStorer.getCarImage();
-		carOpponentString = imageStorer.getOpponentCarImage();
+		if (carsImage != null && opponentCarImage != null && trackImage != null) 
+			return;
+		carNumber = storer.getCarImage();
+		carOpponentString = storer.getOpponentCarImage();
+		if (carOpponentString.equals("Bicycle.png")) 
+		{
+			opponentSpeed = storer.getDifficultyLevel() % 20 + 10;
+		}
+		else if (carOpponentString.equals("Motorcycle.png")) 
+		{
+			opponentSpeed =  storer.getDifficultyLevel() * 2 % 20 + 10 * 2;
+		} 
+		else if (carOpponentString.equals("CarNormal.png")) 
+		{
+			opponentSpeed = storer.getDifficultyLevel() * 3 % 20 + 10 * 3;
+		} 
+		else if (carOpponentString.equals("CarSport.png")) 
+		{
+			opponentSpeed = storer.getDifficultyLevel() * 4 % 20 + 10 * 4;
+		} 
+		else if (carOpponentString.equals("Rocket.png")) 
+		{
+			opponentSpeed = storer.getDifficultyLevel() * 5 % 20 + 10 * 5;
+		} 
 		try 
 		{
 			BufferedImage originalOpponentImage = ImageIO.read(new File(carOpponentString));
@@ -1763,10 +1829,11 @@ class GamePanel extends JPanel
 	public void startTimer() 
 	{
 		gameTimer = new Timer(16, e -> {
-			if (gameEnded) return;
+			boolean win = true;
+			if (gameEnded) 
+				return;
 
 			double userSpeed = 10 + Math.random() * 5 + userSpeedBoost;
-			double opponentSpeed = 18 + Math.random() * 3;
 
 			car1LogicalPos += userSpeed;
 			car2LogicalPos += opponentSpeed;
@@ -1776,16 +1843,22 @@ class GamePanel extends JPanel
 				trackPos -= userSpeed;
 			}
 
-			if (car1LogicalPos >= FINISH_LINE)
+			if (car1LogicalPos >= FINISH_LINE && car2LogicalPos < FINISH_LINE && win)
 			{
 				gameEnded = true;
 				gameTimer.stop();
 				JOptionPane.showMessageDialog(GamePanel.this, "You Win!", "Race Result", JOptionPane.INFORMATION_MESSAGE);
-			} else if (car2LogicalPos >= FINISH_LINE) 
+			} 
+			else if (car2LogicalPos >= FINISH_LINE && car1LogicalPos >= FINISH_LINE)
 			{
 				gameEnded = true;
 				gameTimer.stop();
-				JOptionPane.showMessageDialog(GamePanel.this, "You Lose! Opponent Passed You!", "Race Result", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(GamePanel.this, "You Loose!", "Race Result", JOptionPane.INFORMATION_MESSAGE);
+			}
+
+			if (car2LogicalPos >= FINISH_LINE)
+			{
+				win = false;
 			}
 
 			repaint();
@@ -1818,12 +1891,14 @@ class GamePanel extends JPanel
 
 		// Draw opponent car
 		int opponentScreenX = USER_CAR_X + (int)(car2LogicalPos - car1LogicalPos);
-		if (opponentCarImage != null)
+		if (opponentCarImage != null) 
 		{
-			if (gameEnded && car2LogicalPos >= FINISH_LINE) 
+			if (car2LogicalPos >= FINISH_LINE) 
 			{
-				g.drawImage(opponentCarImage, getWidth() + 100, 580, 238 * 2, 121 * 2, this);
-			} else if (opponentScreenX < getWidth() && opponentScreenX > -400) 
+				// Keep the opponent car at the same finish line as the user
+				g.drawImage(opponentCarImage, USER_CAR_X + (int)(FINISH_LINE - car1LogicalPos), 580, 238 * 2, 121 * 2, this);
+			} 
+			else if (opponentScreenX < getWidth() && opponentScreenX > -400) 
 			{
 				g.drawImage(opponentCarImage, opponentScreenX, 580, 238 * 2, 121 * 2, this);
 			}
