@@ -1,0 +1,349 @@
+1. What is the period of the function y = sin(x)?
+   A. π
+   B. x
+   C. 2π
+   D. 1
+   Answer: C
+
+2. What is the amplitude of y = 3cos(x)?
+   A. 2π
+   B. 3
+   C. 1
+   D. x
+   Answer: B
+
+3. sin²(x) + cos²(x) = ?
+   A. π
+   B. 2sin(x)
+   C. undefined
+   D. 1
+   Answer: D
+
+4. What is the value of tan(45°)?
+   A. 1
+   B. π
+   C. 2π
+   D. -π
+   Answer: A
+
+5. What is the reciprocal of sin(x)?
+   A. tan(x)
+   B. csc(x)
+   C. sec(x)
+   D. cot(x)
+   Answer: B
+
+6. What is the general form of the sine function?
+   A. y = sin(Bx - C) 
+   B. y = A sin(Bx - C) + D
+   C. y = sin(x)
+   D. y = A sin (Bx - C) 
+   Answer: B
+
+7. Which identity converts a product of sines into a sum?
+   A. sin(A)sin(B) = [cos(A−B) + cos(A+B)]/2
+   B. sin(A)sin(B) = [cos(A−B) − cos(A+B)]/2
+   C. sin(A)sin(B) = 2[cos(A−B) − cos(A+B)]
+   D. sin(A)sin(B) = [cos(A−B) − cos(A+B)]
+   Answer: B
+
+8. If y = 2sin(2x), what is its period?
+   A. 2π
+   B. π
+   C. π/2
+   D. 1
+   Answer: A
+
+9. What is the range of y = -2cos(x)?
+   A. [0,2π]
+   B. [-2π,0] 
+   C. [-2, 2]
+   D. [-2π,2π]
+   Answer: C
+
+10. What is the phase shift of y = sin(x - π/2)?
+   A. 2π
+   B. x
+   C. π/2
+   D. -π/2
+   Answer: C
+
+11. What is the domain of y = tan(x)?
+   A. [-2π,2π]
+   B. All Real Numbers
+   C. x ≠ π + nπ, n is an integer
+   D. x ≠ π/2 + nπ, n is an integer
+   Answer: D
+
+12. tan²(x) + 1 = ?
+   A. 2 * cos(x) * sin(x)
+   B. cos(x) * sin(x)
+   C. sec(x)
+   D. sec²(x)
+   Answer: D
+
+13. What is the reciprocal of tan(x)?
+   A. The reciprocal of tan(x) is cot(x).
+   B. amplitude = 1
+   C. 0
+   D. sin(x)
+   Answer: A
+
+14. How do you find the amplitude of y = A sin(x)?
+   A. range = [-1, 1]
+   B. -1
+   C. undefined
+   D. The amplitude is the absolute value of A.
+   Answer: D
+
+15. What is the period of y = sin(Bx)?
+   A. csc(x)
+   B. undefined
+   C. Period = 2π / B.
+   D. sec(x)
+   Answer: C
+
+16. What is sin(0°)?
+   A. π/2
+   B. sin(0°) = 0.
+   C. -1
+   D. π
+   Answer: B
+
+17. What is cos(90°)?
+   A. cos(90°) = 0.
+   B. π/2
+   C. sec(x)
+   D. π
+   Answer: A
+
+18. What is the value of sin(90°)?
+   A. 2π
+   B. domain = all real numbers
+   C. sin(90°) = 1.
+   D. sec(x)
+   Answer: C
+
+19. What is the period of y = tan(x)?
+   A. -1
+   B. cos(x)
+   C. The period of tan(x) is π.
+   D. sin(x)
+   Answer: C
+
+20. What is the range of sin(x)?
+   A. amplitude = 1
+   B. Range = [-1, 1].
+   C. sec(x)
+   D. 180°
+   Answer: B
+
+21. What is the unit circle?
+   A. π
+   B. A circle of radius 1 centered at the origin used to define trig functions.
+   C. domain = all real numbers
+   D. undefined
+   Answer: B
+
+22. What quadrant is sin(x) positive in?
+   A. domain = all real numbers
+   B. Sin(x) is positive in quadrants I and II.
+   C. π/2
+   D. period = π
+   Answer: B
+
+23. Which quadrant has all trig functions positive?
+   A. 0
+   B. π/3
+   C. period = π
+   D. Quadrant I.
+   Answer: D
+
+24. What is an even trig function?
+   A. -1
+   B. 2π
+   C. cos(x) and sec(x) are even: f(-x) = f(x).
+   D. csc(x)
+   Answer: C
+
+25. What is an odd trig function?
+   A. sec(x)
+   B. range = [-1, 1]
+   C. domain = all real numbers
+   D. sin(x), tan(x), csc(x), cot(x) are odd: f(-x) = -f(x).
+   Answer: D
+
+26. What does 'co-function' mean in trigonometry?
+   A. Functions like sin and cos are co-functions: sin(θ) = cos(90° − θ).
+   B. -1
+   C. period = π
+   D. π
+   Answer: A
+
+27. Convert 180° to radians.
+   A. csc(x)
+   B. range = [-1, 1]
+   C. 180° = π radians.
+   D. amplitude = 1
+   Answer: C
+
+28. Convert π/3 radians to degrees.
+   A. π/3 × 180°/π = 60°.
+   B. sin(x)
+   C. period = π
+   D. cot(x)
+   Answer: A
+
+29. What is the graph of y = sin(x) like?
+   A. 90°
+   B. A wave that oscillates between -1 and 1 every 2π.
+   C. csc(x)
+   D. undefined
+   Answer: B
+
+30. What is the graph of y = tan(x) like?
+   A. A repeating curve with vertical asymptotes at odd multiples of π/2.
+   B. 2π
+   C. range = [-1, 1]
+   D. -1
+   Answer: A
+
+31. What identity is cos²(x) - sin²(x)?
+   A. 90°
+   B. 180°
+   C. cos(2x), a double-angle identity.
+   D. π/2
+   Answer: C
+
+32. What is sin(2x) equal to?
+   A. 2sin(x)cos(x) — double-angle identity.
+   B. sec(x)
+   C. amplitude = 1
+   D. range = [-1, 1]
+   Answer: A
+
+33. What is cos(2x) equal to?
+   A. π/2
+   B. cos²(x) − sin²(x), or 2cos²(x)−1, or 1−2sin²(x).
+   C. cos(x)
+   D. 0
+   Answer: B
+
+34. How do you find a reference angle?
+   A. 1
+   B. Take the acute angle between the terminal side and the x-axis.
+   C. 2π
+   D. cot(x)
+   Answer: B
+
+35. What is the cotangent of 0°?
+   A. π/3
+   B. cot(x)
+   C. 90°
+   D. Undefined. cot(0°) = cos(0)/sin(0), and sin(0) = 0.
+   Answer: D
+
+36. What is sec(0°)?
+   A. tan(x)
+   B. cot(x)
+   C. sec(0°) = 1/cos(0°) = 1.
+   D. cos(x)
+   Answer: C
+
+37. What is csc(90°)?
+   A. -1
+   B. csc(x)
+   C. csc(90°) = 1/sin(90°) = 1.
+   D. π/3
+   Answer: C
+
+38. How do you identify vertical shift in a trig function?
+   A. π/2
+   B. cos(x)
+   C. -1
+   D. The '+ D' at the end of the function shows vertical shift.
+   Answer: D
+
+39. What does B affect in y = A sin(Bx)?
+   A. -1
+   B. π
+   C. 2π
+   D. B affects the period of the graph.
+   Answer: D
+
+40. What is the amplitude of y = -4sin(x)?
+   A. Amplitude = 4. Negative sign reflects the graph.
+   B. sin(x)
+   C. 0
+   D. π
+   Answer: A
+
+41. If sin(x) = 1/2, what is x?
+   A. π/3
+   B. range = [-1, 1]
+   C. x = 30° or 150° in [0°, 180°].
+   D. π
+   Answer: C
+
+42. What is arcsin(1)?
+   A. cos(x)
+   B. cot(x)
+   C. 180°
+   D. π/2 or 90°, because sin(π/2) = 1.
+   Answer: D
+
+43. What is arccos(0)?
+   A. 2π
+   B. π/2 or 90°, because cos(π/2) = 0.
+   C. 1
+   D. period = π
+   Answer: B
+
+44. What is arctan(1)?
+   A. 180°
+   B. π/3
+   C. π/4 or 45°, because tan(π/4) = 1.
+   D. 0
+   Answer: C
+
+45. How do you find the phase shift in y = sin(Bx − C)?
+   A. 90°
+   B. cos(x)
+   C. Phase shift = C / B.
+   D. cot(x)
+   Answer: C
+
+46. What is the period of y = 5sin(3x)?
+   A. csc(x)
+   B. 2π / 3.
+   C. tan(x)
+   D. π/2
+   Answer: B
+
+47. How do you find the maximum of y = A sin(x) + D?
+   A. 1
+   B. Maximum = A + D.
+   C. 0
+   D. range = [-1, 1]
+   Answer: B
+
+48. How do you find the minimum of y = A sin(x) + D?
+   A. 90°
+   B. 1
+   C. range = [-1, 1]
+   D. Minimum = -A + D.
+   Answer: D
+
+49. What does D represent in y = A sin(Bx) + D?
+   A. 1
+   B. π/2
+   C. D is the vertical shift.
+   D. csc(x)
+   Answer: C
+
+50. How does a negative amplitude affect the graph?
+   A. cot(x)
+   B. period = π
+   C. range = [-1, 1]
+   D. It reflects the graph across the x-axis.
+   Answer: D

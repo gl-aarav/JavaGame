@@ -1783,26 +1783,33 @@ class GamePanel extends JPanel
 			return;
 		carNumber = storer.getCarImage();
 		carOpponentString = storer.getOpponentCarImage();
+		int level = storer.getDifficultyLevel(); // e.g., from 1 to 10
+
 		if (carOpponentString.equals("Bicycle.png")) 
 		{
-			opponentSpeed = storer.getDifficultyLevel() % 20 + 10;
-		}
+			opponentSpeed = 10 + level * 1;  // 11–20
+		} 
 		else if (carOpponentString.equals("Motorcycle.png")) 
 		{
-			opponentSpeed =  storer.getDifficultyLevel() * 2 % 20 + 10 * 2;
+			opponentSpeed = 15 + level * 1.5; // 16.5–30
 		} 
 		else if (carOpponentString.equals("CarNormal.png")) 
 		{
-			opponentSpeed = storer.getDifficultyLevel() * 3 % 20 + 10 * 3;
+			opponentSpeed = 20 + level * 2; // 22–40
 		} 
 		else if (carOpponentString.equals("CarSport.png")) 
 		{
-			opponentSpeed = storer.getDifficultyLevel() * 4 % 20 + 10 * 4;
+			opponentSpeed = 25 + level * 2.5; // 27.5–50
 		} 
 		else if (carOpponentString.equals("Rocket.png")) 
 		{
-			opponentSpeed = storer.getDifficultyLevel() * 5 % 20 + 10 * 5;
+			opponentSpeed = 30 + level * 3; // 33–60
 		} 
+		else 
+		{
+			opponentSpeed = 15 + level * 1.5; // fallback for unknown types
+		}
+
 		try 
 		{
 			BufferedImage originalOpponentImage = ImageIO.read(new File(carOpponentString));
@@ -1833,8 +1840,8 @@ class GamePanel extends JPanel
 			if (gameEnded) 
 				return;
 
-			double userSpeed = 10 + Math.random() * 5 + userSpeedBoost;
-
+			double userSpeed = 10 + userSpeedBoost;
+			
 			car1LogicalPos += userSpeed;
 			car2LogicalPos += opponentSpeed;
 

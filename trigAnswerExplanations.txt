@@ -1,0 +1,50 @@
+1. The period of y = sin(x) is 2π. This is because sine repeats every 2π units.
+2. The amplitude is 3. Amplitude is the coefficient in front of cosine or sine.
+3. sin²(x) + cos²(x) = 1. This is a fundamental Pythagorean identity.
+4. tan(45°) = 1. At 45°, sine and cosine are equal.
+5. The reciprocal of sin(x) is csc(x).
+6. y = A sin(Bx - C) + D is the general form.
+7. Product-to-sum identity: sin(A)sin(B) = ½[cos(A−B) − cos(A+B)]
+8. Period = 2π / B = 2π / 2 = π.
+9. Range = [-2, 2]. Cosine oscillates between -1 and 1, scaled by -2.
+10. Phase shift is π/2 to the right.
+11. All real x except odd multiples of π/2, where tangent is undefined.
+12. tan²(x) + 1 = sec²(x) — a Pythagorean identity.
+13. The reciprocal of tan(x) is cot(x).
+14. The amplitude is the absolute value of A.
+15. Period = 2π / B.
+16. sin(0°) = 0.
+17. cos(90°) = 0.
+18. sin(90°) = 1.
+19. The period of tan(x) is π.
+20. Range = [-1, 1].
+21. A circle of radius 1 centered at the origin used to define trig functions.
+22. Sin(x) is positive in quadrants I and II.
+23. Quadrant I.
+24. cos(x) and sec(x) are even: f(-x) = f(x).
+25. sin(x), tan(x), csc(x), cot(x) are odd: f(-x) = -f(x).
+26. Functions like sin and cos are co-functions: sin(θ) = cos(90° − θ).
+27. 180° = π radians.
+28. π/3 × 180°/π = 60°.
+29. A wave that oscillates between -1 and 1 every 2π.
+30. A repeating curve with vertical asymptotes at odd multiples of π/2.
+31. cos(2x), a double-angle identity.
+32. 2sin(x)cos(x) — double-angle identity.
+33. cos²(x) − sin²(x), or 2cos²(x)−1, or 1−2sin²(x).
+34. Take the acute angle between the terminal side and the x-axis.
+35. Undefined. cot(0°) = cos(0)/sin(0), and sin(0) = 0.
+36. sec(0°) = 1/cos(0°) = 1.
+37. csc(90°) = 1/sin(90°) = 1.
+38. The '+ D' at the end of the function shows vertical shift.
+39. B affects the period of the graph.
+40. Amplitude = 4. Negative sign reflects the graph.
+41. x = 30° or 150° in [0°, 180°].
+42. π/2 or 90°, because sin(π/2) = 1.
+43. π/2 or 90°, because cos(π/2) = 0.
+44. π/4 or 45°, because tan(π/4) = 1.
+45. Phase shift = C / B.
+46. 2π / 3.
+47. Maximum = A + D.
+48. Minimum = -A + D.
+49. D is the vertical shift.
+50. It reflects the graph across the x-axis.
