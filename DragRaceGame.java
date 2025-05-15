@@ -87,6 +87,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -106,9 +107,11 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
+import java.util.Scanner;
 
 public class DragRaceGame 
 {
@@ -670,7 +673,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 	private JLabel carStatsLabel;
 	private String carStats = "No car selected"; // Placeholder for car stats
 	private boolean opponentCarSelected = false;
-	storer storer = new storer();
+	Storer Storer = new Storer();
 
 	public CarChoosePanel(GameHolder gameHolder, CardLayout layout)
 	{
@@ -822,35 +825,35 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		difficultySlider.addChangeListener(e ->
 		{
 			int value = difficultySlider.getValue();
-			storer.setDifficultyLevel(value); // Set the difficulty based on the slider value
-			storer storer = new storer();
+			Storer.setDifficultyLevel(value); // Set the difficulty based on the slider value
+			Storer Storer = new Storer();
 			try
 			{
 				opponentCarSelected = true; // Set to true when the slider is moved
 				if (value < 20)
 				{
 					imageForOpponent = ImageIO.read(new File("Bicycle.png")); // Easy mode
-					storer.setOpponentCarImage("Bicycle.png");
+					Storer.setOpponentCarImage("Bicycle.png");
 				}
 				else if (value < 40)
 				{
 					imageForOpponent = ImageIO.read(new File("Motorcycle.png"));
-					storer.setOpponentCarImage("Motorcycle.png");
+					Storer.setOpponentCarImage("Motorcycle.png");
 				}
 				else if (value < 60)
 				{
 					imageForOpponent = ImageIO.read(new File("CarNormal.png"));
-					storer.setOpponentCarImage("CarNormal.png");
+					Storer.setOpponentCarImage("CarNormal.png");
 				}
 				else if (value < 80)
 				{
 					imageForOpponent = ImageIO.read(new File("CarSport.png"));
-					storer.setOpponentCarImage("CarSport.png");
+					Storer.setOpponentCarImage("CarSport.png");
 				}
 				else
 				{
 					imageForOpponent = ImageIO.read(new File("Rocket.png"));
-					storer.setOpponentCarImage("Rocket.png");
+					Storer.setOpponentCarImage("Rocket.png");
 				}
 			}
 			catch (IOException ex)
@@ -986,7 +989,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 7;
 				carSelected = true;
 				carSelectSound.play();
-				storer.setCarImage("Car1"); // Reset the image
+				Storer.setCarImage("Car1"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1005,7 +1008,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 7;
 				carSelected = true;
 				carSelectSound.play();
-				storer.setCarImage("Car2"); // Reset the image
+				Storer.setCarImage("Car2"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1024,7 +1027,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 7;
 				carSelected = true;
 				carSelectSound.play();
-				storer.setCarImage("Car3"); // Reset the image
+				Storer.setCarImage("Car3"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1043,7 +1046,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 7;
 				carSelected = true;
 				carSelectSound.play();
-				storer.setCarImage("Car4"); // Reset the image
+				Storer.setCarImage("Car4"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1062,7 +1065,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 7;
 				carSelected = true;
 				carSelectSound.play();
-				storer.setCarImage("Car5"); // Reset the image
+				Storer.setCarImage("Car5"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1081,7 +1084,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 245;
 				carSelected = true;
 				carSelectSound.play();
-				storer.setCarImage("Car6"); // Reset the image
+				Storer.setCarImage("Car6"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1100,7 +1103,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 245;
 				carSelected = true;
 				carSelectSound.play();
-				storer.setCarImage("Car7"); // Reset the image
+				Storer.setCarImage("Car7"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1119,7 +1122,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 245;
 				carSelected = true;
 				carSelectSound.play();
-				storer.setCarImage("Car8"); // Reset the image
+				Storer.setCarImage("Car8"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1138,7 +1141,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 245;
 				carSelected = true;
 				carSelectSound.play();
-				storer.setCarImage("Car9"); // Reset the image
+				Storer.setCarImage("Car9"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1157,7 +1160,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 245;
 				carSelected = true;
 				carSelectSound.play();
-				storer.setCarImage("Car10"); // Reset the image
+				Storer.setCarImage("Car10"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1176,7 +1179,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 490;
 				carSelected = true;
 				carSelectSound.play();
-				storer.setCarImage("Car11"); // Reset the image
+				Storer.setCarImage("Car11"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1195,7 +1198,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 490;
 				carSelected = true;
 				carSelectSound.play();
-				storer.setCarImage("Car12"); // Reset the image
+				Storer.setCarImage("Car12"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1214,7 +1217,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 490;
 				carSelected = true;
 				carSelectSound.play();
-				storer.setCarImage("Car13"); // Reset the image
+				Storer.setCarImage("Car13"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1233,7 +1236,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 490;
 				carSelected = true;
 				carSelectSound.play();
-				storer.setCarImage("Car14"); // Reset the image
+				Storer.setCarImage("Car14"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1252,7 +1255,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 490;
 				carSelected = true;
 				carSelectSound.play();
-				storer.setCarImage("Car15"); // Reset the image
+				Storer.setCarImage("Car15"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1271,7 +1274,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 735;
 				carSelected = true;
 				carSelectSound.play();
-				storer.setCarImage("Car16"); // Reset the image
+				Storer.setCarImage("Car16"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1290,7 +1293,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 735;
 				carSelected = true;
 				carSelectSound.play();
-				storer.setCarImage("Car17"); // Reset the image
+				Storer.setCarImage("Car17"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1309,7 +1312,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 735;
 				carSelected = true;
 				carSelectSound.play();
-				storer.setCarImage("Car18"); // Reset the image
+				Storer.setCarImage("Car18"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1328,7 +1331,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 735;
 				carSelected = true;
 				carSelectSound.play();
-				storer.setCarImage("Car19"); // Reset the image
+				Storer.setCarImage("Car19"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1347,7 +1350,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				yClick = 735;
 				carSelected = true;
 				carSelectSound.play();
-				storer.setCarImage("Car20"); // Reset the image
+				Storer.setCarImage("Car20"); // Reset the image
 			}
 			clicked = true;
 		}
@@ -1597,7 +1600,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 	}
 }
 
-class storer 
+class Storer 
 {
 	private static String carNumber; // Make this static
 	private static String carOpponentString;
@@ -1631,8 +1634,8 @@ class storer
 		return difficultyLevel;
 	}
 }
-//Just a unfinished class to partially show the car image
-class GamePanel extends JPanel 
+
+class GamePanel extends JPanel
 {
 	private JPanel parent;
 	private CardLayout layout;
@@ -1653,164 +1656,201 @@ class GamePanel extends JPanel
 	private double userSpeedBoost = 0;
 	private Timer gameTimer;
 	private double opponentSpeed;
-	storer storer = new storer();
-	public GamePanel(JPanel gameHolder, CardLayout layout) 
+	private Storer Storer = new Storer();
+
+	private String question = "";
+	private String answerExplanation = "";
+	private String[] answerChoices = new String[4];
+	private String answer = "";
+	boolean showButtons = true;
+	JTextArea questionArea = new JTextArea();;
+
+	public GamePanel(JPanel gameHolder, CardLayout layout)
 	{
+		importTextfiles();
 		this.parent = gameHolder;
 		this.layout = layout;
 		setLayout(new BorderLayout());
 
-		// Title
 		JLabel label = new JLabel("Racing Challenge!", SwingConstants.CENTER);
 		label.setForeground(Color.BLACK);
 		label.setFont(new Font("Arial", Font.BOLD, 32));
-		add(label, BorderLayout.NORTH);
+		JPanel header = new JPanel(new GridLayout(2,1));
 
-		// Bottom control buttons
 		JPanel controlPanel = new JPanel(new GridLayout(1, 5, 10, 10));
-		JButton startButton = new JButton("Start");
-		JButton faster = new JButton("Go Faster");
-		JButton slower = new JButton("Go Slower");
-		JButton boost = new JButton("Small Boost");
-		JButton slowdown = new JButton("Small Slowdown");
+		JButton questionOneButton = new JButton("");
+		JButton questionTwoButton = new JButton("");
+		JButton questionThreeButton = new JButton("");
+		JButton questionFourButton = new JButton("");
+		JButton dontKnowButton = new JButton("");
+		JButton start = new JButton("Start");
 
-		startButton.addActionListener(new ActionListener() 
+		start.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				if (!timerStarted) 
+				if (!timerStarted)
 				{
 					startTimer();
 					timerStarted = true;
-					startButton.setText("Restart");
-				} 
-				else 
+					start.setText("Restart");
+					questionOneButton.setText(answerChoices[0]);
+					questionTwoButton.setText(answerChoices[1]);
+					questionThreeButton.setText(answerChoices[2]);
+					questionFourButton.setText(answerChoices[3]);
+					dontKnowButton.setText("I Don't Know");
+					questionArea.setText(question);
+				}
+
+				else
 				{
-					if (gameTimer != null) gameTimer.stop(); // <-- Add this
+					questionOneButton.setText("");
+					questionTwoButton.setText("");
+					questionThreeButton.setText("");
+					questionFourButton.setText("");
+					dontKnowButton.setText("");
+					questionArea.setText("");
+					if (gameTimer != null)
+						gameTimer.stop();
 					car1LogicalPos = 0;
 					car2LogicalPos = 0;
 					trackPos = 0;
 					userSpeedBoost = 0;
 					gameEnded = false;
 					timerStarted = false;
-					startButton.setText("Start");
+					start.setText("Start");
 					repaint();
 				}
 			}
 		});
 
+		questionOneButton.addActionListener(e -> handleAnswer(0, questionOneButton, questionTwoButton, questionThreeButton, questionFourButton));
+		questionTwoButton.addActionListener(e -> handleAnswer(1, questionOneButton, questionTwoButton, questionThreeButton, questionFourButton));
+		questionThreeButton.addActionListener(e -> handleAnswer(2, questionOneButton, questionTwoButton, questionThreeButton, questionFourButton));
+		questionFourButton.addActionListener(e -> handleAnswer(3, questionOneButton, questionTwoButton, questionThreeButton, questionFourButton));
 
-		faster.addActionListener(new ActionListener() 
-		{
-			public void actionPerformed(ActionEvent e) 
-			{
-				userSpeedBoost += 5;	
-			}	
-		});
+		Dimension buttonSize = new Dimension(170, 60);  // width, height
+		questionOneButton.setPreferredSize(buttonSize);
+		questionTwoButton.setPreferredSize(buttonSize);
+		questionThreeButton.setPreferredSize(buttonSize);
+		questionFourButton.setPreferredSize(buttonSize);
+		dontKnowButton.setPreferredSize(buttonSize);
 
-		slower.addActionListener(new ActionListener() 
-		{
-			public void actionPerformed(ActionEvent e) 
-			{
-				userSpeedBoost -= 5;	
-				if (userSpeedBoost < 5) 
-				{
-					userSpeedBoost = 0; // Prevent negative speed
-				}
-			}	
-		});
-		boost.addActionListener(new ActionListener() 
-		{
-			public void actionPerformed(ActionEvent e) 
-			{
-				if (!gameEnded) 
-				{
-					userSpeedBoost += 10; // Apply the boost
-					Timer boostTimer = new Timer(2000, new ActionListener() 
-					{ // 2000ms = 2 seconds
-						@Override
-						public void actionPerformed(ActionEvent e) 
-						{
-							userSpeedBoost -= 10; // Revert the boost
-							((Timer) e.getSource()).stop(); // Stop the timer
-						}
-					});
-					boostTimer.setRepeats(false); // Ensure the timer only runs once
-					boostTimer.start(); // Start the timer
-				}
-			}	
-		});
 
-		slowdown.addActionListener(new ActionListener() 
+		dontKnowButton.addActionListener(e -> 
 		{
-			public void actionPerformed(ActionEvent e) 
+			if (timerStarted)
 			{
-				if (!gameEnded)
-				{	
-					userSpeedBoost -= 10; // Apply the slowdown
-					if (userSpeedBoost < 10) 
-					{
-						userSpeedBoost = 0; // Prevent negative speed
-					}
-
-					Timer slowdownTimer = new Timer(2000, new ActionListener()
-					{ // 2000ms = 2 seconds
-						@Override
-						public void actionPerformed(ActionEvent e) 
-						{
-							userSpeedBoost += 10; // Revert the slowdown
-							((Timer) e.getSource()).stop(); // Stop the timer
-						}
-					});
-					slowdownTimer.setRepeats(false); // Ensure the timer only runs once
-					slowdownTimer.start(); // Start the timer
-				}
+				importTextfiles();
+				questionOneButton.setText(answerChoices[0]);
+				questionTwoButton.setText(answerChoices[1]);
+				questionThreeButton.setText(answerChoices[2]);
+				questionFourButton.setText(answerChoices[3]);
+				questionArea.setText(question);
 			}
 		});
+		
+		header.add(label);
+		header.add(questionArea,BorderLayout.NORTH);
+		add(header,BorderLayout.NORTH);
+		controlPanel.add(questionOneButton);
+		controlPanel.add(questionTwoButton);
+		controlPanel.add(questionThreeButton);
+		controlPanel.add(questionFourButton);
+		controlPanel.add(dontKnowButton);
 
-
-		controlPanel.add(startButton);
-		controlPanel.add(faster);
-		controlPanel.add(slower);
-		controlPanel.add(boost);
-		controlPanel.add(slowdown);
+		add(start, BorderLayout.EAST);
 		add(controlPanel, BorderLayout.SOUTH);
 	}
 
-	public void getCar() 
+	private void importTextfiles()
 	{
-		if (carsImage != null && opponentCarImage != null && trackImage != null) 
-			return;
-		carNumber = storer.getCarImage();
-		carOpponentString = storer.getOpponentCarImage();
-		int level = storer.getDifficultyLevel(); // e.g., from 1 to 10
+		Scanner in1 = null;
+		Scanner in2 = null;
+		File trigAnswerFile = new File("trigAnswerExplanations.txt");
+		File trigQuestionFile = new File("trigMultipleChoice.txt");
 
-		if (carOpponentString.equals("Bicycle.png")) 
+		try
 		{
-			opponentSpeed = 10 + level * 1;  // 11–20
-		} 
-		else if (carOpponentString.equals("Motorcycle.png")) 
+			in1 = new Scanner(trigAnswerFile);
+			in2 = new Scanner(trigQuestionFile);
+		}
+		catch (FileNotFoundException e)
 		{
-			opponentSpeed = 15 + level * 1.5; // 16.5–30
-		} 
-		else if (carOpponentString.equals("CarNormal.png")) 
-		{
-			opponentSpeed = 20 + level * 2; // 22–40
-		} 
-		else if (carOpponentString.equals("CarSport.png")) 
-		{
-			opponentSpeed = 25 + level * 2.5; // 27.5–50
-		} 
-		else if (carOpponentString.equals("Rocket.png")) 
-		{
-			opponentSpeed = 30 + level * 3; // 33–60
-		} 
-		else 
-		{
-			opponentSpeed = 15 + level * 1.5; // fallback for unknown types
+			System.err.println("File not found: " + e.getMessage());
 		}
 
-		try 
+		int questionNumber = (int) (Math.random() * 50 + 1);
+		System.out.println("Question Number: " + questionNumber);
+
+		while (in1.hasNextLine())
+		{
+			String line = in1.nextLine();
+			if (line.startsWith(questionNumber + ")"))
+			{
+				answerExplanation = line;
+			}
+		}
+
+		while (in2.hasNextLine())
+		{
+			String questionLine = in2.nextLine();
+			if (questionLine.startsWith(questionNumber + ")"))
+			{
+				question = questionLine;
+				for (int i = 0; i < 4; i++)
+				{
+					if (in2.hasNextLine())
+					{
+						answerChoices[i] = in2.nextLine();
+					}
+				}
+				in2.next();
+				if (in2.hasNext())
+				{
+					answer = in2.next();
+				}
+			}
+		}
+
+		System.out.println("Question: " + question);
+		for (String choice : answerChoices)
+		{
+			System.out.println("Choice: " + choice);
+		}
+		System.out.println("Answer: " + answer);
+		System.out.println("Explanation: " + answerExplanation);
+	}
+
+	public void getCar()
+	{
+		if (carsImage != null && opponentCarImage != null && trackImage != null)
+			return;
+
+		carNumber = Storer.getCarImage();
+		carOpponentString = Storer.getOpponentCarImage();
+		int level = Storer.getDifficultyLevel();
+
+		switch (carOpponentString)
+		{
+		case "Bicycle.png":
+			opponentSpeed = 10 + level;
+			break;
+		case "Motorcycle.png":
+			opponentSpeed = 15 + level * 1.5;
+			break;
+		case "CarNormal.png":
+			opponentSpeed = 20 + level * 2;
+			break;
+		case "CarSport.png":
+			opponentSpeed = 25 + level * 2.5;
+			break;
+		case "Rocket.png":
+			opponentSpeed = 30 + level * 3;
+			break;
+		}
+
+		try
 		{
 			BufferedImage originalOpponentImage = ImageIO.read(new File(carOpponentString));
 			int width = originalOpponentImage.getHeight();
@@ -1824,28 +1864,30 @@ class GamePanel extends JPanel
 			g2d.drawImage(originalOpponentImage, transform, null);
 			g2d.dispose();
 			opponentCarImage = rotatedImage;
+
 			carsImage = ImageIO.read(new File(carNumber + ".png"));
 			trackImage = ImageIO.read(new File("Track.png"));
-		} 
+		}
 		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
 	}
 
-	public void startTimer() 
+	public void startTimer()
 	{
-		gameTimer = new Timer(16, e -> {
+		gameTimer = new Timer(16, e ->
+		{
 			boolean win = true;
-			if (gameEnded) 
+			if (gameEnded)
 				return;
 
 			double userSpeed = 10 + userSpeedBoost;
-			
+
 			car1LogicalPos += userSpeed;
 			car2LogicalPos += opponentSpeed;
 
-			if (trackPos > TRACK_END) 
+			if (trackPos > TRACK_END)
 			{
 				trackPos -= userSpeed;
 			}
@@ -1855,12 +1897,12 @@ class GamePanel extends JPanel
 				gameEnded = true;
 				gameTimer.stop();
 				JOptionPane.showMessageDialog(GamePanel.this, "You Win!", "Race Result", JOptionPane.INFORMATION_MESSAGE);
-			} 
+			}
 			else if (car2LogicalPos >= FINISH_LINE && car1LogicalPos >= FINISH_LINE)
 			{
 				gameEnded = true;
 				gameTimer.stop();
-				JOptionPane.showMessageDialog(GamePanel.this, "You Loose!", "Race Result", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(GamePanel.this, "You Lose!", "Race Result", JOptionPane.INFORMATION_MESSAGE);
 			}
 
 			if (car2LogicalPos >= FINISH_LINE)
@@ -1875,39 +1917,92 @@ class GamePanel extends JPanel
 	}
 
 	@Override
-	public void paintComponent(Graphics g) 
+	public void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
 		getCar();
 
-		// Camera shake
 		int shake = (int)(Math.random() * Math.max(0, userSpeedBoost / 2));
 		int trackY = 100 + shake;
 
-		// Draw track
-		if (trackImage != null) 
+		if (trackImage != null)
 		{
 			g.drawImage(trackImage, (int) trackPos, trackY, (int) (1166 * 25), 800, this);
 		}
 
-		// Draw player car
-		if (carsImage != null) 
+		if (carsImage != null)
 		{
 			g.drawImage(carsImage, USER_CAR_X, 170 + shake, 238 * 2, 121 * 2, this);
 		}
 
-		// Draw opponent car
 		int opponentScreenX = USER_CAR_X + (int)(car2LogicalPos - car1LogicalPos);
-		if (opponentCarImage != null) 
+		if (opponentCarImage != null)
 		{
-			if (car2LogicalPos >= FINISH_LINE) 
+			if (car2LogicalPos >= FINISH_LINE)
 			{
-				// Keep the opponent car at the same finish line as the user
 				g.drawImage(opponentCarImage, USER_CAR_X + (int)(FINISH_LINE - car1LogicalPos), 580, 238 * 2, 121 * 2, this);
-			} 
-			else if (opponentScreenX < getWidth() && opponentScreenX > -400) 
+			}
+			else if (opponentScreenX < getWidth() && opponentScreenX > -400)
 			{
 				g.drawImage(opponentCarImage, opponentScreenX, 580, 238 * 2, 121 * 2, this);
+			}
+		}
+	}
+
+	public void handleAnswer(int selectedIndex, JButton b1, JButton b2, JButton b3, JButton b4)
+	{
+		if (timerStarted)
+		{
+			boolean isCorrect = answerChoices[selectedIndex].substring(3, 4).equals(answer);
+			System.out.println(isCorrect + "\n");
+			System.out.println("Entered: " + answerChoices[selectedIndex].substring(3,4) + "\tRight: " + answer);
+
+			if (!gameEnded)
+			{
+				if (isCorrect)
+				{
+					userSpeedBoost += 10; // Apply the boost 
+					importTextfiles();
+					b1.setText(answerChoices[0]);
+					b2.setText(answerChoices[1]);
+					b3.setText(answerChoices[2]);
+					b4.setText(answerChoices[3]);
+					questionArea.setText(question);
+					Timer boostTimer = new Timer(2000, new ActionListener() 
+					{ // 2000ms = 2 seconds
+						@Override
+						public void actionPerformed(ActionEvent e) 
+						{
+							userSpeedBoost -= 10; // Revert the boost
+							((Timer) e.getSource()).stop(); // Stop the timer
+						}
+					});
+					boostTimer.setRepeats(false); // Ensure the timer only runs once
+					boostTimer.start(); // Start the timer
+				}
+				else
+				{
+					userSpeedBoost -= 10; // Apply the slowdown
+					importTextfiles();
+					b1.setText(answerChoices[0]);
+					b2.setText(answerChoices[1]);
+					b3.setText(answerChoices[2]);
+					b4.setText(answerChoices[3]);
+					questionArea.setText(question);
+					Timer slowdownTimer = new Timer(2000, new ActionListener()
+					{ // 2000ms = 2 seconds
+						@Override
+						public void actionPerformed(ActionEvent e) 
+						{
+							userSpeedBoost += 10; // Revert the slowdown
+							((Timer) e.getSource()).stop(); // Stop the timer
+						}
+					});
+					slowdownTimer.setRepeats(false); // Ensure the timer only runs once
+					slowdownTimer.start(); // Start the timer
+				}
+
+
 			}
 		}
 	}
