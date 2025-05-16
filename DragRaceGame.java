@@ -1768,7 +1768,7 @@ class GamePanel extends JPanel
 		Scanner in1 = null;
 		Scanner in2 = null;
 		File trigAnswerFile = new File("trigAnswerExplanations.txt");
-		File trigQuestionFile = new File("trigMultipleChoice.txt");
+		File trigQuestionFile = new File("simpleOperations.txt");
 
 		try
 		{
@@ -2001,8 +2001,6 @@ class GamePanel extends JPanel
 					slowdownTimer.setRepeats(false); // Ensure the timer only runs once
 					slowdownTimer.start(); // Start the timer
 				}
-
-
 			}
 		}
 	}

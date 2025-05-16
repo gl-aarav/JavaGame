@@ -1,9 +1,9 @@
 1) What is 6 + 5?
-   A) 10
-   B) 11
+   A) 11
+   B) 10
    C) 12
    D) 13
-   Answer: B
+   Answer: A
 
 2) What is 12 + 7?
    A) 18
@@ -14,24 +14,25 @@
 
 3) What is 4 + 9?
    A) 12
-   B) 13
-   C) 14
+   B) 14
+   C) 13
    D) 15
-   Answer: B
+   Answer: C
 
 4) What is 15 + 3?
    A) 17
-   B) 18
-   C) 19
-   D) 20
-   Answer: B
-
-5) What is 8 + 11?
-   A) 18
    B) 19
    C) 20
+   D) 18
+   Answer: D
+
+5) What is 8 + 11?
+   A) 19
+   B) 18
+   C) 20
    D) 21
-   Answer: B
+   Answer: A
+
 6) What is 14 - 7?
    A) 6
    B) 7
@@ -48,301 +49,301 @@
 
 8) What is 9 - 4?
    A) 4
+   B) 6
+   C) 7
+   D) 5
+   Answer: D
+
+9) What is 17 - 9?
+   A) 8
+   B) 7
+   C) 9
+   D) 10
+   Answer: A
+
+10) What is 25 - 10?
+   A) 13
+   B) 15
+   C) 14
+   D) 16
+   Answer: B
+
+11) What is 3 × 4?
+   A) 10
+   B) 11
+   C) 12
+   D) 13
+   Answer: C
+
+12) What is 7 × 5?
+   A) 33
+   B) 34
+   C) 36
+   D) 35
+   Answer: D
+
+13) What is 9 × 3?
+   A) 27
+   B) 26
+   C) 28
+   D) 29
+   Answer: A
+
+14) What is 6 × 6?
+   A) 34
+   B) 36
+   C) 35
+   D) 37
+   Answer: B
+
+15) What is 8 × 7?
+   A) 54
+   B) 55
+   C) 56
+   D) 57
+   Answer: C
+
+16) What is 20 ÷ 4?
+   A) 4
+   B) 6
+   C) 7
+   D) 5
+   Answer: D
+
+17) What is 36 ÷ 6?
+   A) 6
+   B) 5
+   C) 7
+   D) 8
+   Answer: A
+
+18) What is 45 ÷ 9?
+   A) 4
    B) 5
    C) 6
    D) 7
    Answer: B
 
-9) What is 17 - 9?
+19) What is 72 ÷ 8?
+   A) 7
+   B) 8
+   C) 9
+   D) 10
+   Answer: C
+
+20) What is 81 ÷ 9?
+   A) 8
+   B) 10
+   C) 11
+   D) 9
+   Answer: D
+
+21) What is 5 + 8?
+   A) 13
+   B) 12
+   C) 14
+   D) 15
+   Answer: A
+
+22) What is 14 - 6?
    A) 7
    B) 8
    C) 9
    D) 10
    Answer: B
 
-10) What is 25 - 10?
-    A) 13
-    B) 14
-    C) 15
-    D) 16
-    Answer: C
-    
-11) What is 3 × 4?
-    A) 10
-    B) 11
-    C) 12
-    D) 13
-    Answer: C
-
-12) What is 7 × 5?
-    A) 33
-    B) 34
-    C) 35
-    D) 36
-    Answer: C
-
-13) What is 9 × 3?
-    A) 26
-    B) 27
-    C) 28
-    D) 29
-    Answer: B
-
-14) What is 6 × 6?
-    A) 34
-    B) 35
-    C) 36
-    D) 37
-    Answer: C
-
-15) What is 8 × 7?
-    A) 54
-    B) 55
-    C) 56
-    D) 57
-    Answer: C
-
-16) What is 20 ÷ 4?
-    A) 4
-    B) 5
-    C) 6
-    D) 7
-    Answer: B
-
-17) What is 36 ÷ 6?
-    A) 5
-    B) 6
-    C) 7
-    D) 8
-    Answer: B
-
-18) What is 45 ÷ 9?
-    A) 4
-    B) 5
-    C) 6
-    D) 7
-    Answer: B
-
-19) What is 72 ÷ 8?
-    A) 7
-    B) 8
-    C) 9
-    D) 10
-    Answer: C
-
-20) What is 81 ÷ 9?
-    A) 8
-    B) 9
-    C) 10
-    D) 11
-    Answer: B
-
-21) What is 5 + 8?
-    A) 12
-    B) 13
-    C) 14
-    D) 15
-    Answer: B
-
-22) What is 14 - 6?
-    A) 7
-    B) 8
-    C) 9
-    D) 10
-    Answer: B
-
 23) What is 7 × 4?
-    A) 27
-    B) 28
-    C) 29
-    D) 30
-    Answer: B
+   A) 27
+   B) 29
+   C) 28
+   D) 30
+   Answer: C
 
 24) What is 56 ÷ 7?
-    A) 6
-    B) 7
-    C) 8
-    D) 9
-    Answer: C
+   A) 6
+   B) 7
+   C) 9
+   D) 8
+   Answer: D
 
 25) What is 11 + 15?
-    A) 25
-    B) 26
-    C) 27
-    D) 28
-    Answer: B
+   A) 26
+   B) 25
+   C) 27
+   D) 28
+   Answer: A
 
 26) What is 30 - 13?
-    A) 16
-    B) 17
-    C) 18
-    D) 19
-    Answer: B
+   A) 16
+   B) 17
+   C) 18
+   D) 19
+   Answer: B
 
 27) What is 8 × 8?
-    A) 62
-    B) 63
-    C) 64
-    D) 65
-    Answer: C
+   A) 62
+   B) 63
+   C) 64
+   D) 65
+   Answer: C
 
 28) What is 90 ÷ 10?
-    A) 8
-    B) 9
-    C) 10
-    D) 11
-    Answer: C
+   A) 8
+   B) 10
+   C) 11
+   D) 9
+   Answer: D
 
 29) What is 7 + 6?
-    A) 11
-    B) 12
-    C) 13
-    D) 14
-    Answer: C
+   A) 13
+   B) 11
+   C) 12
+   D) 14
+   Answer: A
 
 30) What is 16 - 9?
-    A) 5
-    B) 6
-    C) 7
-    D) 8
-    Answer: C
+   A) 5
+   B) 7
+   C) 6
+   D) 8
+   Answer: B
 
 31) What is 4 × 9?
-    A) 34
-    B) 35
-    C) 36
-    D) 37
-    Answer: C
+   A) 34
+   B) 35
+   C) 36
+   D) 37
+   Answer: C
 
 32) What is 64 ÷ 8?
-    A) 6
-    B) 7
-    C) 8
-    D) 9
-    Answer: C
+   A) 6
+   B) 7
+   C) 9
+   D) 8
+   Answer: D
 
 33) What is 12 + 14?
-    A) 25
-    B) 26
-    C) 27
-    D) 28
-    Answer: D
+   A) 25
+   B) 27
+   C) 26
+   D) 28
+   Answer: C
 
 34) What is 22 - 10?
-    A) 10
-    B) 11
-    C) 12
-    D) 13
-    Answer: B
+   A) 10
+   B) 12
+   C) 11
+   D) 13
+   Answer: B
 
 35) What is 5 × 7?
-    A) 33
-    B) 34
-    C) 35
-    D) 36
-    Answer: C
+   A) 33
+   B) 34
+   C) 35
+   D) 36
+   Answer: C
 
 36) What is 49 ÷ 7?
-    A) 6
-    B) 7
-    C) 8
-    D) 9
-    Answer: B
+   A) 6
+   B) 8
+   C) 9
+   D) 7
+   Answer: D
 
 37) What is 9 + 10?
-    A) 18
-    B) 19
-    C) 20
-    D) 21
-    Answer: B
+   A) 19
+   B) 18
+   C) 20
+   D) 21
+   Answer: A
 
 38) What is 18 - 7?
-    A) 10
-    B) 11
-    C) 12
-    D) 13
-    Answer: B
+   A) 10
+   B) 11
+   C) 12
+   D) 13
+   Answer: B
 
 39) What is 6 × 5?
-    A) 28
-    B) 29
-    C) 30
-    D) 31
-    Answer: C
+   A) 28
+   B) 29
+   C) 30
+   D) 31
+   Answer: C
 
 40) What is 54 ÷ 9?
-    A) 5
-    B) 6
-    C) 7
-    D) 8
-    Answer: B
+   A) 5
+   B) 7
+   C) 8
+   D) 6
+   Answer: D
 
 41) What is 3 + 17?
-    A) 19
-    B) 20
-    C) 21
-    D) 22
-    Answer: B
+   A) 19
+   B) 20
+   C) 21
+   D) 22
+   Answer: B
 
 42) What is 25 - 8?
-    A) 15
-    B) 16
-    C) 17
-    D) 18
-    Answer: C
+   A) 15
+   B) 16
+   C) 17
+   D) 18
+   Answer: C
 
 43) What is 7 × 6?
-    A) 40
-    B) 41
-    C) 42
-    D) 43
-    Answer: C
+   A) 40
+   B) 41
+   C) 43
+   D) 42
+   Answer: D
 
 44) What is 100 ÷ 20?
-    A) 4
-    B) 5
-    C) 6
-    D) 7
-    Answer: B
+   A) 4
+   B) 5
+   C) 6
+   D) 7
+   Answer: B
 
 45) What is 14 + 13?
-    A) 25
-    B) 26
-    C) 27
-    D) 28
-    Answer: C
+   A) 25
+   B) 26
+   C) 27
+   D) 28
+   Answer: C
 
 46) What is 19 - 11?
-    A) 6
-    B) 7
-    C) 8
-    D) 9
-    Answer: B
+   A) 6
+   B) 7
+   C) 9
+   D) 8
+   Answer: D
 
 47) What is 9 × 7?
-    A) 62
-    B) 63
-    C) 64
-    D) 65
-    Answer: B
+   A) 62
+   B) 63
+   C) 64
+   D) 65
+   Answer: B
 
 48) What is 80 ÷ 8?
-    A) 9
-    B) 10
-    C) 11
-    D) 12
-    Answer: B
+   A) 9
+   B) 11
+   C) 10
+   D) 12
+   Answer: C
 
 49) What is 10 + 15?
-    A) 24
-    B) 25
-    C) 26
-    D) 27
-    Answer: B
+   A) 24
+   B) 26
+   C) 25
+   D) 27
+   Answer: C
 
 50) What is 28 - 14?
-    A) 12
-    B) 13
-    C) 14
-    D) 15
-    Answer: C
+   A) 12
+   B) 13
+   C) 15
+   D) 14
+   Answer: D
