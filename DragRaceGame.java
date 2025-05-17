@@ -72,6 +72,7 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -79,6 +80,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -87,6 +89,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -106,6 +109,7 @@ import javax.swing.ButtonModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -115,7 +119,11 @@ import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
+
 import java.util.Scanner;
 import java.util.function.BiConsumer;
 
@@ -156,12 +164,14 @@ class GameHolder extends JPanel
 		HighScorePanel highScoresPanel = new HighScorePanel(this, layout);
 		GamePanel gamePanel = new GamePanel(this, layout);
 		CarChoosePanel carChoose = new CarChoosePanel(this,layout);
+		TugOfWarPanel towg = new TugOfWarPanel(this, layout);
 
 		add(welcomePanel, "Welcome");
 		add(instructionsPanel, "Instructions");
 		add(highScoresPanel, "HighScores");
 		add(carChoose, "ChooseCar");
 		add(gamePanel, "Game");
+		add (towg, "Tug");
 	}
 }
 
@@ -734,7 +744,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				if (carSelected && opponentCarSelected && nameEntered)
 				{
 					openingSound.play();
-					layout.show(parent, "Game");
+					layout.show(parent, "Tug");
 				}
 
 				else
@@ -1870,7 +1880,7 @@ class GamePanel extends JPanel
 		controlPanel.add(questionFourButton);
 		controlPanel.add(dontKnowButton);
 		add(controlPanel, BorderLayout.SOUTH);
-		
+
 		add(controlButtonPanel, BorderLayout.CENTER);
 	}
 
@@ -2037,7 +2047,8 @@ class GamePanel extends JPanel
 			car1LogicalPos += userSpeed;
 			car2LogicalPos += opponentSpeed;
 
-			if (trackPos > TRACK_END) {
+			if (trackPos > TRACK_END) 
+			{
 				trackPos -= userSpeed;
 			}
 
@@ -2175,13 +2186,527 @@ class GamePanel extends JPanel
 	}
 }
 
+class TugOfWarPanel extends JPanel
+{
+	private JPanel parent;
+	private CardLayout layout;
+
+	private BufferedImage userCarImage;
+	private BufferedImage botCarImage;
+	private BufferedImage ropeImage;
+
+	// Constants for game mechanics
+	private final double PULL_STEP     = 50;    // pixels rope moves towards user per correct
+	private final double BOT_PULL_STEP = 20;    // pixels rope moves towards bot per incorrect
+	private final double BOT_AUTO_PULL = 0.1;   // pixels rope moves towards bot per game tick (auto-pull)
+	private final double WIN_THRESHOLD = 300;   // pixels from center to win/lose
+
+	// Target car dimensions
+	private final int CAR_WIDTH = 238;
+	private final int CAR_HEIGHT = 131;
+
+
+	private double ropeOffset = 0;               // negative => toward user, positive => toward bot
+	private boolean timerStarted = false;
+	private boolean gameEnded    = false;
+
+	private Timer gameTimer;
+
+	private int questionNumber = 0;
+	private String question           = "";
+	private String[] answerChoices    = new String[4];
+	private String answer             = "";
+	private String answerExplanation  = ""; // Not currently used in game logic, but kept for import
+
+	private SoundPlayer correctSound;
+	private SoundPlayer incorrectSound;
+
+	private JTextArea questionArea    = new JTextArea();
+	private JButton[] answerButtons   = new JButton[4];
+	private JButton startButton       = new JButton("Start");
+	private JButton restartButton     = new JButton("Restart");
+
+	public TugOfWarPanel(JPanel gameHolder, CardLayout layout)
+	{
+		this.parent = gameHolder;
+		this.layout = layout;
+
+		setLayout(new BorderLayout());
+		setBackground(new Color(70, 80, 90)); // Dark blue-gray background
+
+		// Load, scale, and rotate images
+		try
+		{
+			// --- Load, Scale, and Rotate User Car (Car1.png) ---
+			BufferedImage originalUserImage = ImageIO.read(new File("Car1.png"));
+
+			// Scale the user car image first to target dimensions
+			BufferedImage scaledUserImage = new BufferedImage(CAR_WIDTH, CAR_HEIGHT, originalUserImage.getType());
+			Graphics2D g2dScaleUser = scaledUserImage.createGraphics();
+			g2dScaleUser.drawImage(originalUserImage, 0, 0, CAR_WIDTH, CAR_HEIGHT, null);
+			g2dScaleUser.dispose();
+
+			// Rotate the scaled user car image by 180 degrees
+			BufferedImage rotatedScaledUserImage = new BufferedImage(CAR_WIDTH, CAR_HEIGHT, scaledUserImage.getType());
+			Graphics2D g2dRotateUser = rotatedScaledUserImage.createGraphics();
+			AffineTransform rotateTransformUser = AffineTransform.getRotateInstance(Math.toRadians(180), CAR_WIDTH / 2.0, CAR_HEIGHT / 2.0);
+			g2dRotateUser.drawImage(scaledUserImage, rotateTransformUser, null);
+			g2dRotateUser.dispose();
+			userCarImage = rotatedScaledUserImage;
+
+
+			// --- Load, Rotate, and Scale Bot Car (CarNormal.png) ---
+			BufferedImage originalOpponentImage = ImageIO.read(new File("CarNormal.png"));
+			int width = originalOpponentImage.getHeight();
+			int height = originalOpponentImage.getWidth();
+			BufferedImage rotatedImage = new BufferedImage(width, height, originalOpponentImage.getType());
+			Graphics2D g2d = rotatedImage.createGraphics();
+			AffineTransform transform = new AffineTransform();
+			transform.translate(width / 2.0, height / 2.0);
+			transform.rotate(Math.toRadians(90));
+			transform.translate(-originalOpponentImage.getWidth() / 2.0, -originalOpponentImage.getHeight() / 2.0);
+			g2d.drawImage(originalOpponentImage, transform, null);
+			g2d.dispose();
+			botCarImage = rotatedImage;
+
+			// Load rope image (no scaling/rotation specified, keep original size)
+			ropeImage = ImageIO.read(new File("rope.png"));
+
+			BufferedImage originalRope = ImageIO.read(new File("rope.png"));
+			int targetWidth = 400;
+			int targetHeight = originalRope.getHeight() * targetWidth / originalRope.getWidth();
+			BufferedImage scaledRope = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB);
+			Graphics2D gRope = scaledRope.createGraphics();
+			gRope.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+			gRope.drawImage(originalRope, 0, 0, targetWidth, targetHeight, null);
+			gRope.dispose();
+			ropeImage = scaledRope;
+
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+			// Handle missing images - maybe show error or use placeholders
+			JOptionPane.showMessageDialog(this, "Error loading game images: " + e.getMessage() + "\nEnsure Car1.png, CarNormal.png, and rope.png are in the correct directory.", "Image Error", JOptionPane.ERROR_MESSAGE);
+		}
+
+		correctSound   = new SoundPlayer("Correct.wav");
+		incorrectSound = new SoundPlayer("InCorrect.wav");
+
+		// Top control buttons
+		JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 20)); // Increased spacing
+		topPanel.setOpaque(false);
+
+		// Apply styling similar to GamePanel's button styling
+		BiConsumer<JButton, Color> styleButton = (btn, bg) ->
+		{
+			Font customFont = new Font("Segoe UI", Font.BOLD, 18); // Slightly larger font
+			Color hoverShadow = new Color(0, 0, 0, 50); // Darker shadow
+
+			btn.setFont(customFont);
+			btn.setBackground(bg);
+			btn.setForeground(Color.WHITE); // White text for colored buttons
+			btn.setFocusPainted(false);
+			btn.setOpaque(true);
+			btn.setContentAreaFilled(true);
+			btn.setBorder(BorderFactory.createCompoundBorder(
+					BorderFactory.createMatteBorder(0, 0, 6, 0, hoverShadow), // Thicker shadow
+					BorderFactory.createEmptyBorder(10, 25, 10, 25) // Increased padding
+					));
+			btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+
+			btn.addMouseListener(new MouseAdapter()
+			{
+				public void mousePressed(MouseEvent e)
+				{
+					btn.setBorder(BorderFactory.createEmptyBorder(16, 25, 4, 25)); // Simulate press down
+				}
+				public void mouseExited(MouseEvent e)
+				{
+					btn.setBorder(BorderFactory.createCompoundBorder(
+							BorderFactory.createMatteBorder(0, 0, 6, 0, hoverShadow),
+							BorderFactory.createEmptyBorder(10, 25, 10, 25)
+							));
+				}
+				public void mouseReleased(MouseEvent e)
+				{
+					btn.setBorder(BorderFactory.createCompoundBorder(
+							BorderFactory.createMatteBorder(0, 0, 6, 0, hoverShadow),
+							BorderFactory.createEmptyBorder(10, 25, 10, 25)
+							));
+				}
+				public void mouseEntered(MouseEvent e) {
+					// Optional: change background slightly on hover
+					// btn.setBackground(bg.darker());
+				}
+			});
+		};
+
+
+		Color startRestartColor = new Color(0, 150, 255); // Brighter blue
+		styleButton.accept(startButton,   startRestartColor);
+		styleButton.accept(restartButton, startRestartColor);
+
+
+		topPanel.add(startButton);
+		topPanel.add(restartButton);
+		add(topPanel, BorderLayout.NORTH);
+
+		// Question area
+		questionArea.setLineWrap(true);
+		questionArea.setWrapStyleWord(true);
+		questionArea.setEditable(false);
+		questionArea.setFont(new Font("Segoe UI", Font.PLAIN, 20)); // Larger font
+		questionArea.setForeground(Color.WHITE);
+		questionArea.setOpaque(false);
+		questionArea.setBorder(new EmptyBorder(20, 50, 20, 50)); // Padding around text
+		add(questionArea, BorderLayout.CENTER); // Question area in the center
+
+
+		// Answer buttons panel
+		JPanel answersPanel = new JPanel(new GridLayout(2, 2, 20, 20)); // 2x2 grid with spacing
+		answersPanel.setOpaque(false);
+		answersPanel.setBorder(new EmptyBorder(0, 50, 50, 50)); // Padding around the button grid
+
+		Color answerButtonColor = new Color(0, 180, 140); // Greenish color
+		Color secondaryColor = new Color(200, 200, 200); // Grey for I Don't Know (if implemented)
+
+		for (int i = 0; i < 4; i++)
+		{
+			answerButtons[i] = new JButton();
+			// Reusing the styleButton logic for answer buttons
+			styleButton.accept(answerButtons[i], answerButtonColor);
+			final int idx = i;
+			answerButtons[i].addActionListener(e -> handleAnswer(idx));
+			answerButtons[i].setEnabled(false); // Disable until game starts
+			answerButtons[i].setFont(new Font("Arial", Font.PLAIN, 16)); // Smaller font for answer text
+			answersPanel.add(answerButtons[i]);
+		}
+		// If you wanted an "I Don't Know" button, you'd add it here to the answersPanel
+		// JButton dontKnowButton = new JButton("I Don't Know");
+		// styleButton.accept(dontKnowButton, secondaryColor);
+		// answersPanel.add(dontKnowButton); // Adjust GridLayout size if adding more buttons
+
+
+		add(answersPanel, BorderLayout.SOUTH); // Answer buttons at the bottom
+
+		// Start button logic with countdown
+		startButton.addActionListener(e ->
+		{
+			if (!timerStarted)
+			{
+				startButton.setEnabled(false);
+				runCountdown(3, () ->
+				{
+					timerStarted = true;
+					loadNextQuestion(); // Load first question after countdown
+					startGameLoop();    // Start game timer for bot pull
+					startButton.setVisible(false); // Hide start, show restart? Or keep both?
+					restartButton.setVisible(true); // Show restart
+				});
+			}
+		});
+
+		// Restart button logic
+		restartButton.setVisible(false); // Hide initially
+		restartButton.addActionListener(e ->
+		{
+			if (gameTimer != null) gameTimer.stop();
+			resetGame();
+			startButton.setVisible(true); // Show start again
+			restartButton.setVisible(false); // Hide restart
+		});
+	}
+
+	// Reusable countdown method
+	private void runCountdown(int seconds, Runnable onComplete)
+	{
+		final JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this),
+				"Get Ready", ModalityType.APPLICATION_MODAL);
+		JLabel lbl = new JLabel("", SwingConstants.CENTER);
+		lbl.setFont(new Font("Arial", Font.BOLD, 80)); // Larger font for countdown
+		lbl.setForeground(Color.WHITE);
+		dialog.getContentPane().setBackground(new Color(0, 0, 0, 180)); // Semi-transparent black
+		dialog.add(lbl);
+		dialog.setUndecorated(true);
+		dialog.setSize(250, 200); // Larger dialog
+		dialog.setLocationRelativeTo(this);
+
+		Timer t = new Timer(1000, null);
+		final int[] count = {seconds};
+		lbl.setText(String.valueOf(count[0])); // Display initial count
+		t.addActionListener(ev ->
+		{
+			count[0]--;
+			if (count[0] >= 1) // Show 3, 2, 1
+			{
+				lbl.setText(String.valueOf(count[0]));
+			} else if (count[0] == 0) { // Show "Go!"
+				lbl.setText("Go!");
+			}
+			else
+			{
+				t.stop();
+				dialog.dispose();
+				onComplete.run();
+			}
+		});
+		t.start();
+		dialog.setVisible(true);
+	}
+
+	private void loadNextQuestion()
+	{
+		importTextfiles(); // Load new question data
+		questionArea.setText(question);
+		for (int i = 0; i < 4; i++)
+		{
+			answerButtons[i].setText(answerChoices[i]);
+			answerButtons[i].setEnabled(true); // Enable buttons for new question
+		}
+		repaint(); // Repaint to ensure everything is updated visually
+	}
+
+	private void handleAnswer(int index)
+	{
+		if (!timerStarted || gameEnded) return;
+
+		// Disable buttons immediately after answering to prevent multiple clicks
+		for (JButton b : answerButtons) b.setEnabled(false);
+
+		boolean isCorrect = false;
+		// Safely check the answer choice format
+		if (answerChoices[index] != null && answerChoices[index].length() >= 4) {
+			isCorrect = answerChoices[index].substring(3,4).equalsIgnoreCase(answer.trim());
+		}
+
+
+		if (isCorrect)
+		{
+			correctSound.play();
+			ropeOffset -= PULL_STEP; // Pull rope towards user
+		}
+		else
+		{
+			incorrectSound.play();
+			ropeOffset += BOT_PULL_STEP;  // Pull rope towards bot
+		}
+
+		// Check win/loss condition after adjusting offset
+		checkWinLoss();
+
+		// Load the next question after a short delay or immediately
+		// Adding a short delay to let the sound play and visual update register
+		Timer delayTimer = new Timer(500, e -> {
+			if (!gameEnded) {
+				loadNextQuestion(); // Load next question and re-enable buttons
+			}
+		});
+		delayTimer.setRepeats(false);
+		delayTimer.start();
+
+		repaint(); // Repaint to show rope movement
+	}
+
+	private void startGameLoop()
+	{
+		gameTimer = new Timer(30, e -> // Timer tick every 30ms
+		{
+			if (gameEnded) return;
+
+			// Bot auto-pull towards the bot side
+			ropeOffset += BOT_AUTO_PULL;
+
+			// Check win/loss conditions continuously during the game loop
+			checkWinLoss();
+
+			repaint(); // Repaint to show continuous bot pull
+		});
+		gameTimer.start();
+	}
+
+	private void checkWinLoss()
+	{
+		if (ropeOffset <= -WIN_THRESHOLD)
+		{
+			endGame("You Win!");
+		}
+		else if (ropeOffset >= WIN_THRESHOLD)
+		{
+			endGame("You Lose!");
+		}
+	}
+
+
+	private void endGame(String msg)
+	{
+		gameEnded = true;
+		timerStarted = false;
+		if (gameTimer != null) gameTimer.stop();
+
+		// Disable all answer buttons
+		for (JButton b : answerButtons) 
+			b.setEnabled(false);
+
+		// Clear question area
+		questionArea.setText("");
+
+		// Show game over message
+		JOptionPane.showMessageDialog(this, msg, "Game Over", JOptionPane.INFORMATION_MESSAGE);
+
+		// After the message is shown, reset the game state
+		resetGame();
+	}
+
+	private void resetGame()
+	{
+		ropeOffset = 0; // Reset rope position
+		gameEnded = timerStarted = false;
+		questionArea.setText("");
+		for (JButton b : answerButtons) {
+			b.setText("");
+			b.setEnabled(false);
+		}
+		if (gameTimer != null) gameTimer.stop();
+		startButton.setEnabled(true); // Re-enable start button
+		startButton.setVisible(true); // Make start button visible again
+		restartButton.setVisible(false); // Hide restart button
+		repaint(); // Repaint to show cars returning to center
+	}
+
+	private void importTextfiles()
+	{
+		Scanner in1 = null;
+		Scanner in2 = null;
+		File trigAnswerFile = new File("trigAnswerExplanations.txt");
+		File trigQuestionFile = new File("trigMultipleChoice.txt");
+
+		try
+		{
+			in1 = new Scanner(trigAnswerFile);
+			in2 = new Scanner(trigQuestionFile);
+		}
+		catch (FileNotFoundException e)
+		{
+			System.err.println("File not found: " + e.getMessage());
+		}
+
+		int temp = 0;
+		do
+		{
+			temp = (int) (Math.random() * 50 + 1);
+		} while (questionNumber == temp);
+
+		questionNumber = temp;
+		System.out.println("Question Number: " + questionNumber);
+
+		while (in1.hasNextLine())
+		{
+			String line = in1.nextLine();
+			if (line.startsWith(questionNumber + ")"))
+			{
+				answerExplanation = line;
+			}
+		}
+
+		while (in2.hasNextLine())
+		{
+			String questionLine = in2.nextLine();
+			if (questionLine.startsWith(questionNumber + ")"))
+			{
+				question = questionLine;
+				for (int i = 0; i < 4; i++)
+				{
+					if (in2.hasNextLine())
+					{
+						answerChoices[i] = in2.nextLine();
+					}
+				}
+				in2.next();
+				if (in2.hasNext())
+				{
+					answer = in2.next();
+				}
+			}
+		}
+
+		System.out.println("Question: " + question);
+		for (String choice : answerChoices)
+		{
+			System.out.println("Choice: " + choice);
+		}
+		System.out.println("Answer: " + answer);
+		System.out.println("Explanation: " + answerExplanation);
+	}
+
+	@Override
+	protected void paintComponent(Graphics g)
+	{
+		super.paintComponent(g);
+
+		Graphics2D g2d = (Graphics2D) g;
+		
+		int w = getWidth();
+		int h = getHeight();
+		
+		int ropeW = ropeImage.getWidth();
+	    int minOffset = -(w - ropeW) / 2;
+	    int maxOffset =  (w - ropeW) / 2;
+	    ropeOffset = Math.max(minOffset, Math.min(maxOffset, ropeOffset));
+		
+		int carWidth = CAR_WIDTH;
+		int carHeight = CAR_HEIGHT;
+		
+		int centerX = w / 2;
+		int userWinX = centerX - (int) WIN_THRESHOLD;
+		int botWinX  = centerX + (int) WIN_THRESHOLD;
+
+		int userCarX = userWinX - CAR_WIDTH + (int) ropeOffset;
+		int botCarX  = botWinX + (int) ropeOffset;
+
+		int drawingAreaCenterY = h / 2;
+		int carY = drawingAreaCenterY - (CAR_HEIGHT / 2);
+
+		g2d.drawImage(userCarImage, userCarX, carY, this);
+		g2d.drawImage(botCarImage, botCarX, carY, CAR_WIDTH, CAR_HEIGHT, this);
+
+
+		g2d.drawImage(userCarImage, userCarX, carY, this);
+		g2d.drawImage(botCarImage, botCarX, carY, 238, 131, this);
+
+		int ropeHeight = ropeImage.getHeight();
+		int ropeY = carY + CAR_HEIGHT / 2 - ropeImage.getHeight() / 2;
+		int ropeX = userCarX + CAR_WIDTH; // Start where user car ends
+		int ropeWidth = botCarX - ropeX;
+
+		if (ropeWidth > 0)
+		    g2d.drawImage(ropeImage, ropeX, ropeY, ropeWidth, ropeImage.getHeight(), this);
+
+		g2d.setColor(Color.LIGHT_GRAY); // Or a color that contrasts with the background
+		int ropeLineY = ropeY + ropeHeight / 2; // Vertical center of the rope image
+		g2d.setStroke(new BasicStroke(2)); // Thinner line for background rope
+		g2d.drawLine(userCarX + carWidth, ropeLineY, botCarX, ropeLineY);
+		
+		g2d.setColor(Color.RED);
+		int thresholdLineY1 = carY; // Top of the cars
+		int thresholdLineY2 = carY + carHeight; // Bottom of the cars
+		g2d.setStroke(new BasicStroke(3)); // Thicker line
+		g2d.drawLine(w / 2 - (int) WIN_THRESHOLD, thresholdLineY1, w / 2 - (int) WIN_THRESHOLD, thresholdLineY2); // User win line
+		g2d.drawLine(w / 2 + (int) WIN_THRESHOLD, thresholdLineY1, w / 2 + (int) WIN_THRESHOLD, thresholdLineY2); // Bot win line
+		g2d.setColor(Color.YELLOW);
+		g2d.drawLine(w / 2, thresholdLineY1, w/2, thresholdLineY2); // Center line
+	}
+}
+
+
+
 class SoundPlayer
 {
 	private Clip clip;
 	private FloatControl volumeControl;
 	private static boolean isMuted = false; // Global mute flag
 
-	// Constructor to load the sound file
 	public SoundPlayer(String filePath)
 	{
 		try
