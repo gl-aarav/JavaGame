@@ -73,6 +73,7 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -81,6 +82,7 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -99,6 +101,8 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.BorderFactory;
+import javax.swing.ButtonModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -106,12 +110,14 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import java.util.Scanner;
+import java.util.function.BiConsumer;
 
 public class DragRaceGame 
 {
@@ -670,6 +676,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 	private SoundPlayer carSelectSound;
 	private SoundPlayer buttonClickSound;
 	private SoundPlayer notificationSound;
+	private SoundPlayer openingSound;
 	private JLabel carStatsLabel;
 	private String carStats = "No car selected"; // Placeholder for car stats
 	private boolean opponentCarSelected = false;
@@ -684,6 +691,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		setLayout(null);
 		addComponents();
 
+		openingSound = new SoundPlayer("Opening.wav");
 		carSelectSound = new SoundPlayer("carSelect.wav");
 		buttonClickSound = new SoundPlayer("buttonClick.wav");
 		notificationSound = new SoundPlayer("Notification.wav");
@@ -725,7 +733,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				buttonClickSound.play(); // Play button click sound
 				if (carSelected && opponentCarSelected && nameEntered)
 				{
-					carSelectSound.play(); // Play car selection sound
+					openingSound.play();
 					layout.show(parent, "Game");
 				}
 
@@ -1658,88 +1666,174 @@ class GamePanel extends JPanel
 	private double opponentSpeed;
 	private Storer Storer = new Storer();
 
+	private int questionNumber = 0;
 	private String question = "";
 	private String answerExplanation = "";
 	private String[] answerChoices = new String[4];
 	private String answer = "";
 	boolean showButtons = true;
-	JTextArea questionArea = new JTextArea();;
+	JTextArea questionArea = new JTextArea();
 
-	public GamePanel(JPanel gameHolder, CardLayout layout)
+	private SoundPlayer correct;
+	private SoundPlayer incorrect;
+	private JProgressBar progressBar;
+
+	JButton start;
+	JButton next;
+
+	GamePanel(JPanel gameHolder, CardLayout layout) 
 	{
 		importTextfiles();
+		correct = new SoundPlayer("Correct.wav");
+		incorrect = new SoundPlayer("InCorrect.wav");
 		this.parent = gameHolder;
 		this.layout = layout;
 		setLayout(new BorderLayout());
 
+		// Panel backgrounds
+		setBackground(new Color(240, 248, 255)); // light pastel blue
 		JLabel label = new JLabel("Racing Challenge!", SwingConstants.CENTER);
-		label.setForeground(Color.BLACK);
-		label.setFont(new Font("Arial", Font.BOLD, 32));
-		JPanel header = new JPanel(new GridLayout(2,1));
+		label.setForeground(new Color(25, 25, 112)); // midnight blue
+		label.setFont(new Font("Verdana", Font.BOLD, 36));
+
+		progressBar = new JProgressBar(0, 27000);
+		progressBar.setValue((int)trackPos);
+
+		JPanel header = new JPanel(new GridLayout(3,1));
+		header.setBackground(new Color(240, 248, 255));
 
 		JPanel controlPanel = new JPanel(new GridLayout(1, 5, 10, 10));
+		controlPanel.setBackground(new Color(230, 240, 255)); // slightly deeper blue
+
+		// Buttons
 		JButton questionOneButton = new JButton("");
 		JButton questionTwoButton = new JButton("");
 		JButton questionThreeButton = new JButton("");
 		JButton questionFourButton = new JButton("");
 		JButton dontKnowButton = new JButton("");
-		JButton start = new JButton("Start");
+		start = new JButton("  Start  ");
+		next = new JButton("Next");
 
-		start.addActionListener(new ActionListener()
+
+		// Button colors
+		Color startRestartColor = new Color(0, 122, 204);  // blue for both start & restart
+		Color nextColor = new Color(0, 166, 126);  // green for next
+
+		start.setPreferredSize(new Dimension(130, 35));
+		next.setPreferredSize(new Dimension(130, 35));
+
+		// Shared styling helper
+		Font customFont = new Font("Segoe UI", Font.BOLD, 16);
+		Color primaryColor     = new Color(0, 166, 126);
+		Color secondaryColor   = new Color(220, 220, 220);
+		Color hoverShadow      = new Color(0, 0, 0, 30);
+
+		// Method to apply flat + hover‐shadow style
+		final BiConsumer<JButton, Color> styleButton = (btn, bg) -> 
 		{
-			public void actionPerformed(ActionEvent e)
+			btn.setFont(customFont);
+			btn.setBackground(bg);
+			btn.setForeground(bg.equals(secondaryColor) ? Color.BLACK : Color.WHITE);
+			btn.setFocusPainted(false);
+			btn.setOpaque(true);
+			btn.setContentAreaFilled(true);
+			btn.setBorder(BorderFactory.createCompoundBorder(
+					BorderFactory.createMatteBorder(0, 0, 4, 0, hoverShadow),
+					BorderFactory.createEmptyBorder(6, 20, 6, 20)
+					));
+
+			btn.addMouseListener(new MouseAdapter() 
 			{
-				if (!timerStarted)
+				public void mousePressed(MouseEvent e) 
+				{
+					btn.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+				}
+				public void mouseExited(MouseEvent e) 
+				{
+					btn.setBorder(BorderFactory.createCompoundBorder(
+							BorderFactory.createMatteBorder(0, 0, 4, 0, hoverShadow),
+							BorderFactory.createEmptyBorder(6, 20, 6, 20)
+							));
+				}
+				public void mouseReleased(MouseEvent e) 
+				{
+					btn.setBorder(BorderFactory.createCompoundBorder(
+							BorderFactory.createMatteBorder(0, 0, 4, 0, hoverShadow),
+							BorderFactory.createEmptyBorder(6, 20, 6, 20)
+							));
+				}
+			});
+		};
+
+		// Apply styles
+		styleButton.accept(questionOneButton, primaryColor);
+		styleButton.accept(questionTwoButton, primaryColor);
+		styleButton.accept(questionThreeButton, primaryColor);
+		styleButton.accept(questionFourButton, primaryColor);
+		styleButton.accept(dontKnowButton, secondaryColor);
+		styleButton.accept(start, startRestartColor);
+		styleButton.accept(next, nextColor);
+
+		// Size
+		Dimension buttonSize = new Dimension(190, 60);
+		for (JButton b : new JButton[]
+				{ 
+						questionOneButton, questionTwoButton,questionThreeButton, questionFourButton, dontKnowButton 
+				})
+		{
+			b.setPreferredSize(buttonSize);
+		}
+
+		// Listeners & logic (unchanged)
+		start.addActionListener(e ->
+		{
+			if (!timerStarted)
+			{
+				start.setEnabled(false);
+				runCountdown(3, () ->
 				{
 					startTimer();
 					timerStarted = true;
 					start.setText("Restart");
+					start.setEnabled(true);
 					questionOneButton.setText(answerChoices[0]);
 					questionTwoButton.setText(answerChoices[1]);
 					questionThreeButton.setText(answerChoices[2]);
 					questionFourButton.setText(answerChoices[3]);
 					dontKnowButton.setText("I Don't Know");
 					questionArea.setText(question);
-				}
-
-				else
-				{
-					questionOneButton.setText("");
-					questionTwoButton.setText("");
-					questionThreeButton.setText("");
-					questionFourButton.setText("");
-					dontKnowButton.setText("");
-					questionArea.setText("");
-					if (gameTimer != null)
-						gameTimer.stop();
-					car1LogicalPos = 0;
-					car2LogicalPos = 0;
-					trackPos = 0;
-					userSpeedBoost = 0;
-					gameEnded = false;
-					timerStarted = false;
-					start.setText("Start");
-					repaint();
-				}
+					updateProgressBar();
+				});
+			}
+			else
+			{
+				questionOneButton.setText("");
+				questionTwoButton.setText("");
+				questionThreeButton.setText("");
+				questionFourButton.setText("");
+				dontKnowButton.setText("");
+				questionArea.setText("");
+				if (gameTimer != null) gameTimer.stop();
+				car1LogicalPos = car2LogicalPos = trackPos = userSpeedBoost = 0;
+				gameEnded = timerStarted = false;
+				start.setText("  Start  ");
+				progressBar.setValue(0);
+				repaint();
 			}
 		});
+
+		JPanel controlButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+		controlButtonPanel.setBackground(new Color(240, 248, 255, 0));
+		controlButtonPanel.add(start);
+		controlButtonPanel.add(next);
 
 		questionOneButton.addActionListener(e -> handleAnswer(0, questionOneButton, questionTwoButton, questionThreeButton, questionFourButton));
 		questionTwoButton.addActionListener(e -> handleAnswer(1, questionOneButton, questionTwoButton, questionThreeButton, questionFourButton));
 		questionThreeButton.addActionListener(e -> handleAnswer(2, questionOneButton, questionTwoButton, questionThreeButton, questionFourButton));
 		questionFourButton.addActionListener(e -> handleAnswer(3, questionOneButton, questionTwoButton, questionThreeButton, questionFourButton));
-
-		Dimension buttonSize = new Dimension(170, 60);  // width, height
-		questionOneButton.setPreferredSize(buttonSize);
-		questionTwoButton.setPreferredSize(buttonSize);
-		questionThreeButton.setPreferredSize(buttonSize);
-		questionFourButton.setPreferredSize(buttonSize);
-		dontKnowButton.setPreferredSize(buttonSize);
-
-
 		dontKnowButton.addActionListener(e -> 
 		{
-			if (timerStarted)
+			if (timerStarted) 
 			{
 				importTextfiles();
 				questionOneButton.setText(answerChoices[0]);
@@ -1749,26 +1843,77 @@ class GamePanel extends JPanel
 				questionArea.setText(question);
 			}
 		});
-		
+
+		Font font = new Font("Arial", Font.CENTER_BASELINE, 10);
+		questionOneButton.setFont(font);
+		questionTwoButton.setFont(font);
+		questionThreeButton.setFont(font);
+		questionFourButton.setFont(font);
+
+		// Text area styling
+		questionArea.setLineWrap(true);
+		questionArea.setWrapStyleWord(true);
+		questionArea.setEditable(false);
+		questionArea.setFont(new Font("Serif", Font.PLAIN, 20));
+		questionArea.setBackground(new Color(245, 245, 245));
+		questionArea.setForeground(Color.BLACK);
+
+		// Assemble
 		header.add(label);
-		header.add(questionArea,BorderLayout.NORTH);
-		add(header,BorderLayout.NORTH);
+		header.add(questionArea);
+		header.add(progressBar);
+		add(header, BorderLayout.NORTH);
+
 		controlPanel.add(questionOneButton);
 		controlPanel.add(questionTwoButton);
 		controlPanel.add(questionThreeButton);
 		controlPanel.add(questionFourButton);
 		controlPanel.add(dontKnowButton);
-
-		add(start, BorderLayout.EAST);
 		add(controlPanel, BorderLayout.SOUTH);
+		
+		add(controlButtonPanel, BorderLayout.CENTER);
 	}
+
+	private void updateProgressBar() {
+		int progress = (int) car1LogicalPos;
+		progressBar.setValue(Math.min(progress, FINISH_LINE));
+	}
+
+
+	private void runCountdown(int seconds, Runnable onComplete)
+	{
+		Timer countdownTimer = new Timer(1000, null);
+		final int[] count = { seconds };
+		start.setText(String.valueOf(count[0]));
+
+		countdownTimer.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				count[0]--;
+				if (count[0] > 0)
+				{
+					start.setText(String.valueOf(count[0]));	
+				}
+				else
+				{
+					countdownTimer.stop();
+					onComplete.run();
+				}
+			}
+		}); 
+
+		countdownTimer.start();
+	}
+
 
 	private void importTextfiles()
 	{
 		Scanner in1 = null;
 		Scanner in2 = null;
 		File trigAnswerFile = new File("trigAnswerExplanations.txt");
-		File trigQuestionFile = new File("simpleOperations.txt");
+		File trigQuestionFile = new File("trigMultipleChoice.txt");
 
 		try
 		{
@@ -1780,7 +1925,13 @@ class GamePanel extends JPanel
 			System.err.println("File not found: " + e.getMessage());
 		}
 
-		int questionNumber = (int) (Math.random() * 50 + 1);
+		int temp = 0;
+		do
+		{
+			temp = (int) (Math.random() * 50 + 1);
+		} while (questionNumber == temp);
+
+		questionNumber = temp;
 		System.out.println("Question Number: " + questionNumber);
 
 		while (in1.hasNextLine())
@@ -1834,19 +1985,19 @@ class GamePanel extends JPanel
 		switch (carOpponentString)
 		{
 		case "Bicycle.png":
-			opponentSpeed = 10 + level;
+			opponentSpeed = 15 + level;
 			break;
 		case "Motorcycle.png":
-			opponentSpeed = 15 + level * 1.5;
+			opponentSpeed = 20 + level * 1.5;
 			break;
 		case "CarNormal.png":
-			opponentSpeed = 20 + level * 2;
+			opponentSpeed = 25 + level * 2;
 			break;
 		case "CarSport.png":
-			opponentSpeed = 25 + level * 2.5;
+			opponentSpeed = 30 + level * 2.5;
 			break;
 		case "Rocket.png":
-			opponentSpeed = 30 + level * 3;
+			opponentSpeed = 35 + level * 3;
 			break;
 		}
 
@@ -1876,38 +2027,35 @@ class GamePanel extends JPanel
 
 	public void startTimer()
 	{
-		gameTimer = new Timer(16, e ->
+		gameTimer = new Timer(16, e -> 
 		{
-			boolean win = true;
 			if (gameEnded)
 				return;
 
-			double userSpeed = 10 + userSpeedBoost;
+			double userSpeed = 20 + userSpeedBoost;
 
 			car1LogicalPos += userSpeed;
 			car2LogicalPos += opponentSpeed;
 
-			if (trackPos > TRACK_END)
-			{
+			if (trackPos > TRACK_END) {
 				trackPos -= userSpeed;
 			}
 
-			if (car1LogicalPos >= FINISH_LINE && car2LogicalPos < FINISH_LINE && win)
+			// Update the progress bar here every tick
+			updateProgressBar();
+
+			// Check win/lose conditions
+			if (car1LogicalPos >= FINISH_LINE && car2LogicalPos < FINISH_LINE)
 			{
 				gameEnded = true;
 				gameTimer.stop();
 				JOptionPane.showMessageDialog(GamePanel.this, "You Win!", "Race Result", JOptionPane.INFORMATION_MESSAGE);
-			}
-			else if (car2LogicalPos >= FINISH_LINE && car1LogicalPos >= FINISH_LINE)
+			} 
+			else if (car2LogicalPos >= FINISH_LINE && car1LogicalPos >= FINISH_LINE) 
 			{
 				gameEnded = true;
 				gameTimer.stop();
 				JOptionPane.showMessageDialog(GamePanel.this, "You Lose!", "Race Result", JOptionPane.INFORMATION_MESSAGE);
-			}
-
-			if (car2LogicalPos >= FINISH_LINE)
-			{
-				win = false;
 			}
 
 			repaint();
@@ -1916,6 +2064,7 @@ class GamePanel extends JPanel
 		gameTimer.start();
 	}
 
+
 	@Override
 	public void paintComponent(Graphics g)
 	{
@@ -1923,11 +2072,15 @@ class GamePanel extends JPanel
 		getCar();
 
 		int shake = (int)(Math.random() * Math.max(0, userSpeedBoost / 2));
-		int trackY = 100 + shake;
+		int trackY = 150 + shake;
 
-		if (trackImage != null)
+		if (trackImage != null && trackPos<=0)
 		{
-			g.drawImage(trackImage, (int) trackPos, trackY, (int) (1166 * 25), 800, this);
+			g.drawImage(trackImage, (int) trackPos, trackY, 1166 * 25, 750, this);
+		}
+		else
+		{
+			g.drawImage(trackImage, 0, trackY, 1166 * 25, 750, this);
 		}
 
 		if (carsImage != null)
@@ -1940,11 +2093,11 @@ class GamePanel extends JPanel
 		{
 			if (car2LogicalPos >= FINISH_LINE)
 			{
-				g.drawImage(opponentCarImage, USER_CAR_X + (int)(FINISH_LINE - car1LogicalPos), 580, 238 * 2, 121 * 2, this);
+				g.drawImage(opponentCarImage, USER_CAR_X + (int)(FINISH_LINE - car1LogicalPos), 580+50, 238 * 2, 121 * 2, this);
 			}
 			else if (opponentScreenX < getWidth() && opponentScreenX > -400)
 			{
-				g.drawImage(opponentCarImage, opponentScreenX, 580, 238 * 2, 121 * 2, this);
+				g.drawImage(opponentCarImage, opponentScreenX, 580+50, 238 * 2, 121 * 2, this);
 			}
 		}
 	}
@@ -1961,6 +2114,8 @@ class GamePanel extends JPanel
 			{
 				if (isCorrect)
 				{
+					correct.stop();
+					correct.play();
 					userSpeedBoost += 10; // Apply the boost 
 					importTextfiles();
 					b1.setText(answerChoices[0]);
@@ -1982,13 +2137,22 @@ class GamePanel extends JPanel
 				}
 				else
 				{
+					incorrect.stop();
+					incorrect.play();
 					userSpeedBoost -= 10; // Apply the slowdown
+
 					importTextfiles();
 					b1.setText(answerChoices[0]);
 					b2.setText(answerChoices[1]);
 					b3.setText(answerChoices[2]);
 					b4.setText(answerChoices[3]);
-					questionArea.setText(question);
+
+					b1.setVisible(false);
+					b2.setVisible(false);
+					b3.setVisible(false);
+					b4.setVisible(false);
+					questionArea.setText("");
+
 					Timer slowdownTimer = new Timer(2000, new ActionListener()
 					{ // 2000ms = 2 seconds
 						@Override
@@ -1996,6 +2160,11 @@ class GamePanel extends JPanel
 						{
 							userSpeedBoost += 10; // Revert the slowdown
 							((Timer) e.getSource()).stop(); // Stop the timer
+							b1.setVisible(true);
+							b2.setVisible(true);
+							b3.setVisible(true);
+							b4.setVisible(true);
+							questionArea.setText(question);
 						}
 					});
 					slowdownTimer.setRepeats(false); // Ensure the timer only runs once
