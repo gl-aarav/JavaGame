@@ -175,6 +175,7 @@ class GameHolder extends JPanel
 		InstructionPanel instructionsPanel = new InstructionPanel(this, layout);
 
 		HighScorePanel highScoresPanel = new HighScorePanel(this, layout);
+		HighScorePanelAfter highScoresPanelAfter = new HighScorePanelAfter(this, layout);
 		GamePanel gamePanel = new GamePanel(this, layout);
 		CarChoosePanel carChoose = new CarChoosePanel(this,layout);
 		TugOfWarPanel tow = new TugOfWarPanel(this, layout);
@@ -187,6 +188,7 @@ class GameHolder extends JPanel
 		add(gamePanel, "Game");
 		add(tow, "Tug");
 		add(lp, "Learn");
+		add(highScoresPanelAfter, "HighScoresAfter");
 	}
 }
 
@@ -1779,7 +1781,7 @@ class GamePanel extends JPanel
 		JPanel header = new JPanel(new GridLayout(3,1));
 		header.setBackground(new Color(240, 248, 255));
 
-		JPanel controlPanel = new JPanel(new GridLayout(1, 5, 10, 10));
+		JPanel controlPanel = new JPanel(new GridLayout(2, 2, 10, 10));
 		controlPanel.setBackground(new Color(230, 240, 255)); // slightly deeper blue
 
 		// Buttons
@@ -1787,7 +1789,6 @@ class GamePanel extends JPanel
 		JButton questionTwoButton = new JButton("");
 		JButton questionThreeButton = new JButton("");
 		JButton questionFourButton = new JButton("");
-		JButton dontKnowButton = new JButton("");
 		start = new JButton("  Start  ");
 		next = new JButton("Next");
 		next.setVisible(false);
@@ -1847,7 +1848,6 @@ class GamePanel extends JPanel
 		styleButton.accept(questionTwoButton, primaryColor);
 		styleButton.accept(questionThreeButton, primaryColor);
 		styleButton.accept(questionFourButton, primaryColor);
-		styleButton.accept(dontKnowButton, secondaryColor);
 		styleButton.accept(start, startRestartColor);
 		styleButton.accept(next, nextColor);
 
@@ -1855,7 +1855,7 @@ class GamePanel extends JPanel
 		Dimension buttonSize = new Dimension(190, 60);
 		for (JButton b : new JButton[]
 				{ 
-						questionOneButton, questionTwoButton,questionThreeButton, questionFourButton, dontKnowButton 
+						questionOneButton, questionTwoButton,questionThreeButton, questionFourButton
 				})
 		{
 			b.setPreferredSize(buttonSize);
@@ -1877,7 +1877,6 @@ class GamePanel extends JPanel
 					questionTwoButton.setText(answerChoices[1]);
 					questionThreeButton.setText(answerChoices[2]);
 					questionFourButton.setText(answerChoices[3]);
-					dontKnowButton.setText("I Don't Know");
 					questionArea.setText(question);
 					updateProgressBar();
 				});
@@ -1888,7 +1887,6 @@ class GamePanel extends JPanel
 				questionTwoButton.setText("");
 				questionThreeButton.setText("");
 				questionFourButton.setText("");
-				dontKnowButton.setText("");
 				questionArea.setText("");
 				if (gameTimer != null) gameTimer.stop();
 				car1LogicalPos = car2LogicalPos = trackPos = userSpeedBoost = 0;
@@ -1909,25 +1907,12 @@ class GamePanel extends JPanel
 		controlButtonPanel.add(start);
 		controlButtonPanel.add(next);
 
-		questionOneButton.addActionListener(e -> handleAnswer(0, questionOneButton, questionTwoButton, questionThreeButton, questionFourButton, dontKnowButton));
-		questionTwoButton.addActionListener(e -> handleAnswer(1, questionOneButton, questionTwoButton, questionThreeButton, questionFourButton, dontKnowButton));
-		questionThreeButton.addActionListener(e -> handleAnswer(2, questionOneButton, questionTwoButton, questionThreeButton, questionFourButton, dontKnowButton));
-		questionFourButton.addActionListener(e -> handleAnswer(3, questionOneButton, questionTwoButton, questionThreeButton, questionFourButton, dontKnowButton));
-		dontKnowButton.addActionListener(e -> 
-		{
-			if (timerStarted) 
-			{
-				arrayNum[arrayNumber++] = questionNumber;
-				importTextfiles();
-				questionOneButton.setText(answerChoices[0]);
-				questionTwoButton.setText(answerChoices[1]);
-				questionThreeButton.setText(answerChoices[2]);
-				questionFourButton.setText(answerChoices[3]);
-				questionArea.setText(question);
-			}
-		});
+		questionOneButton.addActionListener(e -> handleAnswer(0, questionOneButton, questionTwoButton, questionThreeButton, questionFourButton));
+		questionTwoButton.addActionListener(e -> handleAnswer(1, questionOneButton, questionTwoButton, questionThreeButton, questionFourButton));
+		questionThreeButton.addActionListener(e -> handleAnswer(2, questionOneButton, questionTwoButton, questionThreeButton, questionFourButton));
+		questionFourButton.addActionListener(e -> handleAnswer(3, questionOneButton, questionTwoButton, questionThreeButton, questionFourButton));
 
-		Font font = new Font("Arial", Font.CENTER_BASELINE, 10);
+		Font font = new Font("Arial", Font.CENTER_BASELINE, 15);
 		questionOneButton.setFont(font);
 		questionTwoButton.setFont(font);
 		questionThreeButton.setFont(font);
@@ -1951,7 +1936,6 @@ class GamePanel extends JPanel
 		controlPanel.add(questionTwoButton);
 		controlPanel.add(questionThreeButton);
 		controlPanel.add(questionFourButton);
-		controlPanel.add(dontKnowButton);
 		add(controlPanel, BorderLayout.SOUTH);
 
 		add(controlButtonPanel, BorderLayout.CENTER);
@@ -2197,7 +2181,7 @@ class GamePanel extends JPanel
 		}
 	}
 
-	public void handleAnswer(int selectedIndex, JButton b1, JButton b2, JButton b3, JButton b4, JButton b5)
+	public void handleAnswer(int selectedIndex, JButton b1, JButton b2, JButton b3, JButton b4)
 	{
 		if (timerStarted)
 		{
@@ -2247,7 +2231,6 @@ class GamePanel extends JPanel
 					b2.setVisible(false);
 					b3.setVisible(false);
 					b4.setVisible(false);
-					b5.setVisible(false);
 					questionArea.setText("");
 
 					Timer slowdownTimer = new Timer(2000, new ActionListener()
@@ -2261,7 +2244,6 @@ class GamePanel extends JPanel
 							b2.setVisible(true);
 							b3.setVisible(true);
 							b4.setVisible(true);
-							b5.setVisible(true);
 							questionArea.setText(question);
 						}
 					});
@@ -2890,7 +2872,10 @@ class LearningPanel extends JPanel
 			}
 		});
 
-		nextButton.addActionListener(e -> layout.show(parent, "HighScores"));
+		nextButton.addActionListener(e -> 
+		{
+			layout.show(parent, "HighScoresAfter");
+		});
 
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setBackground(new Color(240, 245, 255));
@@ -3020,7 +3005,6 @@ class LearningPanel extends JPanel
 class HighScorePanel extends JPanel 
 {
 	private JTextArea textArea;
-	private Storer storer;
 	private JPanel parent;
 	private CardLayout layout;
 	private static final String HIGH_SCORE_FILE = "HighScores.txt";
@@ -3029,7 +3013,6 @@ class HighScorePanel extends JPanel
 	{
 		this.parent = parent;
 		this.layout = layout;
-		this.storer = new Storer();
 
 		setLayout(new BorderLayout());
 		setBackground(Color.WHITE);
@@ -3074,6 +3057,147 @@ class HighScorePanel extends JPanel
 	{
 		super.setVisible(visible);
 		if (!visible) return;
+
+		// Append current result with opponent
+
+
+		// Read and process high scores
+		Map<String, List<Record>> map = readRecordsGrouped();
+
+		StringBuilder sb = new StringBuilder();
+		for (String opp : map.keySet()) 
+		{
+			sb.append("Opponent: ").append(opp).append("\n");
+			List<Record> list = map.get(opp);
+			// sort by raceTime and tugTime
+			list.sort(Comparator.comparingInt(r -> r.raceTime));
+			sb.append(" Lowest RaceGame Times:\n");
+			for (int i = 0; i < Math.min(3, list.size()); i++) 
+			{
+				Record r = list.get(i);
+				sb.append("  " + (i+1) + ". " + r.name + ": " + r.raceTime + "s\n");
+			}
+			list.sort(Comparator.comparingInt(r -> r.tugTime));
+			sb.append(" Lowest TugGame Times:\n");
+			for (int i = 0; i < Math.min(3, list.size()); i++) 
+			{
+				Record r = list.get(i);
+				sb.append("  " + (i+1) + ". " + r.name + ": " + r.tugTime + "s\n");
+			}
+			sb.append("\n");
+		}
+
+		textArea.setText(sb.toString());
+		textArea.setCaretPosition(0);
+	}
+
+	private Map<String, List<Record>> readRecordsGrouped() 
+	{
+		Map<String, List<Record>> map = new LinkedHashMap<>();
+		File f = new File(HIGH_SCORE_FILE);
+		if (!f.exists()) return map;
+
+		try (BufferedReader br = new BufferedReader(new FileReader(f))) 
+		{
+			String line;
+			while ((line = br.readLine()) != null) 
+			{
+				String[] parts = line.split("\\|");
+				if (parts.length < 4) continue;
+				String name = parts[0], opp = parts[1];
+				int rt = Integer.parseInt(parts[2]);
+				int tt = Integer.parseInt(parts[3]);
+				Record r = new Record(name, rt, tt);
+				map.computeIfAbsent(opp, k -> new ArrayList<>()).add(r);
+			}
+		} 
+		catch (IOException e) 
+		{
+			// ignore
+		}
+		return map;
+	}
+
+	private static class Record 
+	{
+		String name;
+		int raceTime;
+		int tugTime;
+		Record(String n, int r, int t)
+		{
+			name = n; raceTime = r; tugTime = t; 
+		}
+	}
+}
+
+class HighScorePanelAfter extends JPanel 
+{
+	private JTextArea textArea;
+	private Storer storer;
+	private JPanel parent;
+	private CardLayout layout;
+	private static final String HIGH_SCORE_FILE = "HighScores.txt";
+
+	public HighScorePanelAfter(JPanel parent, CardLayout layout) 
+	{
+		this.parent = parent;
+		this.layout = layout;
+		this.storer = new Storer();
+
+		setLayout(new BorderLayout());
+		setBackground(Color.WHITE);
+
+		JLabel title = new JLabel("High Scores by Opponent", SwingConstants.CENTER);
+		title.setFont(new Font("Segoe UI", Font.BOLD, 26));
+		title.setBorder(new EmptyBorder(15, 0, 10, 0));
+		add(title, BorderLayout.NORTH);
+
+		textArea = new JTextArea();
+		textArea.setFont(new Font("Consolas", Font.PLAIN, 16));
+		textArea.setEditable(false);
+		textArea.setLineWrap(true);
+		textArea.setWrapStyleWord(true);
+		textArea.setBackground(new Color(245, 245, 250));
+		textArea.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createLineBorder(new Color(180,180,200), 1, true),
+				new EmptyBorder(12,12,12,12)
+				));
+
+		JScrollPane scroll = new JScrollPane(textArea);
+		scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scroll.setBorder(new EmptyBorder(10, 30, 10, 30));
+		add(scroll, BorderLayout.CENTER);
+
+		JButton backBtn = new JButton("Back");
+		backBtn.setFont(new Font("Segoe UI", Font.BOLD, 18));
+		backBtn.setBackground(new Color(200, 60, 60));
+		backBtn.setForeground(Color.BLACK);
+		backBtn.setFocusPainted(false);
+		backBtn.setPreferredSize(new Dimension(120, 40));
+		backBtn.addActionListener(e -> layout.show(parent, "Welcome"));
+		
+		JButton finish = new JButton("Finish");
+		finish.setFont(new Font("Segoe UI", Font.BOLD, 18));
+		finish.setBackground(new Color(200, 60, 60));
+		finish.setForeground(Color.BLACK);
+		finish.setFocusPainted(false);
+		finish.setPreferredSize(new Dimension(120, 40));
+		finish.addActionListener(e -> System.exit(0));
+		
+		JPanel btnPanel = new JPanel();
+		btnPanel.setBackground(Color.WHITE);
+		btnPanel.setBorder(new EmptyBorder(10,10,20,10));
+		btnPanel.add(backBtn);
+		btnPanel.add(finish);
+		add(btnPanel, BorderLayout.SOUTH);
+	}
+
+	@Override
+	public void setVisible(boolean visible) 
+	{
+		super.setVisible(visible);
+		if (!visible) 
+			return;
 
 		// Append current result with opponent
 		appendCurrentResult();

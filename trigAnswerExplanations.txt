@@ -1,31 +1,31 @@
-1) The period of y = sin(x) is 2π) This is because sine repeats every 2π units.
-2) The amplitude is 3) Amplitude is the coefficient in front of cosine or sine.
-3) sin²(x) + cos²(x) = 1) This is a fundamental Pythagorean identity.
-4) tan(45°) = 1) At 45°, sine and cosine are equal.
+1) The period of y = sin(x) is 2π. This is because sine repeats every 2π units.
+2) The amplitude is 3. Amplitude is the coefficient in front of cosine or sine.
+3) sin²(x) + cos²(x) = 1. This is a fundamental Pythagorean identity.
+4) tan(45°) = 1. At 45°, sine and cosine are equal.
 5) The reciprocal of sin(x) is csc(x).
 6) y = A sin(Bx - C) + D is the general form.
 7) Product-to-sum identity: sin(A)sin(B) = ½\[cos(A−B) − cos(A+B)].
 8) Period = 2π / B = 2π / 2 = π.
-9) Range = \[-2, 2]) Cosine oscillates between -1 and 1, scaled by -2.
+9) Range = [-2, 2]. Cosine oscillates between -1 and 1, scaled by -2.
 10) Phase shift is π/2 to the right.
 11) All real x except odd multiples of π/2, where tangent is undefined.
 12) tan²(x) + 1 = sec²(x) — a Pythagorean identity.
 13) The reciprocal of tan(x) is cot(x).
 14) The amplitude is the absolute value of A.
 15) Period = 2π / B.
-16) sin(0°) = 0) Sine of 0 is zero on the unit circle.
-17) cos(90°) = 0) At 90°, cosine is zero.
-18) sin(90°) = 1) This is the maximum value of sine.
+16) sin(0°) = 0. Sine of 0 is zero on the unit circle.
+17) cos(90°) = 0. At 90°, cosine is zero.
+18) sin(90°) = 1. This is the maximum value of sine.
 19) Period of tangent is π because tan(x) repeats every π units.
-20) Range of sin(x) is \[-1, 1]) This is the vertical extent of the wave.
+20) Range of sin(x) is [-1, 1]. This is the vertical extent of the wave.
 21) The unit circle is a circle of radius 1 used to define trig values.
 22) Sine is positive in Quadrants I and II.
 23) All trig functions are positive in Quadrant I.
 24) Even functions like cos(x) and sec(x) satisfy f(−x) = f(x).
-25) Odd functions like sin(x), tan(x), etc) satisfy f(−x) = −f(x).
+25) Odd functions like sin(x), tan(x), etc. satisfy f(−x) = −f(x).
 26) Co-function identity: sin(θ) = cos(90° − θ).
-27) 180° = π radians) This is the conversion factor.
-28) π/3 radians = 60°) Multiply by 180/π to convert.
+27) 180° = π radians. This is the conversion factor.
+28) π/3 radians = 60°. Multiply by 180/π to convert.
 29) y = sin(x) is a smooth, periodic wave between −1 and 1.
 30) y = tan(x) has vertical asymptotes and repeats every π.
 31) cos²(x) − sin²(x) = cos(2x), a double-angle identity.
@@ -37,7 +37,7 @@
 37) csc(90°) = 1 since sin(90°) = 1.
 38) D in the equation causes vertical shift.
 39) B affects the period: period = 2π / B.
-40) Amplitude is 4) The negative sign reflects the graph.
+40) Amplitude is 4. The negative sign reflects the graph.
 41) sin(x) = ½ at 30° and 150° on the unit circle.
 42) arcsin(1) = 90°, the angle whose sine is 1.
 43) arccos(0) = 90°, since cos(90°) = 0.
