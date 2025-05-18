@@ -3160,13 +3160,13 @@ class HighScorePanelAfter extends JPanel
 		scroll.setBorder(new EmptyBorder(10, 30, 10, 30));
 		add(scroll, BorderLayout.CENTER);
 		
-		JButton finish = new JButton("Next");
+		JButton finish = new JButton("Finish");
 		finish.setFont(new Font("Segoe UI", Font.BOLD, 18));
 		finish.setBackground(new Color(200, 60, 60));
 		finish.setForeground(Color.BLACK);
 		finish.setFocusPainted(false);
 		finish.setPreferredSize(new Dimension(120, 40));
-		finish.addActionListener(e -> System.exit(0));
+		finish.addActionListener(e -> layout.show(parent, "thank you"));
 
 		JPanel btnPanel = new JPanel();
 		btnPanel.setBackground(Color.WHITE);
@@ -3185,7 +3185,7 @@ class HighScorePanelAfter extends JPanel
 		// Append current result with opponent
 		appendCurrentResult();
 
-		// Read and process high scores
+		// R ead and process high scores
 		Map<String, List<Record>> map = readRecordsGrouped();
 
 		StringBuilder sb = new StringBuilder();
