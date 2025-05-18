@@ -93,11 +93,19 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
@@ -1688,19 +1696,23 @@ class Storer
 	{
 		return name;
 	}
-	public void setWrongFromGame1(int[] wrongIn) {
+	public void setWrongFromGame1(int[] wrongIn) 
+	{
 		wrongGame1 = wrongIn;
 	}
 
-	public void setWrongFromGame2(int[] wrongIn) {
+	public void setWrongFromGame2(int[] wrongIn) 
+	{
 		wrongGame2 = wrongIn;
 	}
 
-	public int[] getWrongFromGame1() {
+	public int[] getWrongFromGame1()
+	{
 		return wrongGame1;
 	}
 
-	public int[] getWrongFromGame2() {
+	public int[] getWrongFromGame2() 
+	{
 		return wrongGame2;
 	}
 }
@@ -2816,202 +2828,350 @@ class SoundPlayer
 
 class LearningPanel extends JPanel 
 {
-    private JTextArea textArea;
-    private Storer storer;
+	private JTextArea textArea;
+	private Storer storer;
 
-    public LearningPanel(JPanel parent, CardLayout layout) {
-        setLayout(new BorderLayout());
-        setBackground(new Color(240, 245, 255)); // Soft bluish background
-
-        storer = new Storer();
-
-        // Cool-looking Title
-        JLabel title = new JLabel("Learning Review", SwingConstants.CENTER);
-        title.setFont(new Font("Segoe UI Semibold", Font.BOLD, 28));
-        title.setForeground(new Color(25, 50, 95));
-        title.setBorder(BorderFactory.createEmptyBorder(20, 10, 10, 10));
-
-        // Fancy Text Area
-        textArea = new JTextArea();
-        textArea.setFont(new Font("JetBrains Mono", Font.PLAIN, 16));
-        textArea.setForeground(new Color(44, 44, 55));
-        textArea.setBackground(new Color(255, 255, 255));
-        textArea.setEditable(false);
-        textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(true);
-        textArea.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(1, 1, 1, 1, new Color(200, 210, 240)),
-            BorderFactory.createEmptyBorder(16, 18, 16, 18)
-        ));
-
-        JScrollPane scrollPane = new JScrollPane(textArea);
-        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30));
-        scrollPane.getViewport().setBackground(new Color(250, 250, 255));
-
-        // Cool Glass-style Button
-        JButton nextButton = new JButton("→ Next");
-        nextButton.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        nextButton.setBackground(new Color(0, 166, 126));
-        nextButton.setForeground(Color.WHITE);
-        nextButton.setFocusPainted(false);
-        nextButton.setPreferredSize(new Dimension(140, 45));
-        nextButton.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(0, 140, 110), 1, true),
-            BorderFactory.createEmptyBorder(8, 18, 8, 18)
-        ));
-        nextButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        nextButton.setOpaque(true);
-
-        // Add hover effect (optional)
-        nextButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                nextButton.setBackground(new Color(0, 150, 115));
-            }
-
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                nextButton.setBackground(new Color(0, 166, 126));
-            }
-        });
-
-        nextButton.addActionListener(e -> layout.show(parent, "HighScores"));
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(new Color(240, 245, 255));
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(15, 10, 25, 10));
-        buttonPanel.add(nextButton);
-
-        // Add subtle shadow panel around text area
-        JPanel centerWrapper = new JPanel(new BorderLayout());
-        centerWrapper.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createEmptyBorder(10, 20, 10, 20),
-            BorderFactory.createLineBorder(new Color(220, 225, 245), 2)
-        ));
-        centerWrapper.setBackground(Color.WHITE);
-        centerWrapper.add(scrollPane, BorderLayout.CENTER);
-
-        add(title, BorderLayout.NORTH);
-        add(centerWrapper, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
-    }
-
-
-    @Override
-    public void setVisible(boolean visible) {
-        super.setVisible(visible);
-        if (!visible) return;
-
-        StringBuilder display = new StringBuilder();
-        String name = storer.getName();
-        int timeRace = storer.getRaceTime();
-        int timeTug = storer.getTugTime();
-        String opponent = storer.getOpponentCarImage().substring(0, storer.getOpponentCarImage().length()-4);
-        int[] wrong1 = storer.getWrongFromGame1();
-        int[] wrong2 = storer.getWrongFromGame2();
-
-        display.append("Name: ").append(name).append("\n");
-        display.append("Opponent's Car: ").append(opponent).append("\n");
-        display.append("Time taken in RaceGame: ").append(timeRace).append(" seconds\n");
-        display.append("Time taken in TugGame: ").append(timeTug).append(" seconds\n\n");
-
-        boolean anyWrong = false;
-        if (wrong1 != null && wrong1.length > 0) {
-            display.append("Wrong Answers - Game 1:\n");
-            processWrongAnswers(wrong1, display);
-            anyWrong = true;
-        }
-
-        if (wrong2 != null && wrong2.length > 0) {
-            display.append("\nWrong Answers - Game 2:\n");
-            processWrongAnswers(wrong2, display);
-            anyWrong = true;
-        }
-
-        if (!anyWrong) {
-            display.append("No wrong answers! Excellent job!\n");
-        }
-
-        textArea.setText(display.toString());
-        textArea.setCaretPosition(0);
-    }
-
-    private void processWrongAnswers(int[] questionNumbers, StringBuilder display) {
-        for (int qNum : questionNumbers) {
-            if (qNum == 0) continue; // skip uninitialized entries
-
-            String question = "";
-            String[] choices = new String[4];
-            String answer = "";
-            String explanation = "";
-
-            try (Scanner qScan = new Scanner(new File("trigMultipleChoice.txt"));
-                 Scanner eScan = new Scanner(new File("trigAnswerExplanations.txt"))) {
-
-                // Read from question file
-                while (qScan.hasNextLine()) {
-                    String line = qScan.nextLine();
-                    if (line.startsWith(qNum + ")")) {
-                        question = line;
-                        for (int i = 0; i < 4 && qScan.hasNextLine(); i++) {
-                            choices[i] = qScan.nextLine();
-                        }
-                        if (qScan.hasNext()) qScan.next(); // skip blank
-                        if (qScan.hasNext()) answer = qScan.next();
-                        break;
-                    }
-                }
-
-                // Read from explanation file
-                while (eScan.hasNextLine()) {
-                    String line = eScan.nextLine();
-                    if (line.startsWith(qNum + ")")) {
-                        explanation = line;
-                        break;
-                    }
-                }
-
-            } catch (IOException e) {
-                display.append("Error reading files for question #").append(qNum).append("\n\n");
-                continue;
-            }
-
-            display.append("Question #").append(qNum).append(":\n");
-            display.append(question).append("\n");
-            for (String choice : choices) {
-                if (choice != null) display.append(choice).append("\n");
-            }
-            display.append("Correct Answer: ").append(answer).append("\n");
-            display.append("Explanation: ").append(explanation).append("\n\n");
-        }
-    }
-}
-
-class HighScorePanel extends JPanel
-{
-	private JPanel parent;
-	private CardLayout layout;
-
-	public HighScorePanel(JPanel gameHolder, CardLayout layout)
+	public LearningPanel(JPanel parent, CardLayout layout) 
 	{
-		this.parent = gameHolder;
-		this.layout = layout;
 		setLayout(new BorderLayout());
-		setBackground(Color.BLACK);
+		setBackground(new Color(240, 245, 255)); // Soft bluish background
 
-		JLabel label = new JLabel("High Scores Coming Soon", JLabel.CENTER);
-		label.setForeground(Color.WHITE);
-		label.setFont(new Font("Arial", Font.BOLD, 32));
-		add(label, BorderLayout.CENTER);
+		storer = new Storer();
 
-		JButton back = new JButton("Back");
-		back.addActionListener(new ActionListener()
+		// Cool-looking Title
+		JLabel title = new JLabel("Learning Review", SwingConstants.CENTER);
+		title.setFont(new Font("Segoe UI Semibold", Font.BOLD, 28));
+		title.setForeground(new Color(25, 50, 95));
+		title.setBorder(BorderFactory.createEmptyBorder(20, 10, 10, 10));
+
+		// Fancy Text Area
+		textArea = new JTextArea();
+		textArea.setFont(new Font("JetBrains Mono", Font.PLAIN, 16));
+		textArea.setForeground(new Color(44, 44, 55));
+		textArea.setBackground(new Color(255, 255, 255));
+		textArea.setEditable(false);
+		textArea.setLineWrap(true);
+		textArea.setWrapStyleWord(true);
+		textArea.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createMatteBorder(1, 1, 1, 1, new Color(200, 210, 240)),
+				BorderFactory.createEmptyBorder(16, 18, 16, 18)
+				));
+
+		JScrollPane scrollPane = new JScrollPane(textArea);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30));
+		scrollPane.getViewport().setBackground(new Color(250, 250, 255));
+
+		// Cool Glass-style Button
+		JButton nextButton = new JButton("→ Next");
+		nextButton.setFont(new Font("Segoe UI", Font.BOLD, 18));
+		nextButton.setBackground(new Color(0, 166, 126));
+		nextButton.setForeground(Color.WHITE);
+		nextButton.setFocusPainted(false);
+		nextButton.setPreferredSize(new Dimension(140, 45));
+		nextButton.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createLineBorder(new Color(0, 140, 110), 1, true),
+				BorderFactory.createEmptyBorder(8, 18, 8, 18)
+				));
+		nextButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		nextButton.setOpaque(true);
+
+		// Add hover effect (optional)
+		nextButton.addMouseListener(new java.awt.event.MouseAdapter() 
 		{
-			@Override
-			public void actionPerformed(ActionEvent e)
+			public void mouseEntered(java.awt.event.MouseEvent evt) 
 			{
-				layout.show(parent, "Welcome");
+				nextButton.setBackground(new Color(0, 150, 115));
+			}
+
+			public void mouseExited(java.awt.event.MouseEvent evt) 
+			{
+				nextButton.setBackground(new Color(0, 166, 126));
 			}
 		});
-		add(back, BorderLayout.SOUTH);
+
+		nextButton.addActionListener(e -> layout.show(parent, "HighScores"));
+
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setBackground(new Color(240, 245, 255));
+		buttonPanel.setBorder(BorderFactory.createEmptyBorder(15, 10, 25, 10));
+		buttonPanel.add(nextButton);
+
+		// Add subtle shadow panel around text area
+		JPanel centerWrapper = new JPanel(new BorderLayout());
+		centerWrapper.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createEmptyBorder(10, 20, 10, 20),
+				BorderFactory.createLineBorder(new Color(220, 225, 245), 2)
+				));
+		centerWrapper.setBackground(Color.WHITE);
+		centerWrapper.add(scrollPane, BorderLayout.CENTER);
+
+		add(title, BorderLayout.NORTH);
+		add(centerWrapper, BorderLayout.CENTER);
+		add(buttonPanel, BorderLayout.SOUTH);
+	}
+
+
+	@Override
+	public void setVisible(boolean visible) 
+	{
+		super.setVisible(visible);
+		if (!visible) return;
+
+		StringBuilder display = new StringBuilder();
+		String name = storer.getName();
+		int timeRace = storer.getRaceTime();
+		int timeTug = storer.getTugTime();
+		String opponent = storer.getOpponentCarImage().substring(0, storer.getOpponentCarImage().length()-4);
+		int[] wrong1 = storer.getWrongFromGame1();
+		int[] wrong2 = storer.getWrongFromGame2();
+
+		display.append("Name: ").append(name).append("\n");
+		display.append("Opponent's Car: ").append(opponent).append("\n");
+		display.append("Time taken in RaceGame: ").append(timeRace).append(" seconds\n");
+		display.append("Time taken in TugGame: ").append(timeTug).append(" seconds\n\n");
+
+		boolean anyWrong = false;
+		if (wrong1 != null && wrong1.length > 0) 
+		{
+			display.append("Wrong Answers - Game 1:\n");
+			processWrongAnswers(wrong1, display);
+			anyWrong = true;
+		}
+
+		if (wrong2 != null && wrong2.length > 0) 
+		{
+			display.append("\nWrong Answers - Game 2:\n");
+			processWrongAnswers(wrong2, display);
+			anyWrong = true;
+		}
+
+		if (!anyWrong) 
+		{
+			display.append("No wrong answers! Excellent job!\n");
+		}
+
+		textArea.setText(display.toString());
+		textArea.setCaretPosition(0);
+	}
+
+	private void processWrongAnswers(int[] questionNumbers, StringBuilder display) 
+	{
+		for (int qNum : questionNumbers)
+		{
+			if (qNum == 0) continue; // skip uninitialized entries
+
+			String question = "";
+			String[] choices = new String[4];
+			String answer = "";
+			String explanation = "";
+
+			try (Scanner qScan = new Scanner(new File("trigMultipleChoice.txt"));
+					Scanner eScan = new Scanner(new File("trigAnswerExplanations.txt"))) 
+			{
+
+				// Read from question file
+				while (qScan.hasNextLine()) 
+				{
+					String line = qScan.nextLine();
+					if (line.startsWith(qNum + ")")) 
+						{
+						question = line;
+						for (int i = 0; i < 4 && qScan.hasNextLine(); i++) 
+						{
+							choices[i] = qScan.nextLine();
+						}
+						if (qScan.hasNext()) qScan.next(); // skip blank
+						if (qScan.hasNext()) answer = qScan.next();
+						break;
+						}
+				}
+
+				// Read from explanation file
+				while (eScan.hasNextLine()) 
+				{
+					String line = eScan.nextLine();
+					if (line.startsWith(qNum + ")")) 
+						{
+						explanation = line;
+						break;
+						}
+				}
+
+			} 
+			catch (IOException e) 
+			{
+				display.append("Error reading files for question #").append(qNum).append("\n\n");
+				continue;
+			}
+
+			display.append("Question #").append(qNum).append(":\n");
+			display.append(question).append("\n");
+			for (String choice : choices) 
+			{
+				if (choice != null) display.append(choice).append("\n");
+			}
+			display.append("Correct Answer: ").append(answer).append("\n");
+			display.append("Explanation: ").append(explanation).append("\n\n");
+		}
+	}
+}
+
+class HighScorePanel extends JPanel 
+{
+	private JTextArea textArea;
+	private Storer storer;
+	private JPanel parent;
+	private CardLayout layout;
+	private static final String HIGH_SCORE_FILE = "HighScores.txt";
+
+	public HighScorePanel(JPanel parent, CardLayout layout) 
+	{
+		this.parent = parent;
+		this.layout = layout;
+		this.storer = new Storer();
+
+		setLayout(new BorderLayout());
+		setBackground(Color.WHITE);
+
+		JLabel title = new JLabel("High Scores by Opponent", SwingConstants.CENTER);
+		title.setFont(new Font("Segoe UI", Font.BOLD, 26));
+		title.setBorder(new EmptyBorder(15, 0, 10, 0));
+		add(title, BorderLayout.NORTH);
+
+		textArea = new JTextArea();
+		textArea.setFont(new Font("Consolas", Font.PLAIN, 16));
+		textArea.setEditable(false);
+		textArea.setLineWrap(true);
+		textArea.setWrapStyleWord(true);
+		textArea.setBackground(new Color(245, 245, 250));
+		textArea.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createLineBorder(new Color(180,180,200), 1, true),
+				new EmptyBorder(12,12,12,12)
+				));
+
+		JScrollPane scroll = new JScrollPane(textArea);
+		scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scroll.setBorder(new EmptyBorder(10, 30, 10, 30));
+		add(scroll, BorderLayout.CENTER);
+
+		JButton backBtn = new JButton("Back");
+		backBtn.setFont(new Font("Segoe UI", Font.BOLD, 18));
+		backBtn.setBackground(new Color(200, 60, 60));
+		backBtn.setForeground(Color.WHITE);
+		backBtn.setFocusPainted(false);
+		backBtn.setPreferredSize(new Dimension(120, 40));
+		backBtn.addActionListener(e -> layout.show(parent, "Welcome"));
+		JPanel btnPanel = new JPanel();
+		btnPanel.setBackground(Color.WHITE);
+		btnPanel.setBorder(new EmptyBorder(10,10,20,10));
+		btnPanel.add(backBtn);
+		add(btnPanel, BorderLayout.SOUTH);
+	}
+
+	@Override
+	public void setVisible(boolean visible) 
+	{
+		super.setVisible(visible);
+		if (!visible) return;
+
+		// Append current result with opponent
+		appendCurrentResult();
+
+		// Read and process high scores
+		Map<String, List<Record>> map = readRecordsGrouped();
+
+		StringBuilder sb = new StringBuilder();
+		for (String opp : map.keySet()) 
+		{
+			sb.append("Opponent: ").append(opp).append("\n");
+			List<Record> list = map.get(opp);
+			// sort by raceTime and tugTime
+			list.sort(Comparator.comparingInt(r -> r.raceTime));
+			sb.append(" Lowest RaceGame Times:\n");
+			for (int i = 0; i < Math.min(3, list.size()); i++) 
+			{
+				Record r = list.get(i);
+				sb.append("  " + (i+1) + ". " + r.name + ": " + r.raceTime + "s\n");
+			}
+			list.sort(Comparator.comparingInt(r -> r.tugTime));
+			sb.append(" Lowest TugGame Times:\n");
+			for (int i = 0; i < Math.min(3, list.size()); i++) 
+			{
+				Record r = list.get(i);
+				sb.append("  " + (i+1) + ". " + r.name + ": " + r.tugTime + "s\n");
+			}
+			sb.append("\n");
+		}
+
+		textArea.setText(sb.toString());
+		textArea.setCaretPosition(0);
+	}
+
+	private void appendCurrentResult() 
+	{
+		String name = storer.getName();
+		String oppFile = storer.getOpponentCarImage();
+		int timeRace = storer.getRaceTime();
+		int timeTug = storer.getTugTime();
+
+		// Validate: skip if name or opponent is missing or times are 0 or negative
+		if (name == null || name.trim().isEmpty() ||
+				oppFile == null || timeRace <= 0 || timeTug <= 0)
+		{
+			return; // don't write invalid entry
+		}
+
+		String opponent = oppFile.replaceFirst("\\.png$", "");
+		String entry = String.format("%s|%s|%d|%d", name.trim(), opponent, timeRace, timeTug);
+
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(HIGH_SCORE_FILE, true))) 
+		{
+			bw.write(entry);
+			bw.newLine();
+		} 
+		catch (IOException e)
+		{
+			System.err.println("Failed to save high score: " + e.getMessage());
+		}
+	}
+
+
+	private Map<String, List<Record>> readRecordsGrouped() 
+	{
+		Map<String, List<Record>> map = new LinkedHashMap<>();
+		File f = new File(HIGH_SCORE_FILE);
+		if (!f.exists()) return map;
+
+		try (BufferedReader br = new BufferedReader(new FileReader(f))) 
+		{
+			String line;
+			while ((line = br.readLine()) != null) 
+			{
+				String[] parts = line.split("\\|");
+				if (parts.length < 4) continue;
+				String name = parts[0], opp = parts[1];
+				int rt = Integer.parseInt(parts[2]);
+				int tt = Integer.parseInt(parts[3]);
+				Record r = new Record(name, rt, tt);
+				map.computeIfAbsent(opp, k -> new ArrayList<>()).add(r);
+			}
+		} 
+		catch (IOException e) 
+		{
+			// ignore
+		}
+		return map;
+	}
+
+	private static class Record 
+	{
+		String name;
+		int raceTime;
+		int tugTime;
+		Record(String n, int r, int t)
+		{
+			name = n; raceTime = r; tugTime = t; 
+		}
 	}
 }
