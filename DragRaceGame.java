@@ -213,7 +213,7 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 	private boolean rightButtonHovered;
 
 	private SoundPlayer buttonClickSound;
-	private SoundPlayer carAccelerationSound;
+	private SoundPlayer IntroSound;
 
 	private JButton muteButton;
 	private boolean isMuted = false;
@@ -237,7 +237,7 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 		addMouseMotionListener(this);
 
 		buttonClickSound = new SoundPlayer("buttonClick.wav");
-		carAccelerationSound = new SoundPlayer("accelerate.wav");
+		IntroSound = new SoundPlayer("Intro.wav");
 
 		startGIF();
 
@@ -281,10 +281,8 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 			public void actionPerformed(ActionEvent e)
 			{
 				fadeCompleted = true;
-				carAccelerationSound.stop();
 				if (timer != null && timer.isRunning())
 				{
-					carAccelerationSound.stop();
 					timer.stop();
 				}
 				alpha = 0.0f;
@@ -302,7 +300,7 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 			{
 				if (!fadeCompleted)
 				{
-					carAccelerationSound.play();
+					IntroSound.play();
 				}
 				else
 				{
@@ -361,7 +359,6 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 						alpha = 0.0f;
 						timer.stop();
 						gifOrNo = false;
-						carAccelerationSound.stop();
 						startFadeIn(100);
 					}
 					repaint();
@@ -486,6 +483,7 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 		{
 			if (leftButtonPressed && y > 855 && y < 896 && x > 232 && x < 412)
 			{
+				IntroSound.stop();
 				layout.show(parent, "Instructions");
 			}
 			else if (rightButtonPressed && y > 855 && y < 896 && x > 587 && x < 964)
