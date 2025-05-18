@@ -1,7 +1,3 @@
-Got it! Here are your questions exactly as you wrote, but with concise answers and choices labeled A, B, C, D:
-
----
-
 1) What is the period of the function y = sin(x)?
    A) π
    B) x

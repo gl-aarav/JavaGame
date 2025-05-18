@@ -122,6 +122,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -1777,7 +1778,7 @@ class GamePanel extends JPanel
 		JButton dontKnowButton = new JButton("");
 		start = new JButton("  Start  ");
 		next = new JButton("Next");
-		//next.setVisible(false);
+		next.setVisible(false);
 
 		// Button colors
 		Color startRestartColor = new Color(0, 122, 204);  // blue for both start & restart
@@ -1904,6 +1905,7 @@ class GamePanel extends JPanel
 		{
 			if (timerStarted) 
 			{
+				arrayNum[arrayNumber++] = questionNumber;
 				importTextfiles();
 				questionOneButton.setText(answerChoices[0]);
 				questionTwoButton.setText(answerChoices[1]);
@@ -2122,6 +2124,7 @@ class GamePanel extends JPanel
 			// Check win/lose conditions
 			if (car1LogicalPos >= FINISH_LINE && car2LogicalPos < FINISH_LINE)
 			{
+				Storer.setWrongFromGame1(Arrays.copyOf(arrayNum, arrayNumber));
 				long endTime = System.currentTimeMillis(); // Record the end time
 				Storer.setRaceGameTime((int) (endTime/1000 - startTime/1000));
 				gameEnded = true;
@@ -2132,6 +2135,7 @@ class GamePanel extends JPanel
 			} 
 			else if (car2LogicalPos >= FINISH_LINE && car1LogicalPos >= FINISH_LINE) 
 			{
+				Storer.setWrongFromGame1(Arrays.copyOf(arrayNum, arrayNumber));
 				long endTime = System.currentTimeMillis(); // Record the end time
 				Storer.setRaceGameTime((int) (endTime/1000 - startTime/1000));
 				gameEnded = true;
@@ -2193,8 +2197,6 @@ class GamePanel extends JPanel
 			{
 				if (isCorrect)
 				{
-					arrayNum[arrayNumber++] = questionNumber;
-
 					correct.stop();
 					correct.play();
 					userSpeedBoost += 10; // Apply the boost 
@@ -2218,6 +2220,7 @@ class GamePanel extends JPanel
 				}
 				else
 				{
+					arrayNum[arrayNumber++] = questionNumber;
 					incorrect.stop();
 					incorrect.play();
 					userSpeedBoost -= 10; // Apply the slowdown
@@ -2253,10 +2256,6 @@ class GamePanel extends JPanel
 					slowdownTimer.setRepeats(false); // Ensure the timer only runs once
 					slowdownTimer.start(); // Start the timer
 				}
-			}
-			if (gameEnded)
-			{
-				Storer.setWrongFromGame1(Arrays.copyOf(arrayNum, arrayNumber));
 			}
 		}
 	}
@@ -2364,7 +2363,7 @@ class TugOfWarPanel extends JPanel
 		styleButton.accept(restartButton, startRestartColor);
 
 		styleButton.accept(next, Color.GREEN);
-		//next.setVisible(false);
+		next.setVisible(false);
 
 		next.addActionListener(e->
 		{
@@ -2815,74 +2814,176 @@ class SoundPlayer
 	}
 }
 
-class LearningPanel extends JPanel
+class LearningPanel extends JPanel 
 {
-	private JPanel parent;
-	private CardLayout layout;
-	private Storer storer = new Storer();
+    private JTextArea textArea;
+    private Storer storer;
 
-	private JTextArea textArea;
+    public LearningPanel(JPanel parent, CardLayout layout) {
+        setLayout(new BorderLayout());
+        setBackground(new Color(240, 245, 255)); // Soft bluish background
 
-	public LearningPanel(JPanel parent, CardLayout layout) {
-		setLayout(new BorderLayout());
-		setBackground(new Color(200, 220, 255)); // light blue
+        storer = new Storer();
 
-		textArea = new JTextArea();
-		textArea.setEditable(false);
-		textArea.setBackground(new Color(224, 240, 255));
-		textArea.setFont(new Font("Serif", Font.PLAIN, 18));
-		textArea.setLineWrap(true);
-		textArea.setWrapStyleWord(true);
+        // Cool-looking Title
+        JLabel title = new JLabel("Learning Review", SwingConstants.CENTER);
+        title.setFont(new Font("Segoe UI Semibold", Font.BOLD, 28));
+        title.setForeground(new Color(25, 50, 95));
+        title.setBorder(BorderFactory.createEmptyBorder(20, 10, 10, 10));
 
-		JScrollPane scrollPane = new JScrollPane(textArea);
-		add(scrollPane, BorderLayout.CENTER);
+        // Fancy Text Area
+        textArea = new JTextArea();
+        textArea.setFont(new Font("JetBrains Mono", Font.PLAIN, 16));
+        textArea.setForeground(new Color(44, 44, 55));
+        textArea.setBackground(new Color(255, 255, 255));
+        textArea.setEditable(false);
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        textArea.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createMatteBorder(1, 1, 1, 1, new Color(200, 210, 240)),
+            BorderFactory.createEmptyBorder(16, 18, 16, 18)
+        ));
 
-		JButton nextButton = new JButton("Next");
-		nextButton.addActionListener(e -> {
-			// Show high score panel or next screen
-			layout.show(parent, "HighScores");
-		});
-		add(nextButton, BorderLayout.SOUTH);
-	}
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30));
+        scrollPane.getViewport().setBackground(new Color(250, 250, 255));
 
-	@Override
-	public void setVisible(boolean visible) {
-		super.setVisible(visible);
-		if (visible) {
-			int[] wrongGame1 = storer.getWrongFromGame1();
-			int[] wrongGame2 = storer.getWrongFromGame2();
-			
-			for (int i =0; i<wrongGame1.length; i++)
-			{
-				System.out.println(wrongGame1[i]);
-			}
+        // Cool Glass-style Button
+        JButton nextButton = new JButton("→ Next");
+        nextButton.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        nextButton.setBackground(new Color(0, 166, 126));
+        nextButton.setForeground(Color.WHITE);
+        nextButton.setFocusPainted(false);
+        nextButton.setPreferredSize(new Dimension(140, 45));
+        nextButton.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(0, 140, 110), 1, true),
+            BorderFactory.createEmptyBorder(8, 18, 8, 18)
+        ));
+        nextButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        nextButton.setOpaque(true);
 
-			StringBuilder display = new StringBuilder("Wrong Questions:\n\n");
+        // Add hover effect (optional)
+        nextButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                nextButton.setBackground(new Color(0, 150, 115));
+            }
 
-			if (wrongGame1 != null && wrongGame1.length > 0) {
-				display.append("Game 1:\n");
-				for (int i : wrongGame1) {
-					display.append("Question #" + i + "\n");
-				}
-				display.append("\n");
-			}
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                nextButton.setBackground(new Color(0, 166, 126));
+            }
+        });
 
-			if (wrongGame2 != null && wrongGame2.length > 0) {
-				display.append("Game 2:\n");
-				for (int i : wrongGame2) {
-					display.append("Question #" + i + "\n");
-				}
-			}
+        nextButton.addActionListener(e -> layout.show(parent, "HighScores"));
 
-			if ((wrongGame1 == null || wrongGame1.length == 0) &&
-					(wrongGame2 == null || wrongGame2.length == 0)) {
-				display.append("No wrong answers! Great job!");
-			}
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(new Color(240, 245, 255));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(15, 10, 25, 10));
+        buttonPanel.add(nextButton);
 
-			textArea.setText(display.toString());
-		}
-	}
+        // Add subtle shadow panel around text area
+        JPanel centerWrapper = new JPanel(new BorderLayout());
+        centerWrapper.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createEmptyBorder(10, 20, 10, 20),
+            BorderFactory.createLineBorder(new Color(220, 225, 245), 2)
+        ));
+        centerWrapper.setBackground(Color.WHITE);
+        centerWrapper.add(scrollPane, BorderLayout.CENTER);
 
+        add(title, BorderLayout.NORTH);
+        add(centerWrapper, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
+    }
+
+
+    @Override
+    public void setVisible(boolean visible) {
+        super.setVisible(visible);
+        if (!visible) return;
+
+        StringBuilder display = new StringBuilder();
+        String name = storer.getName();
+        int timeRace = storer.getRaceTime();
+        int timeTug = storer.getTugTime();
+        String opponent = storer.getOpponentCarImage().substring(0, storer.getOpponentCarImage().length()-4);
+        int[] wrong1 = storer.getWrongFromGame1();
+        int[] wrong2 = storer.getWrongFromGame2();
+
+        display.append("Name: ").append(name).append("\n");
+        display.append("Opponent's Car: ").append(opponent).append("\n");
+        display.append("Time taken in RaceGame: ").append(timeRace).append(" seconds\n");
+        display.append("Time taken in TugGame: ").append(timeTug).append(" seconds\n\n");
+
+        boolean anyWrong = false;
+        if (wrong1 != null && wrong1.length > 0) {
+            display.append("Wrong Answers - Game 1:\n");
+            processWrongAnswers(wrong1, display);
+            anyWrong = true;
+        }
+
+        if (wrong2 != null && wrong2.length > 0) {
+            display.append("\nWrong Answers - Game 2:\n");
+            processWrongAnswers(wrong2, display);
+            anyWrong = true;
+        }
+
+        if (!anyWrong) {
+            display.append("No wrong answers! Excellent job!\n");
+        }
+
+        textArea.setText(display.toString());
+        textArea.setCaretPosition(0);
+    }
+
+    private void processWrongAnswers(int[] questionNumbers, StringBuilder display) {
+        for (int qNum : questionNumbers) {
+            if (qNum == 0) continue; // skip uninitialized entries
+
+            String question = "";
+            String[] choices = new String[4];
+            String answer = "";
+            String explanation = "";
+
+            try (Scanner qScan = new Scanner(new File("trigMultipleChoice.txt"));
+                 Scanner eScan = new Scanner(new File("trigAnswerExplanations.txt"))) {
+
+                // Read from question file
+                while (qScan.hasNextLine()) {
+                    String line = qScan.nextLine();
+                    if (line.startsWith(qNum + ")")) {
+                        question = line;
+                        for (int i = 0; i < 4 && qScan.hasNextLine(); i++) {
+                            choices[i] = qScan.nextLine();
+                        }
+                        if (qScan.hasNext()) qScan.next(); // skip blank
+                        if (qScan.hasNext()) answer = qScan.next();
+                        break;
+                    }
+                }
+
+                // Read from explanation file
+                while (eScan.hasNextLine()) {
+                    String line = eScan.nextLine();
+                    if (line.startsWith(qNum + ")")) {
+                        explanation = line;
+                        break;
+                    }
+                }
+
+            } catch (IOException e) {
+                display.append("Error reading files for question #").append(qNum).append("\n\n");
+                continue;
+            }
+
+            display.append("Question #").append(qNum).append(":\n");
+            display.append(question).append("\n");
+            for (String choice : choices) {
+                if (choice != null) display.append(choice).append("\n");
+            }
+            display.append("Correct Answer: ").append(answer).append("\n");
+            display.append("Explanation: ").append(explanation).append("\n\n");
+        }
+    }
 }
 
 class HighScorePanel extends JPanel
