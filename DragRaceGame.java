@@ -3058,7 +3058,7 @@ class HighScorePanel extends JPanel
 		JButton backBtn = new JButton("Back");
 		backBtn.setFont(new Font("Segoe UI", Font.BOLD, 18));
 		backBtn.setBackground(new Color(200, 60, 60));
-		backBtn.setForeground(Color.WHITE);
+		backBtn.setForeground(Color.BLACK);
 		backBtn.setFocusPainted(false);
 		backBtn.setPreferredSize(new Dimension(120, 40));
 		backBtn.addActionListener(e -> layout.show(parent, "Welcome"));
@@ -3127,8 +3127,8 @@ class HighScorePanel extends JPanel
 
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(HIGH_SCORE_FILE, true))) 
 		{
-			bw.write(entry);
 			bw.newLine();
+			bw.write(entry);
 		} 
 		catch (IOException e)
 		{
