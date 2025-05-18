@@ -44,6 +44,7 @@
  *  - Add the person's name to the game panel
  *  - Make the car move
  *  - Add the opponent car
+ *  - Add another type of game (tug of war)
  * Week 5
  *  - Finish the game panel
  *  - Finish the question panel
@@ -54,7 +55,6 @@
  *  - Test the game
  *  - Integrate the learning panel with the answer text file
  *  - Create the learning panel
- * Week 6
  *  - Finishing touches
  *  - Add the high scores text file
  *  - Finish the high scores panel
@@ -64,6 +64,8 @@
  *  - Finish the high scores panel
  *  - Add more graphics (if time allows)
  *  - Add another subject (if time allows)
+ *  Week 6 
+ *  - Finishing Touches
  */
 
 import java.awt.AlphaComposite;
@@ -94,6 +96,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -115,6 +118,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -165,16 +169,17 @@ class GameHolder extends JPanel
 		GamePanel gamePanel = new GamePanel(this, layout);
 		CarChoosePanel carChoose = new CarChoosePanel(this,layout);
 		TugOfWarPanel tow = new TugOfWarPanel(this, layout);
+		LearningPanel lp = new LearningPanel(this, layout);
 
 		add(welcomePanel, "Welcome");
 		add(instructionsPanel, "Instructions");
 		add(highScoresPanel, "HighScores");
 		add(carChoose, "ChooseCar");
 		add(gamePanel, "Game");
-		add (tow, "Tug");
+		add(tow, "Tug");
+		add(lp, "Learn");
 	}
 }
-
 
 class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListener
 {
@@ -638,25 +643,26 @@ class InstructionPanel extends JPanel
 		g2d.setFont(new Font("Arial", Font.BOLD, 18));
 		g2d.setColor(Color.WHITE);
 
-		String[] lines = {
-				"Game Setup",
-				"You control a race car that competes against a bot car.",
-				"Answer correctly for speed boosts; wrong answers slow you down.",
-				"",
-				"How to Play",
-				"Enter your name, pick your car color, choose difficulty,",
-				"and press Start Game to begin.",
-				"Answer questions using the buttons that appear.",
-				"If the bot wins, you lose!",
-				"",
-				"Learning Features",
-				"At the end, review your mistakes,",
-				"see correct answers, and get helpful explanations.",
-				"",
-				"Winning the Game",
-				"Beat the bot to the finish line!",
-				"Track your progress with the progress bar, and aim for a high score!"
-		};
+		String[] lines = 
+			{
+					"Game Setup",
+					"You control a race car that competes against a bot car.",
+					"Answer correctly for speed boosts; wrong answers slow you down.",
+					"",
+					"How to Play",
+					"Enter your name, pick your car color, choose difficulty,",
+					"and press Start Game to begin.",
+					"Answer questions using the buttons that appear.",
+					"If the bot wins, you lose!",
+					"",
+					"Learning Features",
+					"At the end, review your mistakes,",
+					"see correct answers, and get helpful explanations.",
+					"",
+					"Winning the Game",
+					"Beat the bot to the finish line!",
+					"Track your progress with the progress bar, and aim for a high score!"
+			};
 
 		int x = 300;
 		int y = 461;
@@ -806,6 +812,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
+				Storer.setName(nameField.getText());
 				if (nameField.getText().isEmpty() || nameField.getText().equals("Enter Your Name"))
 				{
 					// Reset the name field if empty or default text
@@ -1623,6 +1630,11 @@ class Storer
 	private static String carNumber; // Make this static
 	private static String carOpponentString;
 	private int difficultyLevel;
+	private static int timeRace;
+	private static int timeTug;
+	private static String name;
+	private static int[] wrongGame1;
+	private static int[] wrongGame2;
 
 	public void setCarImage(String number) 
 	{
@@ -1651,6 +1663,45 @@ class Storer
 	{
 		return difficultyLevel;
 	}
+	public void setRaceGameTime(int timeRaceIn)
+	{
+		timeRace = timeRaceIn;
+	}
+	public int getRaceTime()
+	{
+		return timeRace;
+	}
+	public void setTugTime(int tugTimeIn)
+	{
+		timeTug = tugTimeIn;
+	}
+	public int getTugTime()
+	{
+		return timeTug;
+	}
+	public void setName(String nameIn)
+	{
+		name = nameIn;
+	}
+	public String getName()
+	{
+		return name;
+	}
+	public void setWrongFromGame1(int[] wrongIn) {
+		wrongGame1 = wrongIn;
+	}
+
+	public void setWrongFromGame2(int[] wrongIn) {
+		wrongGame2 = wrongIn;
+	}
+
+	public int[] getWrongFromGame1() {
+		return wrongGame1;
+	}
+
+	public int[] getWrongFromGame2() {
+		return wrongGame2;
+	}
 }
 
 class GamePanel extends JPanel
@@ -1661,8 +1712,8 @@ class GamePanel extends JPanel
 	private String carNumber, carOpponentString;
 
 	private final int USER_CAR_X = 300;
-	private final int FINISH_LINE = 27000;
-	private final int TRACK_END = -28000;
+	private final int FINISH_LINE = 54000;
+	private final int TRACK_END = -56000;
 
 	private double car1LogicalPos = 0;
 	private double car2LogicalPos = 0;
@@ -1688,8 +1739,11 @@ class GamePanel extends JPanel
 	private SoundPlayer incorrect;
 	private JProgressBar progressBar;
 
-	JButton start;
-	JButton next;
+	private JButton start;
+	private JButton next;
+
+	private int arrayNumber = 0;
+	private int[] arrayNum = new int[100];
 
 	GamePanel(JPanel gameHolder, CardLayout layout) 
 	{
@@ -1706,7 +1760,7 @@ class GamePanel extends JPanel
 		label.setForeground(new Color(25, 25, 112)); // midnight blue
 		label.setFont(new Font("Verdana", Font.BOLD, 36));
 
-		progressBar = new JProgressBar(0, 27000);
+		progressBar = new JProgressBar(0, 54000);
 		progressBar.setValue((int)trackPos);
 
 		JPanel header = new JPanel(new GridLayout(3,1));
@@ -1723,7 +1777,7 @@ class GamePanel extends JPanel
 		JButton dontKnowButton = new JButton("");
 		start = new JButton("  Start  ");
 		next = new JButton("Next");
-
+		//next.setVisible(false);
 
 		// Button colors
 		Color startRestartColor = new Color(0, 122, 204);  // blue for both start & restart
@@ -1842,10 +1896,10 @@ class GamePanel extends JPanel
 		controlButtonPanel.add(start);
 		controlButtonPanel.add(next);
 
-		questionOneButton.addActionListener(e -> handleAnswer(0, questionOneButton, questionTwoButton, questionThreeButton, questionFourButton));
-		questionTwoButton.addActionListener(e -> handleAnswer(1, questionOneButton, questionTwoButton, questionThreeButton, questionFourButton));
-		questionThreeButton.addActionListener(e -> handleAnswer(2, questionOneButton, questionTwoButton, questionThreeButton, questionFourButton));
-		questionFourButton.addActionListener(e -> handleAnswer(3, questionOneButton, questionTwoButton, questionThreeButton, questionFourButton));
+		questionOneButton.addActionListener(e -> handleAnswer(0, questionOneButton, questionTwoButton, questionThreeButton, questionFourButton, dontKnowButton));
+		questionTwoButton.addActionListener(e -> handleAnswer(1, questionOneButton, questionTwoButton, questionThreeButton, questionFourButton, dontKnowButton));
+		questionThreeButton.addActionListener(e -> handleAnswer(2, questionOneButton, questionTwoButton, questionThreeButton, questionFourButton, dontKnowButton));
+		questionFourButton.addActionListener(e -> handleAnswer(3, questionOneButton, questionTwoButton, questionThreeButton, questionFourButton, dontKnowButton));
 		dontKnowButton.addActionListener(e -> 
 		{
 			if (timerStarted) 
@@ -1889,7 +1943,8 @@ class GamePanel extends JPanel
 		add(controlButtonPanel, BorderLayout.CENTER);
 	}
 
-	private void updateProgressBar() {
+	private void updateProgressBar()
+	{
 		int progress = (int) car1LogicalPos;
 		progressBar.setValue(Math.min(progress, FINISH_LINE));
 	}
@@ -1898,7 +1953,10 @@ class GamePanel extends JPanel
 	private void runCountdown(int seconds, Runnable onComplete)
 	{
 		Timer countdownTimer = new Timer(1000, null);
-		final int[] count = { seconds };
+		final int[] count = 
+			{ 
+					seconds
+			};
 		start.setText(String.valueOf(count[0]));
 
 		countdownTimer.addActionListener(new ActionListener()
@@ -2000,19 +2058,19 @@ class GamePanel extends JPanel
 		switch (carOpponentString)
 		{
 		case "Bicycle.png":
-			opponentSpeed = 15 + level;
+			opponentSpeed = 15 + level * 2;
 			break;
 		case "Motorcycle.png":
-			opponentSpeed = 20 + level * 1.5;
+			opponentSpeed = 25 + level * 5;
 			break;
 		case "CarNormal.png":
-			opponentSpeed = 25 + level * 2;
+			opponentSpeed = 35 + level * 6;
 			break;
 		case "CarSport.png":
-			opponentSpeed = 30 + level * 2.5;
+			opponentSpeed = 40 + level * 7;
 			break;
 		case "Rocket.png":
-			opponentSpeed = 35 + level * 3;
+			opponentSpeed = 50 + level * 8;
 			break;
 		}
 
@@ -2042,12 +2100,13 @@ class GamePanel extends JPanel
 
 	public void startTimer()
 	{
+		long startTime = System.currentTimeMillis(); // Record the start time
 		gameTimer = new Timer(16, e -> 
-		{
+		{	
 			if (gameEnded)
 				return;
 
-			double userSpeed = 20 + userSpeedBoost;
+			double userSpeed = 20 + 2 * userSpeedBoost;
 
 			car1LogicalPos += userSpeed;
 			car2LogicalPos += opponentSpeed;
@@ -2063,15 +2122,23 @@ class GamePanel extends JPanel
 			// Check win/lose conditions
 			if (car1LogicalPos >= FINISH_LINE && car2LogicalPos < FINISH_LINE)
 			{
+				long endTime = System.currentTimeMillis(); // Record the end time
+				Storer.setRaceGameTime((int) (endTime/1000 - startTime/1000));
 				gameEnded = true;
 				gameTimer.stop();
 				JOptionPane.showMessageDialog(GamePanel.this, "You Win!", "Race Result", JOptionPane.INFORMATION_MESSAGE);
+				next.setVisible(true);
+				start.setVisible(false);
 			} 
 			else if (car2LogicalPos >= FINISH_LINE && car1LogicalPos >= FINISH_LINE) 
 			{
+				long endTime = System.currentTimeMillis(); // Record the end time
+				Storer.setRaceGameTime((int) (endTime/1000 - startTime/1000));
 				gameEnded = true;
 				gameTimer.stop();
 				JOptionPane.showMessageDialog(GamePanel.this, "You Lose!", "Race Result", JOptionPane.INFORMATION_MESSAGE);
+				next.setVisible(true);
+				start.setVisible(false);
 			}
 
 			repaint();
@@ -2090,18 +2157,14 @@ class GamePanel extends JPanel
 		int shake = (int)(Math.random() * Math.max(0, userSpeedBoost / 2));
 		int trackY = 150 + shake;
 
-		if (trackImage != null && trackPos<=0)
+		if (trackImage != null)
 		{
-			g.drawImage(trackImage, (int) trackPos, trackY, 1166 * 25, 750, this);
-		}
-		else
-		{
-			g.drawImage(trackImage, 0, trackY, 1166 * 25, 750, this);
+			g.drawImage(trackImage, (int) trackPos, trackY, 1166 * 50, 750, this);
 		}
 
 		if (carsImage != null)
 		{
-			g.drawImage(carsImage, USER_CAR_X, 170 + shake, 238 * 2, 121 * 2, this);
+			g.drawImage(carsImage, USER_CAR_X, 170 + shake, 476, 242, this);
 		}
 
 		int opponentScreenX = USER_CAR_X + (int)(car2LogicalPos - car1LogicalPos);
@@ -2109,16 +2172,16 @@ class GamePanel extends JPanel
 		{
 			if (car2LogicalPos >= FINISH_LINE)
 			{
-				g.drawImage(opponentCarImage, USER_CAR_X + (int)(FINISH_LINE - car1LogicalPos), 580+50, 238 * 2, 121 * 2, this);
+				g.drawImage(opponentCarImage, USER_CAR_X + (int)(FINISH_LINE - car1LogicalPos), 630, 476, 242, this);
 			}
 			else if (opponentScreenX < getWidth() && opponentScreenX > -400)
 			{
-				g.drawImage(opponentCarImage, opponentScreenX, 580+50, 238 * 2, 121 * 2, this);
+				g.drawImage(opponentCarImage, opponentScreenX, 630, 476, 242, this);
 			}
 		}
 	}
 
-	public void handleAnswer(int selectedIndex, JButton b1, JButton b2, JButton b3, JButton b4)
+	public void handleAnswer(int selectedIndex, JButton b1, JButton b2, JButton b3, JButton b4, JButton b5)
 	{
 		if (timerStarted)
 		{
@@ -2130,6 +2193,8 @@ class GamePanel extends JPanel
 			{
 				if (isCorrect)
 				{
+					arrayNum[arrayNumber++] = questionNumber;
+
 					correct.stop();
 					correct.play();
 					userSpeedBoost += 10; // Apply the boost 
@@ -2167,6 +2232,7 @@ class GamePanel extends JPanel
 					b2.setVisible(false);
 					b3.setVisible(false);
 					b4.setVisible(false);
+					b5.setVisible(false);
 					questionArea.setText("");
 
 					Timer slowdownTimer = new Timer(2000, new ActionListener()
@@ -2180,12 +2246,17 @@ class GamePanel extends JPanel
 							b2.setVisible(true);
 							b3.setVisible(true);
 							b4.setVisible(true);
+							b5.setVisible(true);
 							questionArea.setText(question);
 						}
 					});
 					slowdownTimer.setRepeats(false); // Ensure the timer only runs once
 					slowdownTimer.start(); // Start the timer
 				}
+			}
+			if (gameEnded)
+			{
+				Storer.setWrongFromGame1(Arrays.copyOf(arrayNum, arrayNumber));
 			}
 		}
 	}
@@ -2226,6 +2297,13 @@ class TugOfWarPanel extends JPanel
 	private JButton[] answerButtons = new JButton[4];
 	private JButton startButton = new JButton("Start");
 	private JButton restartButton = new JButton("Restart");
+	private JButton next = new JButton("Next");
+	private Storer store = new Storer();
+	private long startTime;
+	private long endTime;
+	private int tugArrayNumber = 0;
+	private int[] tugArrayNum = new int[100];
+
 
 	public TugOfWarPanel(JPanel gameHolder, CardLayout layout)
 	{
@@ -2236,7 +2314,6 @@ class TugOfWarPanel extends JPanel
 		setBackground(new Color(70, 80, 90));
 
 		initControls();
-
 	}
 
 	private void initControls()
@@ -2286,10 +2363,19 @@ class TugOfWarPanel extends JPanel
 		styleButton.accept(startButton, startRestartColor);
 		styleButton.accept(restartButton, startRestartColor);
 
+		styleButton.accept(next, Color.GREEN);
+		//next.setVisible(false);
+
+		next.addActionListener(e->
+		{
+			layout.show(parent, "Learn");
+		});
+
 		JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 20));
 		topPanel.setOpaque(false);
 		topPanel.add(startButton);
 		topPanel.add(restartButton);
+		topPanel.add(next);
 		add(topPanel, BorderLayout.NORTH);
 
 		questionArea.setLineWrap(true);
@@ -2346,7 +2432,6 @@ class TugOfWarPanel extends JPanel
 
 	private void getImages()
 	{
-		Storer store = new Storer();
 		try
 		{
 			String carNumber = store.getCarImage();
@@ -2425,7 +2510,10 @@ class TugOfWarPanel extends JPanel
 		dialog.setLocationRelativeTo(this);
 
 		Timer t = new Timer(1000, null);
-		final int[] count = { seconds };
+		final int[] count = 
+			{ 
+					seconds
+			};
 		lbl.setText(String.valueOf(count[0]));
 		t.addActionListener(ev ->
 		{
@@ -2465,7 +2553,8 @@ class TugOfWarPanel extends JPanel
 	{
 		if (!timerStarted || gameEnded) return;
 
-		for (JButton b : answerButtons) b.setEnabled(false);
+		for (JButton b : answerButtons)
+			b.setEnabled(false);
 
 		boolean isCorrect = false;
 		if (answerChoices[index] != null && answerChoices[index].length() >= 4)
@@ -2482,6 +2571,7 @@ class TugOfWarPanel extends JPanel
 		{
 			incorrectSound.play();
 			ropeOffset += BOT_PULL_STEP;
+			tugArrayNum[tugArrayNumber++] = questionNumber;
 		}
 
 		checkWinLoss();
@@ -2501,6 +2591,7 @@ class TugOfWarPanel extends JPanel
 
 	private void startGameLoop()
 	{
+		startTime = System.currentTimeMillis(); // Record the start time
 		gameTimer = new Timer(30, e ->
 		{
 			if (gameEnded) return;
@@ -2526,9 +2617,18 @@ class TugOfWarPanel extends JPanel
 
 	private void endGame(String msg)
 	{
+		Storer storer = new Storer();
+		storer.setWrongFromGame2(Arrays.copyOf(tugArrayNum, tugArrayNumber));
+
+		endTime = System.currentTimeMillis(); // Record the end time
+		store.setTugTime((int) (endTime - startTime) / 1000);
+		next.setVisible(true);
+		startButton.setVisible(false);
+		restartButton.setVisible(false);
 		gameEnded = true;
 		timerStarted = false;
-		if (gameTimer != null) gameTimer.stop();
+		if (gameTimer != null) 
+			gameTimer.stop();
 
 		for (JButton b : answerButtons) b.setEnabled(false);
 
@@ -2557,16 +2657,16 @@ class TugOfWarPanel extends JPanel
 			{
 				String line = in1.nextLine();
 				if (line.startsWith(questionNumber + ")"))
-					{
+				{
 					answerExplanation = line;
-					}
+				}
 			}
 
 			while (in2.hasNextLine())
 			{
 				String questionLine = in2.nextLine();
 				if (questionLine.startsWith(questionNumber + ")"))
-					{
+				{
 					question = questionLine;
 					for (int i = 0; i < 4; i++)
 					{
@@ -2580,7 +2680,7 @@ class TugOfWarPanel extends JPanel
 					{
 						answer = in2.next();
 					}
-					}
+				}
 			}
 		}
 		catch (IOException e)
@@ -2715,6 +2815,75 @@ class SoundPlayer
 	}
 }
 
+class LearningPanel extends JPanel
+{
+	private JPanel parent;
+	private CardLayout layout;
+	private Storer storer = new Storer();
+
+	private JTextArea textArea;
+
+	public LearningPanel(JPanel parent, CardLayout layout) {
+		setLayout(new BorderLayout());
+		setBackground(new Color(200, 220, 255)); // light blue
+
+		textArea = new JTextArea();
+		textArea.setEditable(false);
+		textArea.setBackground(new Color(224, 240, 255));
+		textArea.setFont(new Font("Serif", Font.PLAIN, 18));
+		textArea.setLineWrap(true);
+		textArea.setWrapStyleWord(true);
+
+		JScrollPane scrollPane = new JScrollPane(textArea);
+		add(scrollPane, BorderLayout.CENTER);
+
+		JButton nextButton = new JButton("Next");
+		nextButton.addActionListener(e -> {
+			// Show high score panel or next screen
+			layout.show(parent, "HighScores");
+		});
+		add(nextButton, BorderLayout.SOUTH);
+	}
+
+	@Override
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
+		if (visible) {
+			int[] wrongGame1 = storer.getWrongFromGame1();
+			int[] wrongGame2 = storer.getWrongFromGame2();
+			
+			for (int i =0; i<wrongGame1.length; i++)
+			{
+				System.out.println(wrongGame1[i]);
+			}
+
+			StringBuilder display = new StringBuilder("Wrong Questions:\n\n");
+
+			if (wrongGame1 != null && wrongGame1.length > 0) {
+				display.append("Game 1:\n");
+				for (int i : wrongGame1) {
+					display.append("Question #" + i + "\n");
+				}
+				display.append("\n");
+			}
+
+			if (wrongGame2 != null && wrongGame2.length > 0) {
+				display.append("Game 2:\n");
+				for (int i : wrongGame2) {
+					display.append("Question #" + i + "\n");
+				}
+			}
+
+			if ((wrongGame1 == null || wrongGame1.length == 0) &&
+					(wrongGame2 == null || wrongGame2.length == 0)) {
+				display.append("No wrong answers! Great job!");
+			}
+
+			textArea.setText(display.toString());
+		}
+	}
+
+}
 
 class HighScorePanel extends JPanel
 {
