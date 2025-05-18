@@ -78,6 +78,8 @@ import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
@@ -104,9 +106,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
@@ -160,7 +164,6 @@ public class DragRaceGame
 	}
 }
 
-
 class GameHolder extends JPanel
 {
 	CardLayout layout;
@@ -180,6 +183,7 @@ class GameHolder extends JPanel
 		CarChoosePanel carChoose = new CarChoosePanel(this,layout);
 		TugOfWarPanel tow = new TugOfWarPanel(this, layout);
 		LearningPanel lp = new LearningPanel(this, layout);
+		ThankYouScreenPanel ty = new ThankYouScreenPanel();
 
 		add(welcomePanel, "Welcome");
 		add(instructionsPanel, "Instructions");
@@ -189,6 +193,7 @@ class GameHolder extends JPanel
 		add(tow, "Tug");
 		add(lp, "Learn");
 		add(highScoresPanelAfter, "HighScoresAfter");
+		add(ty, "thank you");
 	}
 }
 
@@ -2289,7 +2294,6 @@ class TugOfWarPanel extends JPanel
 	private JTextArea questionArea = new JTextArea();
 	private JButton[] answerButtons = new JButton[4];
 	private JButton startButton = new JButton("Start");
-	private JButton restartButton = new JButton("Restart");
 	private JButton next = new JButton("Next");
 	private Storer store = new Storer();
 	private long startTime;
@@ -2354,7 +2358,6 @@ class TugOfWarPanel extends JPanel
 
 		Color startRestartColor = new Color(0, 150, 255);
 		styleButton.accept(startButton, startRestartColor);
-		styleButton.accept(restartButton, startRestartColor);
 
 		styleButton.accept(next, Color.GREEN);
 		next.setVisible(false);
@@ -2367,7 +2370,6 @@ class TugOfWarPanel extends JPanel
 		JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 20));
 		topPanel.setOpaque(false);
 		topPanel.add(startButton);
-		topPanel.add(restartButton);
 		topPanel.add(next);
 		add(topPanel, BorderLayout.NORTH);
 
@@ -2409,17 +2411,8 @@ class TugOfWarPanel extends JPanel
 					loadNextQuestion();
 					startGameLoop();
 					startButton.setVisible(false);
-					restartButton.setVisible(true);
 				});
 			}
-		});
-
-		restartButton.setVisible(false);
-		restartButton.addActionListener(e ->
-		{
-			if (gameTimer != null) gameTimer.stop();
-			startButton.setVisible(true);
-			restartButton.setVisible(false);
 		});
 	}
 
@@ -2617,7 +2610,6 @@ class TugOfWarPanel extends JPanel
 		store.setTugTime((int) (endTime - startTime) / 1000);
 		next.setVisible(true);
 		startButton.setVisible(false);
-		restartButton.setVisible(false);
 		gameEnded = true;
 		timerStarted = false;
 		if (gameTimer != null) 
@@ -2960,7 +2952,7 @@ class LearningPanel extends JPanel
 				{
 					String line = qScan.nextLine();
 					if (line.startsWith(qNum + ")")) 
-						{
+					{
 						question = line;
 						for (int i = 0; i < 4 && qScan.hasNextLine(); i++) 
 						{
@@ -2969,7 +2961,7 @@ class LearningPanel extends JPanel
 						if (qScan.hasNext()) qScan.next(); // skip blank
 						if (qScan.hasNext()) answer = qScan.next();
 						break;
-						}
+					}
 				}
 
 				// Read from explanation file
@@ -2977,10 +2969,10 @@ class LearningPanel extends JPanel
 				{
 					String line = eScan.nextLine();
 					if (line.startsWith(qNum + ")")) 
-						{
+					{
 						explanation = line;
 						break;
-						}
+					}
 				}
 
 			} 
@@ -3167,27 +3159,18 @@ class HighScorePanelAfter extends JPanel
 		scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scroll.setBorder(new EmptyBorder(10, 30, 10, 30));
 		add(scroll, BorderLayout.CENTER);
-
-		JButton backBtn = new JButton("Back");
-		backBtn.setFont(new Font("Segoe UI", Font.BOLD, 18));
-		backBtn.setBackground(new Color(200, 60, 60));
-		backBtn.setForeground(Color.BLACK);
-		backBtn.setFocusPainted(false);
-		backBtn.setPreferredSize(new Dimension(120, 40));
-		backBtn.addActionListener(e -> layout.show(parent, "Welcome"));
 		
-		JButton finish = new JButton("Finish");
+		JButton finish = new JButton("Next");
 		finish.setFont(new Font("Segoe UI", Font.BOLD, 18));
 		finish.setBackground(new Color(200, 60, 60));
 		finish.setForeground(Color.BLACK);
 		finish.setFocusPainted(false);
 		finish.setPreferredSize(new Dimension(120, 40));
 		finish.addActionListener(e -> System.exit(0));
-		
+
 		JPanel btnPanel = new JPanel();
 		btnPanel.setBackground(Color.WHITE);
 		btnPanel.setBorder(new EmptyBorder(10,10,20,10));
-		btnPanel.add(backBtn);
 		btnPanel.add(finish);
 		add(btnPanel, BorderLayout.SOUTH);
 	}
@@ -3298,4 +3281,159 @@ class HighScorePanelAfter extends JPanel
 			name = n; raceTime = r; tugTime = t; 
 		}
 	}
+}class ThankYouScreenPanel extends JPanel implements ActionListener {
+    private final java.util.List<Particle> particles = new ArrayList<>();
+    private final Timer timer;
+    private float rotationAngle = 0f;
+    private float gradientOffset = 0;
+    private float hue = 0f;
+    private final GradientButton quitButton;
+
+    public ThankYouScreenPanel() {
+        setLayout(null);
+        setBackground(Color.BLACK);
+
+        // Create and style a custom gradient button
+        quitButton = new GradientButton("Quit");
+        quitButton.setFont(new Font("Arial", Font.BOLD, 20));
+        quitButton.setForeground(Color.WHITE);
+        quitButton.setBounds(1000, 10, 150, 50);
+        quitButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        quitButton.addActionListener(e -> System.exit(0));
+        add(quitButton);
+
+        // Spawn initial particles
+        for (int i = 0; i < 100; i++) {
+            particles.add(new Particle(getWidth(), getHeight()));
+        }
+
+        timer = new Timer(16, this);
+        timer.start();
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2 = (Graphics2D) g.create();
+        int w = getWidth(), h = getHeight();
+
+        // Animate diagonal gradient and hue shift
+        gradientOffset += 1;
+        hue += 0.001f;
+        if (hue > 1f) hue = 0f;
+        Color c1 = Color.getHSBColor(hue, 1f, 0.6f);
+        Color c2 = Color.getHSBColor((hue + 0.4f) % 1f, 1f, 0.9f);
+        GradientPaint bg = new GradientPaint(
+            (gradientOffset % w), 0, c1,
+            0, (gradientOffset % h), c2
+        );
+        g2.setPaint(bg);
+        g2.fillRect(0, 0, w, h);
+
+        // Rotating logo
+        AffineTransform old = g2.getTransform();
+        g2.translate(w/2, h/3);
+        g2.rotate(rotationAngle);
+        g2.setColor(new Color(255, 220, 0, 200));
+        g2.fillOval(-50, -50, 100, 100);
+        g2.setTransform(old);
+
+        // Particles
+        for (Particle p : particles) p.draw(g2);
+
+        // Text
+        String msg = "Thank You for Playing!";
+        Font font = new Font("Arial Black", Font.BOLD, 48);
+        g2.setFont(font);
+        FontMetrics fm = g2.getFontMetrics();
+        int textW = fm.stringWidth(msg);
+        int x = (w - textW) / 2;
+        int y = h * 2 / 3;
+
+        // Shadow
+        g2.setColor(new Color(0, 0, 0, 150));
+        g2.drawString(msg, x + 4, y + 4);
+
+        // Animated text gradient (matching background hues)
+        Color t1 = Color.getHSBColor((hue + 0.2f) % 1f, 1f, 1f);
+        Color t2 = Color.getHSBColor((hue + 0.6f) % 1f, 1f, 1f);
+        GradientPaint tg = new GradientPaint(x, y - fm.getAscent(), t1, x + textW, y, t2);
+        g2.setPaint(tg);
+        g2.drawString(msg, x, y);
+        g2.dispose();
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        int w = getWidth(), h = getHeight();
+        if (particles.size() < 150) particles.add(new Particle(w, h));
+        Iterator<Particle> it = particles.iterator();
+        while (it.hasNext()) {
+            Particle p = it.next();
+            p.update();
+            if (!p.isAlive()) it.remove();
+        }
+        rotationAngle += 0.01f;
+        repaint();
+    }
+
+    /**
+     * Custom JButton with rounded gradient background and hover effect
+     */
+    private static class GradientButton extends JButton {
+        private boolean hover = false;
+        GradientButton(String text) {
+            super(text);
+            setContentAreaFilled(false);
+            setBorderPainted(false);
+            setFocusPainted(false);
+            addMouseListener(new MouseAdapter() {
+                public void mouseEntered(MouseEvent e) { hover = true; repaint(); }
+                public void mouseExited(MouseEvent e) { hover = false; repaint(); }
+            });
+        }
+        @Override protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            int w = getWidth(), h = getHeight();
+            float f = hover ? 1.1f : 1f;
+            GradientPaint gp = new GradientPaint(0, 0,
+                getBackground().brighter(), 0, h,
+                getBackground().darker());
+            g2.setPaint(gp);
+            g2.fillRoundRect(0, 0, w, h, 20, 20);
+            g2.setComposite(AlphaComposite.SrcOver);
+            super.paintComponent(g2);
+            g2.dispose();
+        }
+        @Override public void setBackground(Color bg) { super.setBackground(bg); }
+        @Override public void setForeground(Color fg) { super.setForeground(fg); }
+    }
+
+    /** Basic particle class for sparkle effect. */
+    static class Particle {
+        float x, y, life, maxLife;
+		double vy;
+		double vx;
+        Color color;
+        Particle(int width, int height) {
+            Random rnd = new Random();
+            x = width/2f; y = height/3f;
+            float ang = rnd.nextFloat()*2*(float)Math.PI;
+            float spd = rnd.nextFloat()*4+1;
+            vx = Math.cos(ang)*spd;
+            vy = Math.sin(ang)*spd;
+            maxLife = life = rnd.nextFloat()*60+30;
+            color = new Color(rnd.nextFloat(), rnd.nextFloat(), rnd.nextFloat(), 1f);
+        }
+        void update() { x+=vx; y+=vy; life--; }
+        boolean isAlive() { return life>0; }
+        void draw(Graphics2D g2) {
+            float a = life/maxLife;
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,a));
+            int s = (int)(a*8+2);
+            g2.setColor(color);
+            g2.fillOval((int)x,(int)y,s,s);
+            g2.setComposite(AlphaComposite.SrcOver);
+        }
+    }
 }
