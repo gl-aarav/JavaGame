@@ -18,3 +18,6 @@ s|CarNormal|15|12
 s|CarNormal|21|20
 a|CarSport|20|11
 a|Rocket|14|11
+k|CarSport|22|11
+l|CarSport|16|12
+l|Rocket|19|13

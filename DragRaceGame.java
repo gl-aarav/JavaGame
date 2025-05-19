@@ -723,6 +723,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		addMouseMotionListener(this);
 		setLayout(null);
 		addComponents();
+		Storer.setCarImage(null);
 
 		carSelectSound = new SoundPlayer("carSelect.wav");
 		buttonClickSound = new SoundPlayer("buttonClick.wav");
@@ -1721,6 +1722,17 @@ class Storer
 	{
 		return wrongGame2;
 	}
+	public void reset() 
+	{
+		carNumber = null;
+		carOpponentString = null;
+		difficultyLevel = 0;
+		timeRace = 0;
+		timeTug = 0;
+		name = null;
+		wrongGame1 = null;
+		wrongGame2 = null;
+	}
 }
 
 class GamePanel extends JPanel
@@ -2420,36 +2432,36 @@ class TugOfWarPanel extends JPanel
 			tugMusic.fadeOut(3000);
 			layout.show(parent, "Learn");
 			// Reset game variables
-		    ropeOffset = 0;
-		    gameEnded = false;
-		    timerStarted = false;
+			ropeOffset = 0;
+			gameEnded = false;
+			timerStarted = false;
 
-		    // Stop any running timers
-		    if (gameTimer != null) {
-		        gameTimer.stop();
-		    }
+			// Stop any running timers
+			if (gameTimer != null) {
+				gameTimer.stop();
+			}
 
-		    // Reset UI components
-		    questionArea.setText("");
-		    for (JButton button : answerButtons) {
-		        button.setText("");
-		        button.setEnabled(false);
-		    }
+			// Reset UI components
+			questionArea.setText("");
+			for (JButton button : answerButtons) {
+				button.setText("");
+				button.setEnabled(false);
+			}
 
-		    // Reset start button visibility
-		    startButton.setVisible(true);
-		    startButton.setEnabled(true);
-		    startButton.setText("Start");
+			// Reset start button visibility
+			startButton.setVisible(true);
+			startButton.setEnabled(true);
+			startButton.setText("Start");
 
-		    // Hide the next button
-		    next.setVisible(false);
+			// Hide the next button
+			next.setVisible(false);
 
-		    // Reset any other game-specific logic
-		    tugArrayNumber = 0;
-		    Arrays.fill(tugArrayNum, 0);
+			// Reset any other game-specific logic
+			tugArrayNumber = 0;
+			Arrays.fill(tugArrayNum, 0);
 
-		    // Repaint the panel to reflect changes
-		    repaint();
+			// Repaint the panel to reflect changes
+			repaint();
 		});
 
 		JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 20));
@@ -3416,6 +3428,7 @@ class ThankYouScreenPanel extends JPanel implements ActionListener
 	private float hue = 0f;
 	private final GradientButton quitButton;
 	private final GradientButton replayButton;
+	private Storer store = new Storer();
 
 	public ThankYouScreenPanel(JPanel parent, CardLayout layout) 
 	{
@@ -3435,7 +3448,7 @@ class ThankYouScreenPanel extends JPanel implements ActionListener
 			System.exit(0);	
 		});
 		add(quitButton);
-		
+
 		replayButton = new GradientButton("Replay");
 		replayButton.setFont(new Font("Arial", Font.BOLD, 20));
 		replayButton.setForeground(Color.WHITE);
@@ -3443,6 +3456,7 @@ class ThankYouScreenPanel extends JPanel implements ActionListener
 		replayButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		replayButton.addActionListener(e -> 
 		{
+			store.reset();
 			layout.show(parent, "Welcome");
 		});
 		add(replayButton);
