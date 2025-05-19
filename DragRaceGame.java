@@ -88,6 +88,8 @@ import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -180,7 +182,7 @@ class GameHolder extends JPanel
 		CarChoosePanel carChoose = new CarChoosePanel(this,layout);
 		TugOfWarPanel tow = new TugOfWarPanel(this, layout);
 		LearningPanel lp = new LearningPanel(this, layout);
-		ThankYouScreenPanel ty = new ThankYouScreenPanel();
+		ThankYouScreenPanel ty = new ThankYouScreenPanel(this, layout);
 
 		add(welcomePanel, "Welcome");
 		add(instructionsPanel, "Instructions");
@@ -300,6 +302,7 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 				if (!fadeCompleted)
 				{
 					IntroSound.play();
+					IntroSound.loop();
 				}
 				else
 				{
@@ -707,7 +710,6 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 	private SoundPlayer carSelectSound;
 	private SoundPlayer buttonClickSound;
 	private SoundPlayer notificationSound;
-	private SoundPlayer openingSound;
 	private JLabel carStatsLabel;
 	private String carStats = "No car selected"; // Placeholder for car stats
 	private boolean opponentCarSelected = false;
@@ -722,7 +724,6 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		setLayout(null);
 		addComponents();
 
-		openingSound = new SoundPlayer("Opening.wav");
 		carSelectSound = new SoundPlayer("carSelect.wav");
 		buttonClickSound = new SoundPlayer("buttonClick.wav");
 		notificationSound = new SoundPlayer("Notification.wav");
@@ -764,7 +765,6 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				buttonClickSound.play(); // Play button click sound
 				if (carSelected && opponentCarSelected && nameEntered)
 				{
-					openingSound.play();
 					layout.show(parent, "Game");
 				}
 
@@ -1757,21 +1757,35 @@ class GamePanel extends JPanel
 	private SoundPlayer correct;
 	private SoundPlayer incorrect;
 	private JProgressBar progressBar;
+	private SoundPlayer raceMusic;
 
 	private JButton start;
 	private JButton next;
 
 	private int arrayNumber = 0;
 	private int[] arrayNum = new int[100];
+	private double userSpeed = 20 + userSpeedBoost;
 
 	GamePanel(JPanel gameHolder, CardLayout layout) 
 	{
 		importTextfiles();
 		correct = new SoundPlayer("Correct.wav");
 		incorrect = new SoundPlayer("InCorrect.wav");
+		raceMusic = new SoundPlayer("raceGameSound.wav");
 		this.parent = gameHolder;
 		this.layout = layout;
 		setLayout(new BorderLayout());
+
+		addComponentListener(new ComponentAdapter() 
+		{
+			@Override
+			public void componentShown(ComponentEvent e) 
+			{
+				raceMusic.play();
+				raceMusic.loop();
+			}
+		});
+
 
 		// Panel backgrounds
 		setBackground(new Color(240, 248, 255)); // light pastel blue
@@ -1892,8 +1906,10 @@ class GamePanel extends JPanel
 				questionThreeButton.setText("");
 				questionFourButton.setText("");
 				questionArea.setText("");
-				if (gameTimer != null) gameTimer.stop();
+				if (gameTimer != null) 
+					gameTimer.stop();
 				car1LogicalPos = car2LogicalPos = trackPos = userSpeedBoost = 0;
+				next.setVisible(false);
 				gameEnded = timerStarted = false;
 				start.setText("  Start  ");
 				progressBar.setValue(0);
@@ -1904,6 +1920,23 @@ class GamePanel extends JPanel
 		next.addActionListener(e->
 		{
 			layout.show(parent, "Tug");
+			questionOneButton.setText("");
+			questionTwoButton.setText("");
+			questionThreeButton.setText("");
+			questionFourButton.setText("");
+			questionArea.setText("");
+			if (gameTimer != null) 
+				gameTimer.stop();
+			car1LogicalPos = car2LogicalPos = trackPos = userSpeedBoost = 0;
+			next.setVisible(false);
+			gameEnded = timerStarted = false;
+			start.setText("  Start  ");
+			start.setEnabled(true);
+			start.setVisible(true);
+			progressBar.setValue(0);
+			userSpeedBoost = 0;
+			userSpeed = 20 + userSpeedBoost;
+			repaint();
 		});
 
 		JPanel controlButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
@@ -1943,6 +1976,13 @@ class GamePanel extends JPanel
 		add(controlPanel, BorderLayout.SOUTH);
 
 		add(controlButtonPanel, BorderLayout.CENTER);
+	}
+
+	//Play sound if visible
+	public void ifVisible()
+	{
+		raceMusic.play();
+		raceMusic.loop();
 	}
 
 	private void updateProgressBar()
@@ -2108,7 +2148,7 @@ class GamePanel extends JPanel
 			if (gameEnded)
 				return;
 
-			double userSpeed = 20 + 2 * userSpeedBoost;
+			userSpeed = 20 + 2 * userSpeedBoost;
 
 			car1LogicalPos += userSpeed;
 			car2LogicalPos += opponentSpeed;
@@ -2129,6 +2169,7 @@ class GamePanel extends JPanel
 				Storer.setRaceGameTime((int) (endTime/1000 - startTime/1000));
 				gameEnded = true;
 				gameTimer.stop();
+				raceMusic.fadeOut(3000);
 				JOptionPane.showMessageDialog(GamePanel.this, "You Win!", "Race Result", JOptionPane.INFORMATION_MESSAGE);
 				next.setVisible(true);
 				start.setVisible(false);
@@ -2140,6 +2181,7 @@ class GamePanel extends JPanel
 				Storer.setRaceGameTime((int) (endTime/1000 - startTime/1000));
 				gameEnded = true;
 				gameTimer.stop();
+				raceMusic.fadeOut(3000);
 				JOptionPane.showMessageDialog(GamePanel.this, "You Lose!", "Race Result", JOptionPane.INFORMATION_MESSAGE);
 				next.setVisible(true);
 				start.setVisible(false);
@@ -2289,6 +2331,7 @@ class TugOfWarPanel extends JPanel
 
 	private SoundPlayer correctSound;
 	private SoundPlayer incorrectSound;
+	private SoundPlayer tugMusic;
 
 	private JTextArea questionArea = new JTextArea();
 	private JButton[] answerButtons = new JButton[4];
@@ -2316,6 +2359,17 @@ class TugOfWarPanel extends JPanel
 	{
 		correctSound = new SoundPlayer("Correct.wav");
 		incorrectSound = new SoundPlayer("InCorrect.wav");
+		tugMusic = new SoundPlayer("tugGameSound.wav");
+
+		addComponentListener(new ComponentAdapter() 
+		{
+			@Override
+			public void componentShown(ComponentEvent e) 
+			{
+				tugMusic.play();
+				tugMusic.loop();
+			}
+		});
 
 		BiConsumer<JButton, Color> styleButton = (btn, bg) ->
 		{
@@ -2363,7 +2417,39 @@ class TugOfWarPanel extends JPanel
 
 		next.addActionListener(e->
 		{
+			tugMusic.fadeOut(3000);
 			layout.show(parent, "Learn");
+			// Reset game variables
+		    ropeOffset = 0;
+		    gameEnded = false;
+		    timerStarted = false;
+
+		    // Stop any running timers
+		    if (gameTimer != null) {
+		        gameTimer.stop();
+		    }
+
+		    // Reset UI components
+		    questionArea.setText("");
+		    for (JButton button : answerButtons) {
+		        button.setText("");
+		        button.setEnabled(false);
+		    }
+
+		    // Reset start button visibility
+		    startButton.setVisible(true);
+		    startButton.setEnabled(true);
+		    startButton.setText("Start");
+
+		    // Hide the next button
+		    next.setVisible(false);
+
+		    // Reset any other game-specific logic
+		    tugArrayNumber = 0;
+		    Arrays.fill(tugArrayNum, 0);
+
+		    // Repaint the panel to reflect changes
+		    repaint();
 		});
 
 		JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 20));
@@ -2785,39 +2871,47 @@ class SoundPlayer
 
 	public void fadeOut(int durationMs)
 	{
-	    if (clip == null || volumeControl == null) return;
-	    final int steps = 10;
-	    final float initial = volumeControl.getValue();
-	    final float min = volumeControl.getMinimum();
-	    final float delta = (initial - min) / steps;
-	    Timer timer = new Timer(durationMs / steps, null);
-	    timer.addActionListener(new ActionListener() 
-	    {
-	        int count = 0;
-	        public void actionPerformed(ActionEvent e) 
-	        {
-	            if (count < steps) 
-	            {
-	                volumeControl.setValue(initial - delta * count);
-	                count++;
-	            }
-	            else 
-	            {
-	                timer.stop();
-	                stop();
-	            }
-	        }
-	    });
-	    timer.start();
+		if (clip == null || volumeControl == null) return;
+		final int steps = 10;
+		final float initial = volumeControl.getValue();
+		final float min = volumeControl.getMinimum();
+		final float delta = (initial - min) / steps;
+		Timer timer = new Timer(durationMs / steps, null);
+		timer.addActionListener(new ActionListener() 
+		{
+			int count = 0;
+			public void actionPerformed(ActionEvent e) 
+			{
+				if (count < steps) 
+				{
+					volumeControl.setValue(initial - delta * count);
+					count++;
+				}
+				else 
+				{
+					timer.stop();
+					stop();
+				}
+			}
+		});
+		timer.start();
 	}
 
-	
+
 	// Stop the sound
 	public void stop()
 	{
 		if (clip != null)
 		{
 			clip.stop();
+		}
+	}
+
+	public void loop()
+	{
+		if (clip != null && !isMuted)
+		{ // Check if not muted
+			clip.loop(Clip.LOOP_CONTINUOUSLY);
 		}
 	}
 
@@ -3313,15 +3407,20 @@ class HighScorePanelAfter extends JPanel
 
 class ThankYouScreenPanel extends JPanel implements ActionListener 
 {
+	private JPanel parent;
+	private CardLayout layout;
 	private final java.util.List<Particle> particles = new ArrayList<>();
 	private final Timer timer;
 	private float rotationAngle = 0f;
 	private float gradientOffset = 0;
 	private float hue = 0f;
 	private final GradientButton quitButton;
+	private final GradientButton replayButton;
 
-	public ThankYouScreenPanel() 
+	public ThankYouScreenPanel(JPanel parent, CardLayout layout) 
 	{
+		this.parent = parent;
+		this.layout = layout;
 		setLayout(null);
 		setBackground(Color.BLACK);
 
@@ -3331,8 +3430,23 @@ class ThankYouScreenPanel extends JPanel implements ActionListener
 		quitButton.setForeground(Color.WHITE);
 		quitButton.setBounds(1000, 10, 150, 50);
 		quitButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		quitButton.addActionListener(e -> System.exit(0));
+		quitButton.addActionListener(e -> 
+		{
+			System.exit(0);	
+		});
 		add(quitButton);
+		
+		replayButton = new GradientButton("Replay");
+		replayButton.setFont(new Font("Arial", Font.BOLD, 20));
+		replayButton.setForeground(Color.WHITE);
+		replayButton.setBounds(1000, 70, 150, 50);
+		replayButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		replayButton.addActionListener(e -> 
+		{
+			layout.show(parent, "Welcome");
+		});
+		add(replayButton);
+
 
 		// Spawn initial particles
 		for (int i = 0; i < 100; i++)
@@ -3354,7 +3468,8 @@ class ThankYouScreenPanel extends JPanel implements ActionListener
 		// Animate diagonal gradient and hue shift
 		gradientOffset += 1;
 		hue += 0.001f;
-		if (hue > 1f) hue = 0f;
+		if (hue > 1f) 
+			hue = 0f;
 		Color c1 = Color.getHSBColor(hue, 1f, 0.6f);
 		Color c2 = Color.getHSBColor((hue + 0.4f) % 1f, 1f, 0.9f);
 		GradientPaint bg = new GradientPaint(
@@ -3373,7 +3488,8 @@ class ThankYouScreenPanel extends JPanel implements ActionListener
 		g2.setTransform(old);
 
 		// Particles
-		for (Particle p : particles) p.draw(g2);
+		for (Particle p : particles) 
+			p.draw(g2);
 
 		// Text
 		String msg = "Thank You for Playing!";
@@ -3401,7 +3517,8 @@ class ThankYouScreenPanel extends JPanel implements ActionListener
 	public void actionPerformed(ActionEvent e) 
 	{
 		int w = getWidth(), h = getHeight();
-		if (particles.size() < 150) particles.add(new Particle(w, h));
+		if (particles.size() < 150) 
+			particles.add(new Particle(w, h));
 		Iterator<Particle> it = particles.iterator();
 		while (it.hasNext()) {
 			Particle p = it.next();
@@ -3412,7 +3529,7 @@ class ThankYouScreenPanel extends JPanel implements ActionListener
 		repaint();
 	}
 
-	/**
+	/*
 	 * Custom JButton with rounded gradient background and hover effect
 	 */
 	private static class GradientButton extends JButton 
@@ -3429,11 +3546,11 @@ class ThankYouScreenPanel extends JPanel implements ActionListener
 				public void mouseEntered(MouseEvent e) 
 				{
 					hover = true; repaint(); 
-					}
+				}
 				public void mouseExited(MouseEvent e) 
 				{
 					hover = false; repaint(); 
-					}
+				}
 			});
 		}
 		@Override protected void paintComponent(Graphics g) 
@@ -3453,11 +3570,11 @@ class ThankYouScreenPanel extends JPanel implements ActionListener
 		@Override public void setBackground(Color bg) 
 		{ 
 			super.setBackground(bg); 
-			}
+		}
 		@Override public void setForeground(Color fg) 
 		{ 
 			super.setForeground(fg); 
-			}
+		}
 	}
 
 	/* Basic particle class for sparkle effect. */

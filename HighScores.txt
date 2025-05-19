@@ -7,3 +7,14 @@ a|CarSport|19|15
 a|Bicycle|42|10
 a|CarSport|18|9
 l|CarNormal|38|88
+j|Motorcycle|26|13
+a|CarSport|19|13
+a|CarSport|18|11
+a|CarSport|17|11
+a|CarSport|17|14
+a|Rocket|19|15
+s|CarSport|17|11
+s|CarNormal|15|12
+s|CarNormal|21|20
+a|CarSport|20|11
+a|Rocket|14|11
