@@ -502,7 +502,7 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 	}
 
 	@Override
-	public void mouseClicked(MouseEvent e){}
+	public void mouseClicked(MouseEvent e) {}
 
 	@Override 
 	public void mouseEntered(MouseEvent e) {}
@@ -557,11 +557,19 @@ class InstructionPanel extends JPanel
 	private boolean agreementChecked;
 	private Image gifImage;
 	JCheckBox agreementCheckBox = new JCheckBox("I agree to the terms and conditions");
+	private float hue = 0f;
+	private final Timer textTimer = new Timer(40, e -> 
+	{
+		hue += 0.002f;
+		if (hue > 1f) hue = 0f;
+		repaint();
+	});
 
 	public InstructionPanel(GameHolder gameHolder, CardLayout layout)
 	{
 		this.parent = gameHolder;
 		this.layout = layout;
+		textTimer.start();
 		setLayout(new BorderLayout());
 		setBackground(Color.BLACK);
 		showObjects();
@@ -651,27 +659,35 @@ class InstructionPanel extends JPanel
 			agreementChecked = false; // Reset the agreement flag
 		}
 	}
-	public void paintComponent(Graphics g)
+	@Override
+	public void paintComponent(Graphics g) 
 	{
 		super.paintComponent(g);
 
+		// Draw your GIF
 		g.drawImage(gifImage, 101, 312, 962, 626, this);
-		g.setColor(Color.WHITE);
-		Graphics2D g2d = (Graphics2D) g;
-		g2d.setFont(new Font("Arial", Font.BOLD, 18));
-		g2d.setColor(Color.WHITE);
 
-		String[] lines = 
+		// Prepare for gradient text
+		Graphics2D g2d = (Graphics2D) g.create();
+		g2d.setFont(new Font("Arial", Font.BOLD, 18));
+		FontMetrics fm = g2d.getFontMetrics();
+		int lineHeight = fm.getHeight();
+
+		// Compute two cycling HSB colors
+		Color c1 = Color.getHSBColor(hue,       1f, 1f);
+		Color c2 = Color.getHSBColor((hue+0.3f)%1f, 1f, 1f);
+
+		// Determine the full text block height
+		String[] lines =
 			{
 					"Game Setup",
-					"You control a race car that competes against a bot car.",
+					"You control a car that competes against a bot car.",
 					"Answer correctly for speed boosts; wrong answers slow you down.",
 					"",
 					"How to Play",
-					"Enter your name, pick your car color, choose difficulty,",
+					"Enter your name, pick your car, and choose difficulty,",
 					"and press Start Game to begin.",
 					"Answer questions using the buttons that appear.",
-					"If the bot wins, you lose!",
 					"",
 					"Learning Features",
 					"At the end, review your mistakes,",
@@ -681,16 +697,24 @@ class InstructionPanel extends JPanel
 					"Beat the bot to the finish line!",
 					"Track your progress with the progress bar, and aim for a high score!"
 			};
-
 		int x = 300;
-		int y = 461;
-		int lineHeight = g.getFontMetrics().getHeight();
+		int yStart = 461;
+		int totalHeight = lines.length * lineHeight;
 
-		for (int i = 0; i < lines.length; i++)
+		// Create a vertical gradient spanning the entire block
+		GradientPaint textGrad = new GradientPaint(
+				x,            yStart,           c1,
+				x,    yStart + totalHeight,     c2
+				);
+		g2d.setPaint(textGrad);
+
+		// Draw each line in place
+		for (int i = 0; i < lines.length; i++) 
 		{
-			g2d.drawString(lines[i], x, y + i * lineHeight);
+			g2d.drawString(lines[i], x, yStart + i * lineHeight);
 		}
 
+		g2d.dispose();
 	}
 }
 
@@ -1722,17 +1746,6 @@ class Storer
 	{
 		return wrongGame2;
 	}
-	public void reset() 
-	{
-		carNumber = null;
-		carOpponentString = null;
-		difficultyLevel = 0;
-		timeRace = 0;
-		timeTug = 0;
-		name = null;
-		wrongGame1 = null;
-		wrongGame2 = null;
-	}
 }
 
 class GamePanel extends JPanel
@@ -1756,7 +1769,7 @@ class GamePanel extends JPanel
 	private double userSpeedBoost = 0;
 	private Timer gameTimer;
 	private double opponentSpeed;
-	private Storer Storer = new Storer();
+	private Storer storer = new Storer();
 
 	private int questionNumber = 0;
 	private String question = "";
@@ -2105,9 +2118,9 @@ class GamePanel extends JPanel
 		if (carsImage != null && opponentCarImage != null && trackImage != null)
 			return;
 
-		carNumber = Storer.getCarImage();
-		carOpponentString = Storer.getOpponentCarImage();
-		int level = Storer.getDifficultyLevel();
+		carNumber = storer.getCarImage();
+		carOpponentString = storer.getOpponentCarImage();
+		int level = storer.getDifficultyLevel();
 
 		switch (carOpponentString)
 		{
@@ -2176,9 +2189,9 @@ class GamePanel extends JPanel
 			// Check win/lose conditions
 			if (car1LogicalPos >= FINISH_LINE && car2LogicalPos < FINISH_LINE)
 			{
-				Storer.setWrongFromGame1(Arrays.copyOf(arrayNum, arrayNumber));
+				storer.setWrongFromGame1(Arrays.copyOf(arrayNum, arrayNumber));
 				long endTime = System.currentTimeMillis(); // Record the end time
-				Storer.setRaceGameTime((int) (endTime/1000 - startTime/1000));
+				storer.setRaceGameTime((int) (endTime/1000 - startTime/1000));
 				gameEnded = true;
 				gameTimer.stop();
 				raceMusic.fadeOut(3000);
@@ -2188,9 +2201,9 @@ class GamePanel extends JPanel
 			} 
 			else if (car2LogicalPos >= FINISH_LINE && car1LogicalPos >= FINISH_LINE) 
 			{
-				Storer.setWrongFromGame1(Arrays.copyOf(arrayNum, arrayNumber));
+				storer.setWrongFromGame1(Arrays.copyOf(arrayNum, arrayNumber));
 				long endTime = System.currentTimeMillis(); // Record the end time
-				Storer.setRaceGameTime((int) (endTime/1000 - startTime/1000));
+				storer.setRaceGameTime((int) (endTime/1000 - startTime/1000));
 				gameEnded = true;
 				gameTimer.stop();
 				raceMusic.fadeOut(3000);
@@ -2230,11 +2243,11 @@ class GamePanel extends JPanel
 		{
 			if (car2LogicalPos >= FINISH_LINE)
 			{
-				g.drawImage(opponentCarImage, USER_CAR_X + (int)(FINISH_LINE - car1LogicalPos), 630, 476, 242, this);
+				g.drawImage(opponentCarImage, USER_CAR_X + (int)(FINISH_LINE - car1LogicalPos), 610, 476, 242, this);
 			}
 			else if (opponentScreenX < getWidth() && opponentScreenX > -400)
 			{
-				g.drawImage(opponentCarImage, opponentScreenX, 630, 476, 242, this);
+				g.drawImage(opponentCarImage, opponentScreenX, 610, 476, 242, this);
 			}
 		}
 	}
@@ -2437,13 +2450,15 @@ class TugOfWarPanel extends JPanel
 			timerStarted = false;
 
 			// Stop any running timers
-			if (gameTimer != null) {
+			if (gameTimer != null) 
+			{
 				gameTimer.stop();
 			}
 
 			// Reset UI components
 			questionArea.setText("");
-			for (JButton button : answerButtons) {
+			for (JButton button : answerButtons) 
+			{
 				button.setText("");
 				button.setEnabled(false);
 			}
@@ -3428,7 +3443,6 @@ class ThankYouScreenPanel extends JPanel implements ActionListener
 	private float hue = 0f;
 	private final GradientButton quitButton;
 	private final GradientButton replayButton;
-	private Storer store = new Storer();
 
 	public ThankYouScreenPanel(JPanel parent, CardLayout layout) 
 	{
@@ -3456,8 +3470,7 @@ class ThankYouScreenPanel extends JPanel implements ActionListener
 		replayButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		replayButton.addActionListener(e -> 
 		{
-			store.reset();
-			layout.show(parent, "Welcome");
+			layout.show(parent, "Game");
 		});
 		add(replayButton);
 
@@ -3534,7 +3547,8 @@ class ThankYouScreenPanel extends JPanel implements ActionListener
 		if (particles.size() < 150) 
 			particles.add(new Particle(w, h));
 		Iterator<Particle> it = particles.iterator();
-		while (it.hasNext()) {
+		while (it.hasNext())
+		{
 			Particle p = it.next();
 			p.update();
 			if (!p.isAlive()) it.remove();
