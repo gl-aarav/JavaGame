@@ -27,3 +27,6 @@ s|Rocket|30|24
 l|Rocket|22|17
 a|Rocket|16|12
 a|Rocket|25|15
+s|CarSport|15|45
+Enter Your Na|CarSport|28|12
+a|Rocket|14|22

@@ -899,15 +899,18 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 
 		// Style Labels
 		Font labelFont = new Font("Arial", Font.BOLD, 16);
-		for (JLabel label : labelTable.values()) {
+		for (JLabel label : labelTable.values()) 
+		{
 		    label.setFont(labelFont);
 		    label.setForeground(new Color(40, 40, 40));
 		}
 
 		// Custom UI: Blue on left, Red on right
-		difficultySlider.setUI(new javax.swing.plaf.basic.BasicSliderUI(difficultySlider) {
+		difficultySlider.setUI(new javax.swing.plaf.basic.BasicSliderUI(difficultySlider) 
+		{
 		    @Override
-		    public void paintThumb(Graphics g) {
+		    public void paintThumb(Graphics g) 
+		    {
 		        Graphics2D g2d = (Graphics2D) g.create();
 		        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		        g2d.setColor(new Color(50, 150, 255));
@@ -916,7 +919,8 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		    }
 
 		    @Override
-		    public void paintTrack(Graphics g) {
+		    public void paintTrack(Graphics g) 
+		    {
 		        Graphics2D g2d = (Graphics2D) g.create();
 		        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		        int cy = trackRect.y + (trackRect.height / 2) - 3;
@@ -2251,7 +2255,8 @@ class GamePanel extends JPanel
 				gameEnded = true;
 				gameTimer.stop();
 				raceMusic.fadeOut(3000);
-				JOptionPane.showMessageDialog(GamePanel.this, "You Win!", "Race Result", JOptionPane.INFORMATION_MESSAGE);
+				ImageIcon win = new ImageIcon("Win.png");
+				JOptionPane.showMessageDialog(GamePanel.this, "You Win!", "Race Result", JOptionPane.INFORMATION_MESSAGE, win);
 				next.setVisible(true);
 				start.setVisible(false);
 			} 
@@ -2263,7 +2268,8 @@ class GamePanel extends JPanel
 				gameEnded = true;
 				gameTimer.stop();
 				raceMusic.fadeOut(3000);
-				JOptionPane.showMessageDialog(GamePanel.this, "You Lose!", "Race Result", JOptionPane.INFORMATION_MESSAGE);
+				ImageIcon lose = new ImageIcon("Lose.png");
+				JOptionPane.showMessageDialog(GamePanel.this, "You Lose!", "Race Result", JOptionPane.INFORMATION_MESSAGE, lose);
 				next.setVisible(true);
 				start.setVisible(false);
 			}
@@ -2761,15 +2767,17 @@ class TugOfWarPanel extends JPanel
 	{
 		if (ropeOffset <= -WIN_THRESHOLD)
 		{
-			endGame("You Win!");
+			ImageIcon win = new ImageIcon("Win.png");
+			endGame("You Win!", win);
 		}
 		else if (ropeOffset >= WIN_THRESHOLD)
 		{
-			endGame("You Lose!");
+			ImageIcon lose = new ImageIcon("Lose.png");
+			endGame("You Lose!", lose);
 		}
 	}
 
-	private void endGame(String msg)
+	private void endGame(String msg, ImageIcon icon)
 	{
 		Storer storer = new Storer();
 		storer.setWrongFromGame2(Arrays.copyOf(tugArrayNum, tugArrayNumber));
@@ -2783,10 +2791,11 @@ class TugOfWarPanel extends JPanel
 		if (gameTimer != null) 
 			gameTimer.stop();
 
-		for (JButton b : answerButtons) b.setEnabled(false);
+		for (JButton b : answerButtons) 
+			b.setEnabled(false);
 
 		questionArea.setText("");
-		JOptionPane.showMessageDialog(this, msg, "Game Over", JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(this, msg, "Game Over", JOptionPane.INFORMATION_MESSAGE, icon);
 	}
 
 	private void importTextfiles()
@@ -2883,7 +2892,7 @@ class TugOfWarPanel extends JPanel
 		g2d.drawImage(userCarImage, userCarX, carY, CAR_WIDTH, CAR_HEIGHT, this);
 		g2d.drawImage(botCarImage, botCarX, carY, CAR_WIDTH, CAR_HEIGHT, this);
 
-		int ropeHeight = ropeImage.getHeight();
+		int ropeHeight = 50;
 		int ropeY = carY + CAR_HEIGHT / 2 - ropeHeight / 2;
 		int ropeX = userCarX + CAR_WIDTH;
 		int ropeWidth = botCarX - ropeX;
@@ -2892,10 +2901,6 @@ class TugOfWarPanel extends JPanel
 		{
 			g2d.drawImage(ropeImage, ropeX, ropeY, ropeWidth, ropeHeight, this);
 		}
-
-		g2d.setColor(Color.LIGHT_GRAY);
-		g2d.setStroke(new BasicStroke(2));
-		g2d.drawLine(userCarX + CAR_WIDTH, ropeY + ropeHeight / 2, botCarX, ropeY + ropeHeight / 2);
 
 		g2d.setColor(Color.RED);
 		g2d.setStroke(new BasicStroke(3));
