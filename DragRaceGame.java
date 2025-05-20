@@ -107,6 +107,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -878,14 +879,73 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		nameField.setBounds(643, 737, 500, 38);
 		nameField.setEditable(true);
 
-		//Add Easy medium and hard labels
 		JSlider difficultySlider = new JSlider(0, 100, 50);
-		difficultySlider.setMajorTickSpacing(20);
-		difficultySlider.setMinorTickSpacing(5);
+		difficultySlider.setBounds(643, 812, 500, 62);
+
+		// Custom Labels
+		Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
+		labelTable.put(0, new JLabel("Easy"));
+		labelTable.put(50, new JLabel("Medium"));
+		labelTable.put(100, new JLabel("Hard"));
+		difficultySlider.setLabelTable(labelTable);
+
+		// Slider Settings
+		difficultySlider.setMajorTickSpacing(50);
+		difficultySlider.setMinorTickSpacing(10);
 		difficultySlider.setPaintTicks(true);
 		difficultySlider.setPaintLabels(true);
-		difficultySlider.setValue(50); // Default to medium difficulty
-		difficultySlider.setBounds(643, 812, 500, 62);
+		difficultySlider.setSnapToTicks(true);
+		difficultySlider.setToolTipText("Adjust Difficulty");
+
+		// Style Labels
+		Font labelFont = new Font("Arial", Font.BOLD, 16);
+		for (JLabel label : labelTable.values()) 
+		{
+		    label.setFont(labelFont);
+		    label.setForeground(new Color(40, 40, 40));
+		}
+
+		// Custom UI: Blue on left, Red on right
+		difficultySlider.setUI(new javax.swing.plaf.basic.BasicSliderUI(difficultySlider) 
+		{
+		    @Override
+		    public void paintThumb(Graphics g) 
+		    {
+		        Graphics2D g2d = (Graphics2D) g.create();
+		        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		        g2d.setColor(new Color(50, 150, 255));
+		        g2d.fillOval(thumbRect.x, thumbRect.y, thumbRect.width, thumbRect.height);
+		        g2d.dispose();
+		    }
+
+		    @Override
+		    public void paintTrack(Graphics g) 
+		    {
+		        Graphics2D g2d = (Graphics2D) g.create();
+		        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		        int cy = trackRect.y + (trackRect.height / 2) - 3;
+		        int trackHeight = 6;
+
+		        int startX = trackRect.x;
+		        int endX = trackRect.x + trackRect.width;
+		        int thumbX = thumbRect.x + thumbRect.width / 2;
+
+		        // Left side: Blue
+		        g2d.setColor(new Color(0, 120, 255));
+		        g2d.fillRoundRect(startX, cy, thumbX - startX, trackHeight, 10, 10);
+
+		        // Right side: Red
+		        g2d.setColor(new Color(200, 0, 0));
+		        g2d.fillRoundRect(thumbX, cy, endX - thumbX, trackHeight, 10, 10);
+
+		        g2d.dispose();
+		    }
+		});
+
+		// Optional: Set background/foreground if needed
+		difficultySlider.setBackground(new Color(245, 245, 245));
+		difficultySlider.setForeground(Color.DARK_GRAY);
+		difficultySlider.setOpaque(true);
 
 		difficultySlider.addChangeListener(e ->
 		{
