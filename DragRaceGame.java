@@ -899,18 +899,15 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 
 		// Style Labels
 		Font labelFont = new Font("Arial", Font.BOLD, 16);
-		for (JLabel label : labelTable.values()) 
-		{
+		for (JLabel label : labelTable.values()) {
 		    label.setFont(labelFont);
 		    label.setForeground(new Color(40, 40, 40));
 		}
 
 		// Custom UI: Blue on left, Red on right
-		difficultySlider.setUI(new javax.swing.plaf.basic.BasicSliderUI(difficultySlider) 
-		{
+		difficultySlider.setUI(new javax.swing.plaf.basic.BasicSliderUI(difficultySlider) {
 		    @Override
-		    public void paintThumb(Graphics g) 
-		    {
+		    public void paintThumb(Graphics g) {
 		        Graphics2D g2d = (Graphics2D) g.create();
 		        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		        g2d.setColor(new Color(50, 150, 255));
@@ -919,8 +916,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		    }
 
 		    @Override
-		    public void paintTrack(Graphics g) 
-		    {
+		    public void paintTrack(Graphics g) {
 		        Graphics2D g2d = (Graphics2D) g.create();
 		        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		        int cy = trackRect.y + (trackRect.height / 2) - 3;
