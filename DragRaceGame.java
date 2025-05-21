@@ -901,45 +901,45 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		Font labelFont = new Font("Arial", Font.BOLD, 16);
 		for (JLabel label : labelTable.values()) 
 		{
-		    label.setFont(labelFont);
-		    label.setForeground(new Color(40, 40, 40));
+			label.setFont(labelFont);
+			label.setForeground(new Color(40, 40, 40));
 		}
 
 		// Custom UI: Blue on left, Red on right
 		difficultySlider.setUI(new javax.swing.plaf.basic.BasicSliderUI(difficultySlider) 
 		{
-		    @Override
-		    public void paintThumb(Graphics g) 
-		    {
-		        Graphics2D g2d = (Graphics2D) g.create();
-		        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		        g2d.setColor(new Color(50, 150, 255));
-		        g2d.fillOval(thumbRect.x, thumbRect.y, thumbRect.width, thumbRect.height);
-		        g2d.dispose();
-		    }
+			@Override
+			public void paintThumb(Graphics g) 
+			{
+				Graphics2D g2d = (Graphics2D) g.create();
+				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				g2d.setColor(new Color(50, 150, 255));
+				g2d.fillOval(thumbRect.x, thumbRect.y, thumbRect.width, thumbRect.height);
+				g2d.dispose();
+			}
 
-		    @Override
-		    public void paintTrack(Graphics g) 
-		    {
-		        Graphics2D g2d = (Graphics2D) g.create();
-		        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		        int cy = trackRect.y + (trackRect.height / 2) - 3;
-		        int trackHeight = 6;
+			@Override
+			public void paintTrack(Graphics g) 
+			{
+				Graphics2D g2d = (Graphics2D) g.create();
+				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				int cy = trackRect.y + (trackRect.height / 2) - 3;
+				int trackHeight = 6;
 
-		        int startX = trackRect.x;
-		        int endX = trackRect.x + trackRect.width;
-		        int thumbX = thumbRect.x + thumbRect.width / 2;
+				int startX = trackRect.x;
+				int endX = trackRect.x + trackRect.width;
+				int thumbX = thumbRect.x + thumbRect.width / 2;
 
-		        // Left side: Blue
-		        g2d.setColor(new Color(200, 0, 0));
-		        g2d.fillRoundRect(startX, cy, thumbX - startX, trackHeight, 10, 10);
+				// Left side: Blue
+				g2d.setColor(new Color(200, 0, 0));
+				g2d.fillRoundRect(startX, cy, thumbX - startX, trackHeight, 10, 10);
 
-		        // Right side: Red
-		        g2d.setColor(new Color(0, 120, 255));
-		        g2d.fillRoundRect(thumbX, cy, endX - thumbX, trackHeight, 10, 10);
+				// Right side: Red
+				g2d.setColor(new Color(0, 120, 255));
+				g2d.fillRoundRect(thumbX, cy, endX - thumbX, trackHeight, 10, 10);
 
-		        g2d.dispose();
-		    }
+				g2d.dispose();
+			}
 		});
 
 		// Optional: Set background/foreground if needed
