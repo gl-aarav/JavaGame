@@ -931,11 +931,11 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		        int thumbX = thumbRect.x + thumbRect.width / 2;
 
 		        // Left side: Blue
-		        g2d.setColor(new Color(0, 120, 255));
+		        g2d.setColor(new Color(200, 0, 0));
 		        g2d.fillRoundRect(startX, cy, thumbX - startX, trackHeight, 10, 10);
 
 		        // Right side: Red
-		        g2d.setColor(new Color(200, 0, 0));
+		        g2d.setColor(new Color(0, 120, 255));
 		        g2d.fillRoundRect(thumbX, cy, endX - thumbX, trackHeight, 10, 10);
 
 		        g2d.dispose();
