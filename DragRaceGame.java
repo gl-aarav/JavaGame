@@ -4,7 +4,7 @@
  * DragRaceGame.java
  */
 
- /* 
+/* 
  * Game Overview
  *
  * 1. Game Structure
@@ -761,10 +761,10 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 class InstructionPanel extends JPanel 
 {
 	private SoundPlayer buttonClickSound, NotificationSound; // Sounds for button clicks and notifications
-	
+
 	private JPanel parent; // Reference to the parent container to switch cards
 	private CardLayout layout; // CardLayout for changing screens
-	
+
 	private boolean agreementChecked; // Tracks if user checked the agreement box
 	private Image gifImage; // Background GIF image for the panel
 
@@ -958,30 +958,30 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 	private Image carOptionsNoBackgroundOriginal; // Car options image without background (original)
 	private Image EmptyCar;                   // Placeholder image for empty car slot
 	private Image imageForOpponent;           // Image representing the opponent’s car
-	
+
 	int x, y;                                // User’s car coordinates
 	int xHover, yHover;                      // Mouse hover coordinates
 	int xClick, yClick;                      // Mouse click coordinates
 	int opponentX, opponentY;                // Opponent car coordinates
-	
+
 	private JPanel parent;                   // Parent JPanel container
 	private CardLayout layout;              // CardLayout for switching UI panels
-	
+
 	private String name = "";               // Player or car name
-	
+
 	private boolean carSelected = false;   // Flag: has user selected a car?
 	private boolean nameEntered = false;   // Flag: has user entered their name?
-	
+
 	private SoundPlayer carSelectSound;    // Sound for car selection
 	private SoundPlayer buttonClickSound; // Sound for button clicks
 	private SoundPlayer notificationSound; // Sound for notifications
-	
+
 	private JLabel carStatsLabel;          // Label displaying car stats
-	
+
 	private String carStats = "No car selected"; // Current car stats text
-	
+
 	private boolean opponentCarSelected = false; // Flag: opponent car selected?
-	
+
 	Storer Storer = new Storer();           // Storage handler instance
 
 	public CarChoosePanel(GameHolder gameHolder, CardLayout layout)
@@ -2083,7 +2083,6 @@ class Storer
 	}
 }
 
-
 class GamePanel extends JPanel
 {
 	private JPanel parent;                 // Reference to the parent container panel
@@ -2133,10 +2132,13 @@ class GamePanel extends JPanel
 
 	private double userSpeed = 20 + userSpeedBoost; // User car speed combining base speed and boost
 
+	JButton slowDownOpponent = new JButton("Slow Down Opponent");
+
 	GamePanel(JPanel gameHolder, CardLayout layout) 
 	{
 		importTextfiles();  // Load questions and other text resources from files
 
+		slowDownOpponent.setVisible(false); // Hide slow down button initially
 		// Initialize sound players for correct, incorrect answers and race background music
 		correct = new SoundPlayer("Correct.wav");
 		incorrect = new SoundPlayer("InCorrect.wav");
@@ -2267,6 +2269,7 @@ class GamePanel extends JPanel
 				start.setEnabled(false);
 				runCountdown(3, () ->
 				{
+					slowDownOpponent.setVisible(true);
 					startTimer();
 					timerStarted = true;
 					start.setText("Restart");
@@ -2283,6 +2286,7 @@ class GamePanel extends JPanel
 			}
 			else
 			{
+				slowDownOpponent.setVisible(false);
 				// Restart game: reset buttons, stop timer, reset variables and progress bar
 				questionOneButton.setText("");
 				questionTwoButton.setText("");
@@ -2323,11 +2327,34 @@ class GamePanel extends JPanel
 			repaint();
 		});
 
+		styleButton.accept(slowDownOpponent, Color.RED);
+		slowDownOpponent.addActionListener(e ->
+		{
+			double temp = opponentSpeed;
+			opponentSpeed = 0; // Slow down opponent
+			slowDownOpponent.setEnabled(false);
+			Timer slowDownTimer = new Timer(5000, e2 ->
+			{
+				opponentSpeed = temp;
+				slowDownOpponent.setVisible(false);
+				Timer renableTimer = new Timer(10000, e3 ->
+				{
+					slowDownOpponent.setEnabled(true);
+					slowDownOpponent.setVisible(true);
+				});
+				renableTimer.setRepeats(false); // Ensure the timer runs only once
+				renableTimer.start(); // Start the timer
+			});
+			slowDownTimer.setRepeats(false); // Ensure the timer runs only once
+			slowDownTimer.start(); // Start the timer
+		});
+
 		// Panel to hold Start and Next buttons with padding and transparent background
 		JPanel controlButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-		controlButtonPanel.setBackground(new Color(240, 248, 255, 0));
+		controlButtonPanel.setBackground(new Color(0, 0, 0, 0));
 		controlButtonPanel.add(start);
 		controlButtonPanel.add(next);
+		controlButtonPanel.add(slowDownOpponent);
 
 		// Add action listeners to answer buttons to handle answer selection logic
 		questionOneButton.addActionListener(e -> handleAnswer(0, questionOneButton, questionTwoButton, questionThreeButton, questionFourButton));
@@ -2571,6 +2598,7 @@ class GamePanel extends JPanel
 			// Check if user wins by reaching finish line first
 			if (car1LogicalPos >= FINISH_LINE && car2LogicalPos < FINISH_LINE)
 			{
+				slowDownOpponent.setVisible(false);
 				storer.setWrongFromGame1(Arrays.copyOf(arrayNum, arrayNumber));
 				long endTime = System.currentTimeMillis(); // Record end time
 				storer.setRaceGameTime((int) (endTime/1000 - startTime/1000));
@@ -2585,6 +2613,7 @@ class GamePanel extends JPanel
 			// Check if opponent wins or both finish simultaneously
 			else if (car2LogicalPos >= FINISH_LINE && car1LogicalPos >= FINISH_LINE) 
 			{
+				slowDownOpponent.setVisible(false);
 				storer.setWrongFromGame1(Arrays.copyOf(arrayNum, arrayNumber));
 				long endTime = System.currentTimeMillis(); // Record end time
 				storer.setRaceGameTime((int) (endTime/1000 - startTime/1000));
@@ -2748,7 +2777,7 @@ class TugOfWarPanel extends JPanel
 	private final double PULL_STEP = 50;        // Amount user pulls rope on correct answer
 	private final double BOT_PULL_STEP = 20;    // Amount bot pulls rope on wrong answer
 	private double botPullSpeed = 0;            // Bot's automatic pull speed per tick
-	
+
 	private final double WIN_THRESHOLD = 300;   // Distance needed to win or lose
 
 	// Car image dimensions
@@ -2896,7 +2925,7 @@ class TugOfWarPanel extends JPanel
 			// Repaint the panel to reflect changes
 			repaint();
 		});
-
+		
 		JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 20));
 		topPanel.setOpaque(false);
 		topPanel.add(startButton);
@@ -2986,7 +3015,7 @@ class TugOfWarPanel extends JPanel
 			BufferedImage rotatedUser = new BufferedImage(CAR_WIDTH, CAR_HEIGHT, scaledUser.getType());
 			Graphics2D g2dRotUser = rotatedUser.createGraphics();
 			AffineTransform rtUser = AffineTransform.getRotateInstance(
-				Math.toRadians(180), CAR_WIDTH / 2.0, CAR_HEIGHT / 2.0);
+					Math.toRadians(180), CAR_WIDTH / 2.0, CAR_HEIGHT / 2.0);
 			g2dRotUser.drawImage(scaledUser, rtUser, null);
 			g2dRotUser.dispose();
 			userCarImage = rotatedUser;
@@ -3573,11 +3602,11 @@ class LearningPanel extends JPanel
 class HighScorePanel extends JPanel 
 {
 	private JTextArea textArea;
-	
+
 	private JPanel parent;
-	
+
 	private CardLayout layout;
-	
+
 	private static final String HIGH_SCORE_FILE = "HighScores.txt";
 
 	public HighScorePanel(JPanel parent, CardLayout layout) 
@@ -3674,7 +3703,8 @@ class HighScorePanel extends JPanel
 			while ((line = br.readLine()) != null) 
 			{
 				String[] parts = line.split("\\|");
-				if (parts.length < 4) continue;
+				if (parts.length < 4) 
+					continue;
 				String name = parts[0], opp = parts[1];
 				int rt = Integer.parseInt(parts[2]);
 				int tt = Integer.parseInt(parts[3]);
@@ -3885,23 +3915,23 @@ class HighScorePanelAfter extends JPanel
 class ThankYouScreenPanel extends JPanel implements ActionListener 
 {
 	private JPanel parent;             // Reference to parent panel for switching cards
-	
+
 	private CardLayout layout;        // Layout manager to switch between screens
-	
+
 	private final java.util.List<Particle> particles = new ArrayList<>();  // List of animated particles
-	
+
 	private final Timer timer;        // Timer for animation updates
-	
+
 	private float rotationAngle = 0f; // Angle for rotating logo
-	
+
 	private float gradientOffset = 0; // Offset used to animate the background gradient
-	
+
 	private float hue = 0f;           // Hue used to shift colors over time
-	
+
 	private final GradientButton quitButton;   // Button to quit the game
-	
+
 	private final GradientButton replayButton; // Button to replay the game
-	
+
 	public ThankYouScreenPanel(JPanel parent, CardLayout layout) 
 	{
 		this.parent = parent;
