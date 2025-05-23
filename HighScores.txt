@@ -31,3 +31,5 @@ s|CarSport|15|45
 Enter Your Na|CarSport|28|12
 a|Rocket|14|22
 Aarav|Rocket|33|13
+j|CarNormal|17|17
+kk|CarSport|19|12
