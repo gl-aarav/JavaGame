@@ -951,7 +951,6 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		{
 			int value = difficultySlider.getValue();
 			Storer.setDifficultyLevel(value); // Set the difficulty based on the slider value
-			Storer Storer = new Storer();
 			try
 			{
 				opponentCarSelected = true; // Set to true when the slider is moved
