@@ -2,17 +2,165 @@
  * Aarav Goyal
  * 4/23/2025
  * DragRaceGame.java
+ */
+
+ /* 
+ * Game Overview
  *
+ * 1. Game Structure
+ * 	The game is a multi-stage educational racing game with the following main panels:
+ * 		- Race Game Panel: A car race where answering math questions correctly gives speed boosts.
+ * 		- Tug of War Panel: A tug-of-war game, also powered by answering questions.
+ * 		- Learning Review Panel: Shows a summary of mistakes and explanations for learning.
+ * 		- High Score Panels: Display high scores grouped by opponent.
+ * 		- Thank You Screen: Animated end screen with replay/quit options.
+ * 	The game uses a CardLayout to switch between these panels.
+ * 
+ * 2. Race Game Panel
+ * 	Gameplay:
+ * 		- The player races against an AI opponent.
+ * 		- The race is visualized with car images moving along a track.
+ * 		- The player’s car speed is affected by answering multiple-choice trigonometry questions.
+ * 		- Correct answers give a temporary speed boost; incorrect answers slow the player down and hide the answer buttons for a penalty period.
+ *
+ * 	UI Elements:
+ * 		- Title Label: "Racing Challenge!"
+ * 		- Progress Bar: Shows the player's progress along the track.
+ * 		- Question Area: Displays the current question.
+ * 		- Answer Buttons: Four buttons for multiple-choice answers.
+ * 		- Start/Restart Button: Starts or restarts the race.
+ *		- Next Button: Advances to the next game (Tug of War).
+ *
+ * 	Game Flow:
+ * 		- On start, a countdown is shown.
+ * 		- The game timer updates car positions and checks for win/loss.
+ * 		- If the player wins or loses, a dialog is shown and the next button appears.
+ *
+ * 	Audio:
+ * 		- Background race music loops while the panel is visible.
+ * 		- Correct/incorrect answer sounds play on answer selection.
+ * 		- Music fades out at the end of the race.
+ *
+ * 	Question System:
+ * 		- Questions and answers are loaded from text files.
+ *		- Each question has four choices and an explanation.
+ * 		- Wrong answers are tracked for review.
+ *
+ *
+ * 3. Tug of War Panel
+ * 	Gameplay:
+ * 		- The player and a bot compete in a tug-of-war.
+ * 		- The rope moves left or right based on correct/incorrect answers.
+ * 		- The bot pulls automatically at a speed based on its car type.
+ * 		- The player wins by pulling the rope past a threshold; loses if the bot does.
+ *
+ * 	UI Elements:
+ * 		- Start Button: Begins the tug-of-war.
+ * 		- Next Button: Advances to the learning review.
+ * 		- Question Area: Shows the current question.
+ * 		- Answer Buttons: Four for multiple-choice answers.
+ *
+ * 	Game Flow:
+ * 		- On start, a countdown is shown.
+ * 		- The game timer moves the rope based on bot speed.
+ * 		- Correct answers pull the rope toward the player; incorrect answers let the bot pull.
+ * 		- Win/loss is checked after each move.
+ *
+ * 	Audio:
+ * 		- Background music loops.
+ * 		- Correct/incorrect answer sounds play.
+ *
+ * 	Question System:
+ * 		- Similar to the race game, with questions loaded from files.
+ * 		- Wrong answers are tracked for review.
+ *
+ *
+ * 4. Learning Review Panel
+ * 	Purpose:
+ * 		- After both games, this panel reviews all questions the player got wrong.
+ * 		- For each wrong answer, it shows:
+ * 			- The question
+ *   		- All answer choices
+ *   		- The correct answer
+ *   		- An explanation
+ *
+ * 	UI Elements:
+ * 		- Title: "Learning Review"
+ * 		- Text Area: Scrollable, formatted review of mistakes.
+ * 		- Next Button: Advances to the high score panel.
+ *
+ *
+ * 5. High Score Panels
+ * 	Purpose:
+ * 		- Show high scores grouped by opponent type.
+ * 		- Two versions: one for after the game (which appends the current result), and one for general viewing.
+ *
+ * 	UI Elements:
+ * 		- Title: "High Scores by Opponent"
+ * 		- Text Area: Shows top 3 lowest times for each opponent in both games.
+ * 		- Back/Finish Button: Returns to the welcome or thank you screen.
+ *
+ * 	Data Storage:
+ * 		- High scores are stored in a text file (HighScores.txt).
+ * 		- Each entry includes player name, opponent, race time, and tug time.
+ *
+ *
+ * 6. Thank You Screen
+ * 	Purpose:
+ * 		- Animated end screen with visual effects.
+ * 		- Offers options to replay or quit.
+ *
+ * 	UI Elements:
+ * 		- Animated Background: Moving gradient and sparkles.
+ * 		- Rotating Logo: Central visual element.
+ * 		- Thank You Text: Large, gradient-filled message.
+ * 		- Replay/Quit Buttons: For restarting or exiting the game.
+ *
+ *
+ * 7. Supporting Classes
+ * 	SoundPlayer:
+ * 		- Handles playing, looping, stopping, and fading out audio.
+ * 		- Supports global mute.
+ *
+ *
+ * Storer:
+ * 		- Stores and retrieves shared game state (player name, times, wrong answers, etc.).
+ *
+ *
+ * 8. Question/Answer File Format
+ * 		- Questions: Stored in trigMultipleChoice.txt, each with a number, four choices, and the correct answer.
+ * 		- Explanations: Stored in trigAnswerExplanations.txt, matched by question number.
+ *
+ *
+ * 9. Visual and Audio Design
+ * 		- Uses custom colors, fonts, and button styles for a modern look.
+ * 		- Animations and sound effects enhance engagement.
+ * 		- All panels are styled for clarity and accessibility.
+ *
+ *
+ * 10. Game Flow Summary
+ * 	1. Welcome/Setup: Player enters name, selects car and opponent.
+ * 	2. Race Game: Player races by answering questions.
+ * 	3. Tug of War: Player competes in a tug-of-war, again answering questions.
+ * 	4. Learning Review: Player reviews mistakes and explanations.
+ * 	5. High Scores: Player sees how their times compare to others.
+ * 	6. Thank You Screen: Animated end, with options to replay or quit.
+ *
+ * This game provides a fun, competitive, and educational experience, reinforcing learning through gameplay and review.
+ */
+
+/*
+ * Plan for the Game
  * Week 1
- * 	- Add intro GIF and fade out animation
- * 	- Create welcome page
- * 	- Add image to go to instructions and high scores
- * 	- Add sound
- * 	- Add coordinates to go to instructions and high scores
+ *  - Add intro GIF and fade out animation
+ *  - Create welcome page
+ *  - Add image to go to instructions and high scores
+ *  - Add sound
+ *  - Add coordinates to go to instructions and high scores
  *  - Make the pointer change when hovering over the coordinates
  *  - Create the instructions and high scores panels
  * Week 2
- * 	- Finish the instructions panel
+ *  - Finish the instructions panel
  *  - Create select car select panel
  *  - Look for images for the cars
  *  - Clear the background of the car images
@@ -64,7 +212,7 @@
  *  - Finish the high scores panel
  *  - Add more graphics (if time allows)
  *  - Add another subject (if time allows)
- *  Week 6 
+ * Week 6 
  *  - Finishing Touches
  */
 
@@ -613,8 +761,10 @@ class WelcomePagePanel extends JPanel implements MouseListener, MouseMotionListe
 class InstructionPanel extends JPanel 
 {
 	private SoundPlayer buttonClickSound, NotificationSound; // Sounds for button clicks and notifications
+	
 	private JPanel parent; // Reference to the parent container to switch cards
 	private CardLayout layout; // CardLayout for changing screens
+	
 	private boolean agreementChecked; // Tracks if user checked the agreement box
 	private Image gifImage; // Background GIF image for the panel
 
@@ -808,21 +958,30 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 	private Image carOptionsNoBackgroundOriginal; // Car options image without background (original)
 	private Image EmptyCar;                   // Placeholder image for empty car slot
 	private Image imageForOpponent;           // Image representing the opponent’s car
+	
 	int x, y;                                // User’s car coordinates
 	int xHover, yHover;                      // Mouse hover coordinates
 	int xClick, yClick;                      // Mouse click coordinates
 	int opponentX, opponentY;                // Opponent car coordinates
+	
 	private JPanel parent;                   // Parent JPanel container
 	private CardLayout layout;              // CardLayout for switching UI panels
+	
 	private String name = "";               // Player or car name
+	
 	private boolean carSelected = false;   // Flag: has user selected a car?
 	private boolean nameEntered = false;   // Flag: has user entered their name?
+	
 	private SoundPlayer carSelectSound;    // Sound for car selection
 	private SoundPlayer buttonClickSound; // Sound for button clicks
 	private SoundPlayer notificationSound; // Sound for notifications
+	
 	private JLabel carStatsLabel;          // Label displaying car stats
+	
 	private String carStats = "No car selected"; // Current car stats text
+	
 	private boolean opponentCarSelected = false; // Flag: opponent car selected?
+	
 	Storer Storer = new Storer();           // Storage handler instance
 
 	public CarChoosePanel(GameHolder gameHolder, CardLayout layout)
@@ -1561,6 +1720,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 		repaint();
 		if (carSelected)
 		{
+			// Define car colors, types, and conditions based on coordinates
 			Map<String, String> carColors = new HashMap<>();
 			carColors.put("7,5", "Blue");
 			carColors.put("7,130", "Dark Blue");
@@ -1636,6 +1796,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			carConditions.put("735,376", "Refurbished");
 			carConditions.put("735,500", "New");
 
+			// Get car stats based on clicked coordinates
 			String key = yClick + "," + xClick;
 			if (carColors.containsKey(key) && carSelected)
 			{
@@ -1648,8 +1809,10 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 				carStatsLabel.repaint();
 			}
 		}
+		// Update the car stats label
 		repaint();
 	}
+	// MouseListener methods
 	@Override
 	public void mouseReleased(MouseEvent e) {}
 	@Override
@@ -1663,6 +1826,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 	@Override
 	public void mouseMoved(MouseEvent e)
 	{
+		// Get mouse coordinates
 		x = e.getX();
 		y = e.getY();
 
@@ -1793,6 +1957,7 @@ class CarChoosePanel extends JPanel implements MouseListener, MouseMotionListene
 			yHover = 0; // Reset hover position
 			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		}
+		// Update the hover position
 		repaint();
 	}
 }
@@ -2583,6 +2748,7 @@ class TugOfWarPanel extends JPanel
 	private final double PULL_STEP = 50;        // Amount user pulls rope on correct answer
 	private final double BOT_PULL_STEP = 20;    // Amount bot pulls rope on wrong answer
 	private double botPullSpeed = 0;            // Bot's automatic pull speed per tick
+	
 	private final double WIN_THRESHOLD = 300;   // Distance needed to win or lose
 
 	// Car image dimensions
@@ -2780,13 +2946,16 @@ class TugOfWarPanel extends JPanel
 		});
 	}
 
+	// Loads and prepares the user car, bot car, and rope images for the tug game
 	private void getImages()
 	{
 		try
 		{
+			// Get image file names for user car and opponent car from the Storer object
 			String carNumber = store.getCarImage();
 			String carOpponentString = store.getOpponentCarImage();
 
+			// Set bot pull speed based on the opponent's car type
 			switch (carOpponentString)
 			{
 			case "Bicycle.png":
@@ -2806,18 +2975,23 @@ class TugOfWarPanel extends JPanel
 				break;
 			}
 
+			// Load and scale the user car image
 			BufferedImage originalUser = ImageIO.read(new File(carNumber + ".png"));
 			BufferedImage scaledUser = new BufferedImage(CAR_WIDTH, CAR_HEIGHT, originalUser.getType());
 			Graphics2D g2dUser = scaledUser.createGraphics();
 			g2dUser.drawImage(originalUser, 0, 0, CAR_WIDTH, CAR_HEIGHT, null);
 			g2dUser.dispose();
+
+			// Rotate the user car image 180 degrees (facing upward)
 			BufferedImage rotatedUser = new BufferedImage(CAR_WIDTH, CAR_HEIGHT, scaledUser.getType());
 			Graphics2D g2dRotUser = rotatedUser.createGraphics();
-			AffineTransform rtUser = AffineTransform.getRotateInstance(Math.toRadians(180), CAR_WIDTH / 2.0, CAR_HEIGHT / 2.0);
+			AffineTransform rtUser = AffineTransform.getRotateInstance(
+				Math.toRadians(180), CAR_WIDTH / 2.0, CAR_HEIGHT / 2.0);
 			g2dRotUser.drawImage(scaledUser, rtUser, null);
 			g2dRotUser.dispose();
 			userCarImage = rotatedUser;
 
+			// Load and rotate the bot car image 90 degrees clockwise (facing left)
 			BufferedImage originalBot = ImageIO.read(new File(carOpponentString));
 			int w = originalBot.getHeight();
 			int h = originalBot.getWidth();
@@ -2831,6 +3005,7 @@ class TugOfWarPanel extends JPanel
 			g2dBot.dispose();
 			botCarImage = rotatedBot;
 
+			// Load and scale the rope image proportionally to a fixed width (400px)
 			BufferedImage originalRope = ImageIO.read(new File("rope.png"));
 			int targetWidth = 400;
 			int targetHeight = originalRope.getHeight() * targetWidth / originalRope.getWidth();
@@ -2843,6 +3018,7 @@ class TugOfWarPanel extends JPanel
 		}
 		catch (IOException e)
 		{
+			// Show error message if any image fails to load
 			JOptionPane.showMessageDialog(this, "Error loading game images: " + e.getMessage(), "Image Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
@@ -3397,8 +3573,11 @@ class LearningPanel extends JPanel
 class HighScorePanel extends JPanel 
 {
 	private JTextArea textArea;
+	
 	private JPanel parent;
+	
 	private CardLayout layout;
+	
 	private static final String HIGH_SCORE_FILE = "HighScores.txt";
 
 	public HighScorePanel(JPanel parent, CardLayout layout) 
@@ -3522,13 +3701,14 @@ class HighScorePanel extends JPanel
 	}
 }
 
+//Panel to display high scores categorized by opponent type after the game ends
 class HighScorePanelAfter extends JPanel 
 {
-	private JTextArea textArea;
-	private Storer storer;
-	private JPanel parent;
-	private CardLayout layout;
-	private static final String HIGH_SCORE_FILE = "HighScores.txt";
+	private JTextArea textArea;        // Area to display formatted high scores
+	private Storer storer;             // Stores and retrieves player data
+	private JPanel parent;             // Reference to parent container (for CardLayout switching)
+	private CardLayout layout;         // Layout used to switch between panels
+	private static final String HIGH_SCORE_FILE = "HighScores.txt"; // File to store high score entries
 
 	public HighScorePanelAfter(JPanel parent, CardLayout layout) 
 	{
@@ -3539,11 +3719,13 @@ class HighScorePanelAfter extends JPanel
 		setLayout(new BorderLayout());
 		setBackground(Color.WHITE);
 
+		// Title label at the top
 		JLabel title = new JLabel("High Scores by Opponent", SwingConstants.CENTER);
 		title.setFont(new Font("Segoe UI", Font.BOLD, 26));
 		title.setBorder(new EmptyBorder(15, 0, 10, 0));
 		add(title, BorderLayout.NORTH);
 
+		// Text area for displaying score data
 		textArea = new JTextArea();
 		textArea.setFont(new Font("Consolas", Font.PLAIN, 16));
 		textArea.setEditable(false);
@@ -3555,11 +3737,13 @@ class HighScorePanelAfter extends JPanel
 				new EmptyBorder(12,12,12,12)
 				));
 
+		// Add text area to a scroll pane
 		JScrollPane scroll = new JScrollPane(textArea);
 		scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scroll.setBorder(new EmptyBorder(10, 30, 10, 30));
 		add(scroll, BorderLayout.CENTER);
 
+		// Finish button to return to thank you screen
 		JButton finish = new JButton("Finish");
 		finish.setFont(new Font("Segoe UI", Font.BOLD, 18));
 		finish.setBackground(new Color(200, 60, 60));
@@ -3568,6 +3752,7 @@ class HighScorePanelAfter extends JPanel
 		finish.setPreferredSize(new Dimension(120, 40));
 		finish.addActionListener(e -> layout.show(parent, "thank you"));
 
+		// Add finish button to a sub-panel
 		JPanel btnPanel = new JPanel();
 		btnPanel.setBackground(Color.WHITE);
 		btnPanel.setBorder(new EmptyBorder(10,10,20,10));
@@ -3575,17 +3760,17 @@ class HighScorePanelAfter extends JPanel
 		add(btnPanel, BorderLayout.SOUTH);
 	}
 
+	// Override visibility to refresh scores when shown
 	@Override
 	public void setVisible(boolean visible) 
 	{
 		super.setVisible(visible);
-		if (!visible) 
-			return;
+		if (!visible) return;
 
-		// Append current result with opponent
+		// Add the most recent game result to the file
 		appendCurrentResult();
 
-		// R ead and process high scores
+		// Read all scores and group by opponent
 		Map<String, List<Record>> map = readRecordsGrouped();
 
 		StringBuilder sb = new StringBuilder();
@@ -3593,7 +3778,8 @@ class HighScorePanelAfter extends JPanel
 		{
 			sb.append("Opponent: ").append(opp).append("\n");
 			List<Record> list = map.get(opp);
-			// sort by raceTime and tugTime
+
+			// Sort and display top 3 lowest race times
 			list.sort(Comparator.comparingInt(r -> r.raceTime));
 			sb.append(" Lowest RaceGame Times:\n");
 			for (int i = 0; i < Math.min(3, list.size()); i++) 
@@ -3601,6 +3787,8 @@ class HighScorePanelAfter extends JPanel
 				Record r = list.get(i);
 				sb.append("  " + (i+1) + ". " + r.name + ": " + r.raceTime + "s\n");
 			}
+
+			// Sort and display top 3 lowest tug-of-war times
 			list.sort(Comparator.comparingInt(r -> r.tugTime));
 			sb.append(" Lowest TugGame Times:\n");
 			for (int i = 0; i < Math.min(3, list.size()); i++) 
@@ -3611,10 +3799,12 @@ class HighScorePanelAfter extends JPanel
 			sb.append("\n");
 		}
 
+		// Update text area with formatted scores
 		textArea.setText(sb.toString());
-		textArea.setCaretPosition(0);
+		textArea.setCaretPosition(0); // Scroll to top
 	}
 
+	// Appends the current game's result to the high score file if valid
 	private void appendCurrentResult() 
 	{
 		String name = storer.getName();
@@ -3622,16 +3812,18 @@ class HighScorePanelAfter extends JPanel
 		int timeRace = storer.getRaceTime();
 		int timeTug = storer.getTugTime();
 
-		// Validate: skip if name or opponent is missing or times are 0 or negative
+		// Validate inputs
 		if (name == null || name.trim().isEmpty() ||
 				oppFile == null || timeRace <= 0 || timeTug <= 0)
 		{
-			return; // don't write invalid entry
+			return; // Invalid data, don't save
 		}
 
+		// Extract opponent name by removing ".png"
 		String opponent = oppFile.replaceFirst("\\.png$", "");
 		String entry = String.format("%s|%s|%d|%d", name.trim(), opponent, timeRace, timeTug);
 
+		// Append entry to file
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(HIGH_SCORE_FILE, true))) 
 		{
 			bw.newLine();
@@ -3643,7 +3835,7 @@ class HighScorePanelAfter extends JPanel
 		}
 	}
 
-
+	// Reads all high scores from the file and groups them by opponent name
 	private Map<String, List<Record>> readRecordsGrouped() 
 	{
 		Map<String, List<Record>> map = new LinkedHashMap<>();
@@ -3656,29 +3848,35 @@ class HighScorePanelAfter extends JPanel
 			while ((line = br.readLine()) != null) 
 			{
 				String[] parts = line.split("\\|");
-				if (parts.length < 4) continue;
+				if (parts.length < 4) continue; // Skip malformed lines
 				String name = parts[0], opp = parts[1];
 				int rt = Integer.parseInt(parts[2]);
 				int tt = Integer.parseInt(parts[3]);
 				Record r = new Record(name, rt, tt);
+
+				// Group by opponent
 				map.computeIfAbsent(opp, k -> new ArrayList<>()).add(r);
 			}
 		} 
 		catch (IOException e) 
 		{
-			// ignore
+			// Reading failed; ignore silently
 		}
 		return map;
 	}
 
+	// Simple record class to store a player's times
 	private static class Record 
 	{
 		String name;
 		int raceTime;
 		int tugTime;
+
 		Record(String n, int r, int t)
 		{
-			name = n; raceTime = r; tugTime = t; 
+			name = n; 
+			raceTime = r; 
+			tugTime = t; 
 		}
 	}
 }
@@ -3687,15 +3885,23 @@ class HighScorePanelAfter extends JPanel
 class ThankYouScreenPanel extends JPanel implements ActionListener 
 {
 	private JPanel parent;             // Reference to parent panel for switching cards
+	
 	private CardLayout layout;        // Layout manager to switch between screens
+	
 	private final java.util.List<Particle> particles = new ArrayList<>();  // List of animated particles
+	
 	private final Timer timer;        // Timer for animation updates
+	
 	private float rotationAngle = 0f; // Angle for rotating logo
+	
 	private float gradientOffset = 0; // Offset used to animate the background gradient
+	
 	private float hue = 0f;           // Hue used to shift colors over time
+	
 	private final GradientButton quitButton;   // Button to quit the game
+	
 	private final GradientButton replayButton; // Button to replay the game
-
+	
 	public ThankYouScreenPanel(JPanel parent, CardLayout layout) 
 	{
 		this.parent = parent;
@@ -3753,9 +3959,9 @@ class ThankYouScreenPanel extends JPanel implements ActionListener
 		Color c1 = Color.getHSBColor(hue, 1f, 0.6f);
 		Color c2 = Color.getHSBColor((hue + 0.4f) % 1f, 1f, 0.9f);
 		GradientPaint bg = new GradientPaint(
-			(gradientOffset % w), 0, c1,
-			0, (gradientOffset % h), c2
-		);
+				(gradientOffset % w), 0, c1,
+				0, (gradientOffset % h), c2
+				);
 		g2.setPaint(bg);
 		g2.fillRect(0, 0, w, h);
 
@@ -3818,7 +4024,7 @@ class ThankYouScreenPanel extends JPanel implements ActionListener
 
 		repaint(); // Request redraw
 	}
-	
+
 	// Custom JButton with a rounded gradient background and hover glow
 	private static class GradientButton extends JButton 
 	{
@@ -3830,12 +4036,18 @@ class ThankYouScreenPanel extends JPanel implements ActionListener
 			setContentAreaFilled(false);  // No default fill
 			setBorderPainted(false);
 			setFocusPainted(false);
-			
+
 			// Detect hover state
 			addMouseListener(new MouseAdapter() 
 			{
-				public void mouseEntered(MouseEvent e) { hover = true; repaint(); }
-				public void mouseExited(MouseEvent e) { hover = false; repaint(); }
+				public void mouseEntered(MouseEvent e) 
+				{ 
+					hover = true; repaint(); 
+				}
+				public void mouseExited(MouseEvent e) 
+				{
+					hover = false; repaint(); 
+				}
 			});
 		}
 
@@ -3848,8 +4060,8 @@ class ThankYouScreenPanel extends JPanel implements ActionListener
 			float f = hover ? 1.1f : 1f;
 
 			GradientPaint gp = new GradientPaint(0, 0,
-				getBackground().brighter(), 0, h,
-				getBackground().darker());
+					getBackground().brighter(), 0, h,
+					getBackground().darker());
 			g2.setPaint(gp);
 			g2.fillRoundRect(0, 0, w, h, 20, 20);
 			g2.setComposite(AlphaComposite.SrcOver);
@@ -3857,8 +4069,14 @@ class ThankYouScreenPanel extends JPanel implements ActionListener
 			g2.dispose();
 		}
 
-		@Override public void setBackground(Color bg) { super.setBackground(bg); }
-		@Override public void setForeground(Color fg) { super.setForeground(fg); }
+		@Override public void setBackground(Color bg) 
+		{
+			super.setBackground(bg);
+		}
+		@Override public void setForeground(Color fg) 
+		{ 
+			super.setForeground(fg); 
+		}
 	}
 
 	// Represents a single particle for the sparkle effect
