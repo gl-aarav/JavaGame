@@ -3,3 +3,4 @@ Opponent1|CarSport|49|57
 Opponent2|Motorcycle|45|99
 Opponent3|Motorcycle|40|67
 Opponent4|Bicycle|46|110
+Anish|CarSport|47|48
